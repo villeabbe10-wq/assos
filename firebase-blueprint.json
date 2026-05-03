@@ -1,0 +1,189 @@
+{
+  "entities": {
+    "blogPost": {
+      "title": "Health Blog Post",
+      "description": "Article for medical awareness and sensitization.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the article" },
+        "content": { "type": "string", "description": "Article body in markdown" },
+        "author": { "type": "string", "description": "Author name" },
+        "category": { "type": "string", "description": "Category (e.g., Sensibilisation, Conseils, Autre)" },
+        "imageUrl": { "type": "string", "description": "Base64 or URL image" },
+        "videoUrl": { "type": "string", "description": "Base64 or URL video" },
+        "publishedAt": { "type": "string", "format": "date-time" },
+        "featured": { "type": "boolean" }
+      },
+      "required": ["title", "content", "publishedAt"]
+    },
+    "event": {
+      "title": "Community Event",
+      "description": "Missions, health campaigns, and meetings.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "location": { "type": "string" },
+        "type": { "type": "string", "description": "mission, campaign, general" },
+        "imageUrl": { "type": "string" }
+      },
+      "required": ["title", "date", "location"]
+    },
+    "volunteer": {
+      "title": "Volunteer Registration",
+      "description": "Inscriptions for local and international volunteers.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "interests": { "type": "string", "description": "Areas of interest" },
+        "status": { "type": "string", "enum": ["pending", "contacted", "active"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "createdAt"]
+    },
+    "partner": {
+      "title": "NGO Partner",
+      "description": "Associated hospitals, NGOs, and sponsors.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "logoUrl": { "type": "string" },
+        "description": { "type": "string" },
+        "website": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "resource": {
+      "title": "Help Resource",
+      "description": "Resources for vulnerable populations.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "type": { "type": "string", "description": "kit, consultation, nutrition, education, autre" },
+        "contact": { "type": "string" }
+      },
+      "required": ["title", "contact"]
+    },
+    "adminMessage": {
+      "title": "Admin Private Message",
+      "description": "Private discussion between administrators or members.",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["text", "userId", "createdAt"]
+    },
+    "campaignJoin": {
+      "title": "Campaign Participation",
+      "description": "Member commitment to an ongoing campaign.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "engagement": { "type": "string" },
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string" }
+      },
+      "required": ["name", "engagement", "userId", "createdAt"]
+    },
+    "memberReview": {
+      "title": "Member Feedback",
+      "description": "Avis et retours des membres.",
+      "type": "object",
+      "properties": {
+        "content": { "type": "string" },
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["content", "userId", "createdAt"]
+    },
+    "activityProposal": {
+      "title": "Project Proposal",
+      "description": "Suggestions for new association activities.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "targets": { "type": "string" },
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string" }
+      },
+      "required": ["title", "description", "userId", "createdAt"]
+    },
+    "sponsorship": {
+      "title": "Sponsorship Application",
+      "description": "Formal request to sponsor a beneficiary.",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string" },
+        "email": { "type": "string" },
+        "beneficiaryChoice": { "type": "string" },
+        "type": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fullName", "email", "createdAt"]
+    },
+    "pharmacyList": {
+      "title": "Pharmacies on Duty",
+      "description": "List of pharmacies on duty for a specific period.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "content", "updatedAt"]
+    },
+    "beneficiary": {
+      "title": "Beneficiary",
+      "description": "Person supported by the association (schooling, health, etc.)",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "detail": { "type": "string" },
+        "location": { "type": "string" },
+        "type": { "type": "string", "description": "scolarite, medical, orphelin, autre" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "createdAt"]
+    },
+    "system_admin": {
+      "title": "System Admin",
+      "description": "Authorized staff member with dashboard access",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["Admin", "Fondateur"] },
+        "addedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "blogPosts/{postId}": { "schema": "blogPost", "description": "Health awareness articles" },
+    "events/{eventId}": { "schema": "event", "description": "Scheduled health actions" },
+    "volunteers/{volunteerId}": { "schema": "volunteer", "description": "Volunteer applications" },
+    "partners/{partnerId}": { "schema": "partner", "description": "Associated entities" },
+    "resources/{resourceId}": { "schema": "resource", "description": "Available aid resources" },
+    "admin_messages/{msgId}": { "schema": "adminMessage", "description": "Private admin/member chat" },
+    "campaign_joins/{joinId}": { "schema": "campaignJoin", "description": "Campaign participations" },
+    "member_reviews/{reviewId}": { "schema": "memberReview", "description": "Member feedback" },
+    "activity_proposals/{proposalId}": { "schema": "activityProposal", "description": "New project ideas" },
+    "sponsorships/{sponsorshipId}": { "schema": "sponsorship", "description": "Sponsorship requests" },
+    "pharmacies/{pharmacyId}": { "schema": "pharmacyList", "description": "Lomé Pharmacies on duty list" },
+    "beneficiaries/{beneficiaryId}": { "schema": "beneficiary", "description": "List of supported individuals" },
+    "system_admins/{email}": { "schema": "system_admin", "description": "List of authorized administrators" }
+  }
+}

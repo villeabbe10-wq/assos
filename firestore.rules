@@ -1,0 +1,110 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isInternalAdmin() {
+      return isEmailVerified() && (
+        request.auth.token.email == 'seduceconseil@gmail.com' ||
+        exists(/databases/$(database)/documents/system_admins/$(request.auth.token.email))
+      );
+    }
+
+    function isPrimaryAdmin() {
+      return isEmailVerified() && request.auth.token.email == 'seduceconseil@gmail.com';
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    match /system_admins/{email} {
+      allow read: if isInternalAdmin();
+      allow write: if isPrimaryAdmin();
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    // --- Collections ---
+
+    match /blogPosts/{postId} {
+      allow read: if true;
+      allow write: if isInternalAdmin();
+    }
+
+    match /events/{eventId} {
+      allow read: if true;
+      allow write: if isInternalAdmin();
+    }
+
+    match /volunteers/{volunteerId} {
+      allow read: if isInternalAdmin();
+      allow create: if 
+        incoming().name is string && incoming().name.size() > 0 && incoming().name.size() < 100 &&
+        incoming().email is string && incoming().email.size() > 0 && incoming().email.size() < 100 &&
+        incoming().createdAt == request.time &&
+        (incoming().status == 'pending');
+    }
+
+    match /partners/{partnerId} {
+      allow read: if true;
+      allow write: if isInternalAdmin();
+    }
+
+    match /resources/{resourceId} {
+      allow read: if true;
+      allow write: if isInternalAdmin();
+    }
+
+    match /admin_messages/{msgId} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /campaign_joins/{joinId} {
+      allow read: if isInternalAdmin();
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid && incoming().createdAt == request.time;
+    }
+
+    match /member_reviews/{reviewId} {
+      allow read: if isInternalAdmin();
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid && incoming().createdAt == request.time;
+    }
+
+    match /activity_proposals/{proposalId} {
+      allow read: if isInternalAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid && incoming().createdAt == request.time;
+    }
+
+    match /sponsorships/{sponsorshipId} {
+      allow read: if isInternalAdmin();
+      allow create: if 
+        incoming().fullName is string && 
+        incoming().email is string &&
+        incoming().createdAt == request.time;
+    }
+
+    match /pharmacies/{pharmacyId} {
+      allow read: if true;
+      allow write: if isInternalAdmin();
+    }
+
+    match /beneficiaries/{beneficiaryId} {
+      allow read: if true;
+      allow write: if isInternalAdmin();
+    }
+  }
+}

@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  
+  --color-emerald-50: #f0fdf4;
+  --color-emerald-100: #dcfce7;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  --color-emerald-800: #065f46;
+  --color-emerald-900: #064e3b;
+  
+  --color-orange-500: #f97316;
+  --color-orange-600: #ea580c;
+}
+
+@layer base {
+  body {
+    -webkit-tap-highlight-color: transparent;
+    @apply bg-slate-50 text-slate-900;
+  }
+}
+
+.markdown-body {
+  line-height: 1.6;
+}
+
+.markdown-body h2 {
+  font-weight: 800;
+  font-size: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #0f172a;
+}
+
+.markdown-body p {
+  margin-bottom: 1rem;
+  color: #475569;
+}
+
+.card-sleek {
+  @apply bg-white rounded-[2rem] border border-slate-200 shadow-sm transition-all hover:shadow-md;
+}
+
+.btn-primary {
+  @apply bg-emerald-700 hover:bg-emerald-800 text-white px-6 py-3 rounded-2xl font-bold transition-all active:scale-95 shadow-lg shadow-emerald-700/20;
+}
+
+.btn-accent {
+  @apply bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-2xl font-bold transition-all active:scale-95 shadow-lg shadow-orange-500/20;
+}
