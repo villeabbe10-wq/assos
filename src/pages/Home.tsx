@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Heart, ShieldCheck, Users, ArrowRight, Activity, Calendar as CalendarIcon, MapPin, Globe } from 'lucide-react';
-import { useTranslation } from '../lib/i18n';
 import { db } from '../lib/firebase';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 
 export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => void }) {
-  const { t } = useTranslation();
   const [latestEvents, setLatestEvents] = useState<any[]>([]);
 
   useEffect(() => {
@@ -58,7 +56,7 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
         <div className="relative z-10 max-w-4xl">
           <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-4 mb-8">
             <span className="bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-slate-400/20">
-              {t('hero_tag')}
+              Mouvement Solidaire Togo
             </span>
             <div className="flex -space-x-3">
               {[1, 2, 3, 4].map((i) => (
@@ -81,13 +79,13 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
                 +1K
               </motion.div>
             </div>
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('global_movement')}</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rejoignez nous</span>
           </motion.div>
           
           <motion.h2 variants={itemVariants} className="text-5xl sm:text-8xl font-black text-slate-900 mb-8 leading-[0.9] tracking-tighter">
-            {t('hero_title_1')} <br />
+            Sensibiliser <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-sky-600 relative">
-              {t('hero_title_2')}
+              Éduquer
               <motion.span 
                 initial={{ width: 0 }}
                 animate={{ width: '100%' }}
@@ -95,11 +93,11 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
                 className="absolute -bottom-2 left-0 h-2 bg-emerald-500/20 rounded-full"
               />
             </span> <br />
-            <span className="text-slate-400">{t('hero_title_3')}</span>
+            <span className="text-slate-400">Protéger</span>
           </motion.h2>
 
           <motion.p variants={itemVariants} className="text-slate-500 text-lg sm:text-xl mb-12 leading-relaxed font-medium max-w-2xl">
-            {t('hero_desc')}
+            L'excellence du conseil médical couplée à l'engagement social pour les populations vulnérables du Togo.
           </motion.p>
           
           <motion.div variants={itemVariants} className="flex flex-wrap gap-5">
@@ -109,7 +107,7 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
               onClick={() => setActiveTab('volunteer')}
               className="bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-sm hover:bg-slate-800 transition-all shadow-2xl shadow-slate-900/20 flex items-center gap-3 uppercase tracking-widest"
             >
-              {t('btn_join')} <ArrowRight size={18} />
+              Nous Rejoindre <ArrowRight size={18} />
             </motion.button>
             <motion.button 
               whileHover={{ scale: 1.05 }}
@@ -118,7 +116,7 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
               className="bg-white border-2 border-slate-100 text-slate-700 px-10 py-5 rounded-2xl font-black text-sm hover:border-emerald-500/30 hover:text-emerald-600 transition-all flex items-center gap-2 uppercase tracking-widest"
             >
               <Heart size={18} className="fill-current" />
-              {t('btn_support')}
+              Soutenir
             </motion.button>
           </motion.div>
         </div>
@@ -140,7 +138,7 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
       <section className="space-y-10">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <h3 className="font-black text-3xl text-slate-900 tracking-tight">{t('impact_title')}</h3>
+            <h3 className="font-black text-3xl text-slate-900 tracking-tight">Notre Impact Social</h3>
             <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Indicateurs temps réel</p>
           </div>
           <div className="hidden sm:block h-[1px] flex-1 bg-slate-200 mx-10"></div>
@@ -153,10 +151,10 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { label: t('stat_lives'), value: '1.2k', progress: 75, color: '#10b981', symbol: <Activity size={16} /> },
-            { label: t('stat_campaigns'), value: '42', progress: 90, color: '#f59e0b', symbol: <Globe size={16} /> },
-            { label: t('stat_beneficiaries'), value: '15k', progress: 60, color: '#0ea5e9', symbol: <Users size={16} /> },
-            { label: t('stat_volunteers'), value: '380', progress: 85, color: '#8b5cf6', symbol: <Heart size={16} /> },
+            { label: 'Vies Impactées', value: '1.2k', progress: 75, color: '#10b981', symbol: <Activity size={16} /> },
+            { label: 'Campagnes Terrain', value: '42', progress: 90, color: '#f59e0b', symbol: <Globe size={16} /> },
+            { label: 'Bénéficiaires Directs', value: '15k', progress: 60, color: '#0ea5e9', symbol: <Users size={16} /> },
+            { label: 'Bénévoles Actifs', value: '380', progress: 85, color: '#8b5cf6', symbol: <Heart size={16} /> },
           ].map((item, i) => (
             <motion.div 
               key={i}
@@ -320,23 +318,23 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
             {
-              text: t('story_1'),
+              text: "Grâce à SEDUCEP, ma maladie chronique est mieux suivie et j'ai reçu les kits nécessaires.",
               author: "Koffi M.",
-              role: t('story_1_role'),
+              role: "Bénéficiaire Lomé",
               bg: "bg-emerald-50",
               dot: "bg-emerald-500"
             },
             {
-              text: t('story_2'),
+              text: "Leur engagement sur le terrain est exemplaire. Les populations isolées ont enfin un accès au conseil.",
               author: "Amenvi P.",
-              role: t('story_2_role'),
+              role: "Volontaire Médical",
               bg: "bg-sky-50",
               dot: "bg-sky-500"
             },
             {
-              text: t('story_3'),
+              text: "Un parrainage qui a changé la vie de mes enfants. Merci pour tout ce que vous faites.",
               author: "Sika G.",
-              role: t('story_3_role'),
+              role: "Veuve Accompagnée",
               bg: "bg-orange-50",
               dot: "bg-orange-500"
             }
@@ -380,7 +378,7 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
           <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mb-8 text-emerald-500 shadow-inner">
             <ShieldCheck size={32} />
           </div>
-          <h3 className="font-black text-2xl text-slate-900 mb-4 tracking-tight">{t('prev_palu')}</h3>
+          <h3 className="font-black text-2xl text-slate-900 mb-4 tracking-tight">Prévention Malaria</h3>
           <p className="text-slate-500 mb-8 leading-relaxed font-medium">
             Le paludisme reste la première cause de mortalité infantile au Togo. Nos guides vous apportent les clés de la prévention.
           </p>

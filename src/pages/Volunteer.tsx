@@ -3,10 +3,8 @@ import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2, Send, Mail, User, Phone, MessageSquare, Heart, ShieldCheck, Star } from 'lucide-react';
-import { useTranslation } from '../lib/i18n';
 
 export default function Volunteer() {
-  const { t } = useTranslation();
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -46,13 +44,13 @@ export default function Volunteer() {
         >
           <CheckCircle2 size={48} />
         </motion.div>
-        <h2 className="text-4xl font-black text-slate-900 tracking-tight">{t('vol_thanks')}</h2>
-        <p className="text-slate-500 font-medium max-w-sm mx-auto">{t('vol_success')}</p>
+        <h2 className="text-4xl font-black text-slate-900 tracking-tight">Merci pour votre engagement !</h2>
+        <p className="text-slate-500 font-medium max-w-sm mx-auto">Votre demande a été transmise à notre équipe. Nous vous contacterons très prochainement.</p>
         <button 
           onClick={() => setSubmitted(false)}
           className="bg-slate-100 text-slate-600 px-8 py-4 rounded-2xl font-bold text-sm hover:bg-slate-200 transition-all mt-8"
         >
-          {t('nav_home')}
+          Retour à l'accueil
         </button>
       </div>
     );
@@ -72,10 +70,10 @@ export default function Volunteer() {
               <Heart size={32} fill="currentColor" />
             </motion.div>
             <h2 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tighter leading-none">
-              {t('vol_title')}
+              Devenir Volontaire
             </h2>
             <p className="text-slate-500 text-lg font-medium leading-relaxed max-w-lg">
-              {t('vol_desc')}
+              Rejoignez une équipe passionnée et aidez-nous à transformer le paysage de la santé au Togo.
             </p>
           </div>
 
@@ -84,7 +82,7 @@ export default function Volunteer() {
               <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0">
                 <ShieldCheck size={20} />
               </div>
-              <p className="text-xs font-bold text-slate-600">{t('don_transparency')}</p>
+              <p className="text-xs font-bold text-slate-600">Transparence Totale</p>
             </div>
             <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
               <div className="w-10 h-10 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center shrink-0">
@@ -104,7 +102,7 @@ export default function Volunteer() {
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest ml-1">{t('vol_form_name')}</label>
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest ml-1">Nom Complet</label>
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                   <input
@@ -120,7 +118,7 @@ export default function Volunteer() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest ml-1">{t('vol_form_email')}</label>
+                  <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest ml-1">Email</label>
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                     <input
@@ -133,7 +131,7 @@ export default function Volunteer() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest ml-1">{t('vol_form_phone')}</label>
+                  <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest ml-1">Téléphone</label>
                   <div className="relative">
                     <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                     <input
@@ -149,7 +147,7 @@ export default function Volunteer() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest ml-1">{t('vol_form_type')}</label>
+                  <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest ml-1">Type de soutien</label>
                   <select
                     className="w-full bg-slate-50/50 border border-slate-100 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-emerald-500 outline-none transition-all appearance-none font-bold text-slate-700"
                     value={form.supportType}
@@ -161,7 +159,7 @@ export default function Volunteer() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest ml-1">{t('vol_form_profession')}</label>
+                  <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest ml-1">Profession</label>
                   <input
                     required
                     type="text"
@@ -173,7 +171,7 @@ export default function Volunteer() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest ml-1">{t('vol_form_interest')}</label>
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest ml-1">Motivations / Intérêts</label>
                 <div className="relative">
                   <MessageSquare className="absolute left-4 top-4 text-slate-300" size={18} />
                   <textarea
@@ -196,7 +194,7 @@ export default function Volunteer() {
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
-                  {t('vol_btn_send')} <Send size={18} />
+                  Envoyer ma candidature <Send size={18} />
                 </>
               )}
             </button>

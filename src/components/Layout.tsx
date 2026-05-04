@@ -3,7 +3,6 @@ import { Menu, X, Home, BookOpen, Calendar, Users, HandHeart, Info, LogIn, LogOu
 import { motion, AnimatePresence } from 'motion/react';
 import { auth, signInWithGoogle, logout, db } from '../lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { useTranslation } from '../lib/i18n';
 import PharmacyModal from './PharmacyModal';
 
 interface LayoutProps {
@@ -16,7 +15,6 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPharmacyModalOpen, setIsPharmacyModalOpen] = useState(false);
   const [user] = useAuthState(auth);
-  const { language, setLanguage, t } = useTranslation();
 
   const [isAuthorized, setIsAuthorized] = useState(false);
 
@@ -24,7 +22,8 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
 
   useEffect(() => {
     if (user?.email) {
-      if (user.email === 'seduceconseil@gmail.com') {
+      const allowedEmails = ['seduceconseil@gmail.com'];
+      if (allowedEmails.includes(user.email)) {
         setIsAuthorized(true);
       } else {
         const checkAuth = async () => {
@@ -32,8 +31,11 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
             const { doc, getDoc } = await import('firebase/firestore');
             const docRef = doc(db, 'system_admins', user.email!);
             const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) setIsAuthorized(true);
-            else setIsAuthorized(false);
+            if (docSnap.exists()) {
+              setIsAuthorized(true);
+            } else {
+              setIsAuthorized(false);
+            }
           } catch (e) {
             console.error(e);
             setIsAuthorized(false);
@@ -46,63 +48,78 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
     }
   }, [user]);
 
-  // Smart redirect on login
-  React.useEffect(() => {
-    if (user && isAuthorized && activeTab === 'home') {
+  // Smart redirect on login for authorized personnel only
+  useEffect(() => {
+    // Only redirect if we just logged in and are authorized
+    if (user && isAuthorized && (activeTab === 'home' || activeTab === 'faq')) {
       setActiveTab('admin');
-    } else if (user && activeTab === 'home') {
-      setActiveTab('messages');
     }
   }, [user, isAuthorized]);
 
-  const navItems = [
-    { id: 'home', label: t('nav_home'), icon: Home },
-    { id: 'blog', label: t('nav_blog'), icon: BookOpen },
-    { id: 'actions', label: t('nav_actions') || 'Actions', icon: Activity },
-    { id: 'events', label: t('nav_events'), icon: Calendar },
-    { id: 'volunteer', label: t('nav_volunteer'), icon: Users },
-    { id: 'resources', label: t('nav_resources'), icon: HandHeart },
-    { id: 'about', label: t('nav_about') || 'À Savoir', icon: Info },
-    { id: 'faq', label: t('nav_faq') || 'FAQ', icon: HelpCircle },
-    { id: 'sponsorship', label: t('nav_sponsorship') || 'Parrainage', icon: Heart },
-    { id: 'partners', label: t('nav_partners'), icon: Handshake },
-    ...(user ? [{ id: 'messages', label: t('mem_title') || 'Dashboard', icon: MessageSquare }] : []),
-    ...(isAuthorized ? [{ id: 'admin', label: 'Console Admin', icon: LayoutDashboard }] : []),
+  const publicNavItems = [
+    { id: 'home', label: 'Accueil', icon: Home },
+    { id: 'blog', label: 'Blog', icon: BookOpen },
+    { id: 'actions', label: 'Actions', icon: Activity },
+    { id: 'events', label: 'Agenda', icon: Calendar },
+    { id: 'volunteer', label: 'Bénévolat', icon: Users },
+    { id: 'resources', label: 'Aides', icon: HandHeart },
+    { id: 'about', label: 'À Savoir', icon: Info },
+    { id: 'faq', label: 'FAQ', icon: HelpCircle },
+    { id: 'sponsorship', label: 'Parrainage', icon: Heart },
+    { id: 'partners', label: 'Partenaires', icon: Handshake },
+  ];
+
+  const adminNavItems = [
+    { id: 'admin', label: 'Console Admin', icon: LayoutDashboard },
+    { id: 'messages', label: 'Dashboard Membre', icon: MessageSquare },
+    { id: 'blog', label: 'Gérer Blog', icon: BookOpen },
+    { id: 'events', label: 'Gérer Actions', icon: Calendar },
+  ];
+
+  const navItems = isAuthorized ? adminNavItems : [
+    ...publicNavItems,
+    ...(user ? [{ id: 'messages', label: 'Espace Membre', icon: MessageSquare }] : [])
   ];
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-slate-50/50">
       {/* Sleek Header - Glass Morphism */}
-      <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-slate-200/40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between">
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 h-24 flex items-center justify-between">
           <motion.div 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className="flex items-center gap-3 cursor-pointer group" 
             onClick={() => setActiveTab('home')}
           >
-            <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-6 transition-transform overflow-hidden relative">
+            <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center shadow-2xl group-hover:rotate-6 transition-transform overflow-hidden relative">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-sky-500 opacity-20" />
-              <span className="text-white font-black text-xl relative z-10">S</span>
+              <span className="text-white font-black text-2xl relative z-10">S</span>
             </div>
             <div>
-              <h1 className="text-lg sm:text-2xl font-black tracking-tight leading-none text-slate-900">SEDUCEP</h1>
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight leading-none text-slate-900">SEDUCEP</h1>
               <p className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 -mt-0.5">Conseils</p>
             </div>
           </motion.div>
+
+          {/* Desktop Navigation Menu */}
+          <nav className="hidden lg:flex items-center gap-1 bg-slate-100/50 p-1.5 rounded-[2rem] border border-slate-200/50">
+            {navItems.slice(0, 8).map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`px-5 py-2.5 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all ${
+                  activeTab === item.id 
+                  ? 'bg-white text-sky-600 shadow-sm border border-slate-200/50' 
+                  : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
           
-          <div className="flex items-center gap-3 sm:gap-6">
-            <div className="hidden sm:flex bg-slate-100 p-1 rounded-2xl border border-slate-200/50">
-              <button 
-                onClick={() => setLanguage('fr')}
-                className={`px-4 py-1.5 rounded-xl text-[10px] font-black transition-all ${language === 'fr' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
-              >FR</button>
-              <button 
-                onClick={() => setLanguage('ewe')}
-                className={`px-4 py-1.5 rounded-xl text-[10px] font-black transition-all ${language === 'ewe' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
-              >EWÉ</button>
-            </div>
-            
+          <div className="flex items-center gap-3 sm:gap-4">
             {!user ? (
               <motion.button 
                 whileHover={{ scale: 1.05 }}
@@ -111,7 +128,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 className="bg-slate-900 text-white px-5 py-2.5 rounded-2xl text-xs font-black shadow-xl shadow-slate-900/10 transition-all flex items-center gap-2"
               >
                 <LogIn className="w-4 h-4" />
-                <span className="hidden sm:inline uppercase tracking-widest">Login</span>
+                <span className="hidden sm:inline uppercase tracking-widest">Connexion</span>
               </motion.button>
             ) : (
               <div className="flex items-center gap-3">
@@ -138,9 +155,9 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
 
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 bg-slate-50 text-slate-900 rounded-xl hover:bg-slate-100 transition-colors md:hidden"
+              className="p-3 bg-slate-100 text-slate-900 rounded-2xl hover:bg-slate-200 transition-colors lg:hidden flex items-center justify-center border border-slate-200/50"
             >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
@@ -197,7 +214,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                   }}
                   className="w-full bg-orange-500 hover:bg-orange-600 transition-colors text-white font-black py-5 rounded-2xl shadow-xl shadow-orange-500/20 mb-6 flex items-center justify-center gap-3 uppercase tracking-widest text-xs"
                 >
-                  <HandHeart size={18} /> {t('nav_donate')}
+                  <HandHeart size={18} /> Faire un Don
                 </button>
                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center">© 2026 SEDUCEP-CONSEILS</p>
               </div>
@@ -271,7 +288,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
               <h1 className="text-lg font-black tracking-tighter text-slate-900 uppercase">SEDUCEP</h1>
             </div>
             <p className="text-sm text-slate-500 font-medium leading-relaxed">
-              {t('footer_desc')}
+              SEDUCEP Conseil & Social est une association dédiée à l'accompagnement des populations vulnérables et à la lutte contre les maladies chroniques au Togo.
             </p>
             <div className="flex items-center gap-4">
               <a href="#" className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-sky-500 hover:text-white transition-all shadow-sm">
@@ -288,7 +305,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
 
           {/* Navigation Column */}
           <div>
-            <h4 className="font-black text-xs uppercase tracking-widest text-slate-900 mb-6">{t('footer_links')}</h4>
+            <h4 className="font-black text-xs uppercase tracking-widest text-slate-900 mb-6">Navigation</h4>
             <ul className="space-y-4">
               {navItems.map((item) => (
                 <li key={item.id}>
@@ -306,14 +323,14 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
 
           {/* Support Column */}
           <div>
-            <h4 className="font-black text-xs uppercase tracking-widest text-slate-900 mb-6">{t('footer_support')}</h4>
+            <h4 className="font-black text-xs uppercase tracking-widest text-slate-900 mb-6">Soutien</h4>
             <ul className="space-y-4">
               <li>
                 <button 
                   onClick={() => setActiveTab('donation')}
                   className="text-sm text-slate-500 hover:text-sky-600 font-bold transition-colors"
                 >
-                  {t('btn_donate')}
+                  Faire un Don
                 </button>
               </li>
               <li>
@@ -334,7 +351,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
 
           {/* Contact Column */}
           <div className="space-y-6">
-            <h4 className="font-black text-xs uppercase tracking-widest text-slate-900 mb-6">{t('footer_contact')}</h4>
+            <h4 className="font-black text-xs uppercase tracking-widest text-slate-900 mb-6">Contact</h4>
             <div className="space-y-4">
               <div className="flex gap-3">
                 <div className="mt-1 text-sky-600"><MapPin size={18} /></div>
@@ -372,7 +389,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
             
             <div className="flex flex-col items-center sm:items-end gap-1">
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                © 2026 SEDUCEP-CONSEILS • {t('footer_rights')}
+                © 2026 SEDUCEP-CONSEILS • Tous droits réservés
               </p>
               <div className="flex items-center gap-2 text-[10px] font-bold text-sky-600">
                 <span>TOGO</span>

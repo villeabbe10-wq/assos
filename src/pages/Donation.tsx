@@ -1,10 +1,8 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Heart, ShieldCheck, Globe, ShoppingBag, Utensils, Home, Bike, Phone, MessageCircle, Gift, Info, Users, ArrowRight, Zap } from 'lucide-react';
-import { useTranslation } from '../lib/i18n';
 
 export default function Donation({ setActiveTab }: { setActiveTab: (tab: string) => void }) {
-  const { t } = useTranslation();
   
   const inKindItems = [
     { icon: Utensils, label: 'Nourriture', color: 'bg-orange-100 text-orange-600', sub: 'Kits alimentaires' },
@@ -16,10 +14,10 @@ export default function Donation({ setActiveTab }: { setActiveTab: (tab: string)
   ];
 
   const whyDonate = [
-    { text: t('don_why_1'), icon: ShieldCheck },
-    { text: t('don_why_2'), icon: Utensils },
-    { text: t('don_why_3'), icon: Users },
-    { text: t('don_why_4'), icon: Globe },
+    { text: "Vous sauvez des vies concrètement sur le terrain.", icon: ShieldCheck },
+    { text: "Vous assurez une nutrition adéquate aux enfants vulnérables.", icon: Utensils },
+    { text: "Vous soutenez une équipe de médiateurs dévoués.", icon: Users },
+    { text: "Vous participez à un changement durable au Togo.", icon: Globe },
   ];
 
   return (
@@ -38,7 +36,7 @@ export default function Donation({ setActiveTab }: { setActiveTab: (tab: string)
             Soutenir notre <span className="text-sky-600">mission</span>
           </h2>
           <p className="text-slate-500 font-medium leading-relaxed text-lg max-w-3xl mx-auto">
-            {t('don_mission_detailed')}
+            Votre don permet de financer nos missions de dépistage, l'éducation des enfants de la rue et l'accompagnement des malades chroniques au Togo.
           </p>
         </div>
       </section>
@@ -47,7 +45,7 @@ export default function Donation({ setActiveTab }: { setActiveTab: (tab: string)
       <section className="bg-white rounded-[3rem] p-8 sm:p-14 border border-slate-100 shadow-sm">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
-            <h3 className="text-3xl font-black text-slate-900 tracking-tight">{t('don_why_title')}</h3>
+            <h3 className="text-3xl font-black text-slate-900 tracking-tight">Pourquoi nous soutenir ?</h3>
             <div className="space-y-6">
               {whyDonate.map((item, i) => (
                 <div key={i} className="flex gap-4 items-start">
@@ -75,7 +73,7 @@ export default function Donation({ setActiveTab }: { setActiveTab: (tab: string)
         {/* In-Kind Section */}
         <section className="space-y-8">
           <div className="flex items-center gap-4 px-2">
-            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">{t('don_kind_title')}</h3>
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Dons en nature</h3>
             <div className="h-px bg-slate-100 flex-1"></div>
           </div>
           
@@ -106,7 +104,7 @@ export default function Donation({ setActiveTab }: { setActiveTab: (tab: string)
                 <Info size={24} />
               </div>
               <p className="text-sky-900 font-bold leading-snug">
-                {t('don_kind_desc')} <br />
+                Nous acceptons les dons de matériel médical, scolaire et de première nécessité. <br />
                 <span className="text-xs text-sky-600 opacity-80 uppercase tracking-widest font-black">Nous organisons la logistique pour vous</span>
               </p>
             </div>
@@ -124,7 +122,7 @@ export default function Donation({ setActiveTab }: { setActiveTab: (tab: string)
         {/* Secure Cash Section */}
         <section className="space-y-8">
           <div className="flex items-center gap-4 px-2">
-            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">{t('don_cash_secure_title')}</h3>
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Canaux Sécurisés</h3>
             <div className="h-px bg-slate-100 flex-1"></div>
           </div>
           
@@ -142,7 +140,7 @@ export default function Donation({ setActiveTab }: { setActiveTab: (tab: string)
                 <div className="space-y-4">
                   <h3 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight">Dons en argent : Acheter du matériel médical & éducatif</h3>
                   <p className="text-slate-400 font-medium leading-relaxed text-lg">
-                    {t('don_security_notice')}
+                    Pour garantir la traçabilité et la sécurité, veuillez contacter uniquement nos administrateurs officiels avant tout transfert.
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -228,9 +226,9 @@ export default function Donation({ setActiveTab }: { setActiveTab: (tab: string)
       <section className="bg-sky-900 rounded-[2.5rem] p-8 sm:p-12 text-white relative overflow-hidden shadow-2xl shadow-sky-900/10">
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <h3 className="text-3xl font-black tracking-tight">{t('don_transparency')}</h3>
+            <h3 className="text-3xl font-black tracking-tight">Transparence Totale</h3>
             <p className="text-sky-50 opacity-80 leading-relaxed font-medium">
-              {t('don_transparency_desc')}
+              Chaque centime est investi directement dans nos missions sur le terrain. Nos rapports financiers sont accessibles à nos donateurs sur demande.
             </p>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-xs font-bold bg-white/10 px-4 py-2 rounded-full border border-white/10">

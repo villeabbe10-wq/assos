@@ -26,7 +26,8 @@
         "date": { "type": "string", "format": "date-time" },
         "location": { "type": "string" },
         "type": { "type": "string", "description": "mission, campaign, general" },
-        "imageUrl": { "type": "string" }
+        "imageUrl": { "type": "string" },
+        "videoUrl": { "type": "string", "description": "URL for campaign video" }
       },
       "required": ["title", "date", "location"]
     },
@@ -64,9 +65,23 @@
         "title": { "type": "string" },
         "description": { "type": "string" },
         "type": { "type": "string", "description": "kit, consultation, nutrition, education, autre" },
-        "contact": { "type": "string" }
+        "contact": { "type": "string" },
+        "documentUrl": { "type": "string", "description": "URL to PDF document" }
       },
       "required": ["title", "contact"]
+    },
+    "founder": {
+      "title": "Founder Biography",
+      "description": "Information about the NGO founders.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "bio": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "order": { "type": "number" }
+      },
+      "required": ["name", "role", "bio"]
     },
     "adminMessage": {
       "title": "Admin Private Message",
@@ -184,6 +199,7 @@
     "sponsorships/{sponsorshipId}": { "schema": "sponsorship", "description": "Sponsorship requests" },
     "pharmacies/{pharmacyId}": { "schema": "pharmacyList", "description": "Lomé Pharmacies on duty list" },
     "beneficiaries/{beneficiaryId}": { "schema": "beneficiary", "description": "List of supported individuals" },
+    "founders/{founderId}": { "schema": "founder", "description": "NGO founders bios" },
     "system_admins/{email}": { "schema": "system_admin", "description": "List of authorized administrators" }
   }
 }

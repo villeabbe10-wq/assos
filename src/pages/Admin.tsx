@@ -13,23 +13,27 @@ export default function Admin({ onBack }: AdminProps) {
   const [user] = useAuthState(auth);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [mode, setMode] = useState<'post' | 'event' | 'volunteers' | 'resources' | 'pharmacies' | 'beneficiaries' | 'activity' | 'admins'>('post');
+  const [mode, setMode] = useState<'post' | 'event' | 'volunteers' | 'resources' | 'pharmacies' | 'beneficiaries' | 'activity' | 'admins' | 'partners' | 'founders'>('post');
   const [volunteers, setVolunteers] = useState<any[]>([]);
   const [resources, setResources] = useState<any[]>([]);
   const [beneficiaries, setBeneficiaries] = useState<any[]>([]);
   const [admins, setAdmins] = useState<any[]>([]);
+  const [partners, setPartners] = useState<any[]>([]);
+  const [founders, setFounders] = useState<any[]>([]);
   const [isAuthorized, setIsAuthorized] = useState(user?.email === 'seduceconseil@gmail.com');
   const [activity, setActivity] = useState<{ proposals: any[], reviews: any[], campaigns: any[] }>({ proposals: [], reviews: [], campaigns: [] });
 
   // Form states
   const [post, setPost] = useState({ title: '', content: '', category: 'Sensibilisation', author: 'SEDUCEP Team', imageUrl: '', videoUrl: '' });
-  const [event, setEvent] = useState({ title: '', description: '', location: '', type: 'mission', date: '' });
-  const [resource, setResource] = useState({ title: '', description: '', type: 'kit', contact: '' });
+  const [event, setEvent] = useState({ title: '', description: '', location: '', type: 'mission', date: '', imageUrl: '', videoUrl: '' });
+  const [resource, setResource] = useState({ title: '', description: '', type: 'kit', contact: '', documentUrl: '' });
   const [pharmacy, setPharmacy] = useState({ title: '', content: '' });
   const [beneficiary, setBeneficiary] = useState({ name: '', detail: '', location: '', type: 'scolarite' });
   const [adminForm, setAdminForm] = useState({ email: '', role: 'Admin' });
+  const [partnerForm, setPartnerForm] = useState({ name: '', logoUrl: '', description: '', website: '' });
+  const [founderForm, setFounderForm] = useState({ name: '', role: 'Fondateur', bio: '', imageUrl: '', order: 0 });
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, target: 'post' | 'partner' | 'founder' | 'event') => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
@@ -38,22 +42,28 @@ export default function Admin({ onBack }: AdminProps) {
       }
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPost({ ...post, imageUrl: reader.result as string });
+        const result = reader.result as string;
+        if (target === 'post') setPost({ ...post, imageUrl: result });
+        else if (target === 'partner') setPartnerForm({ ...partnerForm, logoUrl: result });
+        else if (target === 'founder') setFounderForm({ ...founderForm, imageUrl: result });
+        else if (target === 'event') setEvent({ ...event, imageUrl: result });
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>, target: 'post' | 'event') => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 800 * 1024) { // Firestore limit is 1MB, let's keep it safe
-        alert("La vidéo est trop volumineuse pour être stockée ainsi (max 800Ko). Pour les vidéos plus longues, utilisez un lien YouTube/Direct.");
+      if (file.size > 800 * 1024) {
+        alert("La vidéo est trop volumineuse (max 800Ko).");
         return;
       }
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPost({ ...post, videoUrl: reader.result as string });
+        const result = reader.result as string;
+        if (target === 'post') setPost({ ...post, videoUrl: result });
+        else if (target === 'event') setEvent({ ...event, videoUrl: result });
       };
       reader.readAsDataURL(file);
     }
@@ -85,8 +95,62 @@ export default function Admin({ onBack }: AdminProps) {
       case 'beneficiaries': fetchBeneficiaries(); break;
       case 'activity': fetchActivity(); break;
       case 'admins': fetchAdmins(); break;
+      case 'partners': fetchPartners(); break;
+      case 'founders': fetchFounders(); break;
     }
   }, [mode, isAuthorized]);
+
+  const fetchPartners = async () => {
+    setLoading(true);
+    try {
+      const q = query(collection(db, 'partners'), orderBy('name', 'asc'));
+      const querySnapshot = await getDocs(q);
+      setPartners(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    } catch (error) { console.error(error); } finally { setLoading(false); }
+  };
+
+  const fetchFounders = async () => {
+    setLoading(true);
+    try {
+      const q = query(collection(db, 'founders'), orderBy('order', 'asc'));
+      const querySnapshot = await getDocs(q);
+      setFounders(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    } catch (error) { console.error(error); } finally { setLoading(false); }
+  };
+
+  const handleAddPartner = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await addDoc(collection(db, 'partners'), partnerForm);
+      setSuccess(true);
+      setPartnerForm({ name: '', logoUrl: '', description: '', website: '' });
+      fetchPartners();
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (error) { handleFirestoreError(error, OperationType.CREATE, 'partners'); } finally { setLoading(false); }
+  };
+
+  const handleAddFounder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await addDoc(collection(db, 'founders'), founderForm);
+      setSuccess(true);
+      setFounderForm({ name: '', role: 'Fondateur', bio: '', imageUrl: '', order: founders.length });
+      fetchFounders();
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (error) { handleFirestoreError(error, OperationType.CREATE, 'founders'); } finally { setLoading(false); }
+  };
+
+  const handleDeleteDoc = async (collPath: string, id: string, fetchFn: () => void) => {
+    if (confirm('Supprimer cet élément ?')) {
+      setLoading(true);
+      try {
+        await deleteDoc(doc(db, collPath, id));
+        fetchFn();
+      } catch (error) { handleFirestoreError(error, OperationType.DELETE, collPath); } finally { setLoading(false); }
+    }
+  };
 
   const fetchAdmins = async () => {
     setLoading(true);
@@ -322,6 +386,8 @@ export default function Admin({ onBack }: AdminProps) {
             { id: 'beneficiaries', label: 'Bénéficiaires' },
             { id: 'resources', label: 'Ressources' },
             { id: 'pharmacies', label: 'Pharmacies' },
+            { id: 'partners', label: 'Partenaires' },
+            { id: 'founders', label: 'Fondateurs' },
             { id: 'volunteers', label: 'Volontaires' },
             { id: 'activity', label: 'Activité' },
             { id: 'admins', label: 'Membres Team' },
@@ -395,7 +461,7 @@ export default function Admin({ onBack }: AdminProps) {
                   <input 
                     type="file"
                     accept="image/*"
-                    onChange={handleImageChange}
+                    onChange={(e) => handleImageChange(e, 'post')}
                     className="hidden"
                     id="post-image-upload"
                   />
@@ -435,7 +501,7 @@ export default function Admin({ onBack }: AdminProps) {
                   <input 
                     type="file"
                     accept="video/*"
-                    onChange={handleVideoChange}
+                    onChange={(e) => handleVideoChange(e, 'post')}
                     className="hidden"
                     id="post-video-upload"
                   />
@@ -443,9 +509,8 @@ export default function Admin({ onBack }: AdminProps) {
                     htmlFor="post-video-upload"
                     className="flex items-center justify-center gap-3 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-4 cursor-pointer hover:border-sky-500 hover:bg-sky-50 transition-all font-bold text-slate-400 hover:text-sky-600"
                   >
-                    {post.videoUrl ? (
+                    {post.videoUrl && post.videoUrl.startsWith('data:') ? (
                       <div className="flex items-center gap-3 w-full truncate">
-                        <video src={post.videoUrl} className="w-10 h-10 object-cover rounded-lg" />
                         <span className="truncate text-xs">Vidéo chargée</span>
                       </div>
                     ) : (
@@ -459,7 +524,7 @@ export default function Admin({ onBack }: AdminProps) {
                 <input 
                   className="flex-1 bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs outline-none"
                   placeholder="Ou lien Vidéo (YouTube/URL)"
-                  value={post.videoUrl.startsWith('data:') ? '' : post.videoUrl}
+                  value={post.videoUrl && post.videoUrl.startsWith('data:') ? '' : post.videoUrl}
                   onChange={e => setPost({...post, videoUrl: e.target.value})}
                 />
               </div>
@@ -567,6 +632,15 @@ export default function Admin({ onBack }: AdminProps) {
                   placeholder="Numéro ou Email"
                   value={resource.contact}
                   onChange={e => setResource({...resource, contact: e.target.value})}
+                />
+              </div>
+            <div className="space-y-2">
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Document / Guide (Lien PDF)</label>
+                <input 
+                  className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none font-medium text-xs"
+                  placeholder="Lien vers le document PDF"
+                  value={resource.documentUrl}
+                  onChange={e => setResource({...resource, documentUrl: e.target.value})}
                 />
               </div>
             </div>
@@ -790,6 +864,85 @@ export default function Admin({ onBack }: AdminProps) {
               ))}
             </div>
             {activity.campaigns.length === 0 && <p className="text-center py-10 text-slate-400 font-bold uppercase text-[10px] tracking-widest">Aucune inscription</p>}
+          </div>
+        </div>
+      ) : mode === 'partners' ? (
+        <div className="space-y-8">
+          <form onSubmit={handleAddPartner} className="space-y-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+            <h3 className="text-sm font-black uppercase text-slate-400 tracking-widest px-2 mb-4">Ajouter un Partenaire</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Nom</label>
+                <input required className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none" value={partnerForm.name} onChange={e => setPartnerForm({...partnerForm, name: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Site Web</label>
+                <input className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none" value={partnerForm.website} onChange={e => setPartnerForm({...partnerForm, website: e.target.value})} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Logo</label>
+              <input type="file" accept="image/*" onChange={(e) => handleImageChange(e, 'partner')} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none text-xs" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Description courte</label>
+              <textarea rows={2} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none resize-none" value={partnerForm.description} onChange={e => setPartnerForm({...partnerForm, description: e.target.value})} />
+            </div>
+            <button disabled={loading} className="w-full bg-sky-600 text-white font-black py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-sky-700 transition-all font-bold">
+              {loading ? <Loader2 className="animate-spin" /> : <><Plus size={20} /> Valider Partenaire</>}
+            </button>
+          </form>
+          <div className="grid gap-4">
+            {partners.map(p => (
+              <div key={p.id} className="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {p.logoUrl && <img src={p.logoUrl} className="w-10 h-10 rounded-lg object-contain" alt="" />}
+                  <span className="font-bold">{p.name}</span>
+                </div>
+                <button onClick={() => handleDeleteDoc('partners', p.id, fetchPartners)} className="text-rose-500 p-2"><Trash2 size={18} /></button>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : mode === 'founders' ? (
+        <div className="space-y-8">
+          <form onSubmit={handleAddFounder} className="space-y-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+            <h3 className="text-sm font-black uppercase text-slate-400 tracking-widest px-2 mb-4">Ajouter un Membre Fondateur</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Nom Complet</label>
+                <input required className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none" value={founderForm.name} onChange={e => setFounderForm({...founderForm, name: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Rôle / Titre</label>
+                <input required className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none" value={founderForm.role} onChange={e => setFounderForm({...founderForm, role: e.target.value})} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Photo</label>
+              <input type="file" accept="image/*" onChange={(e) => handleImageChange(e, 'founder')} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none text-xs" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Biographie</label>
+              <textarea rows={4} required className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none resize-none font-medium text-sm" value={founderForm.bio} onChange={e => setFounderForm({...founderForm, bio: e.target.value})} />
+            </div>
+            <button disabled={loading} className="w-full bg-sky-600 text-white font-black py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-sky-700 transition-all font-bold">
+              {loading ? <Loader2 className="animate-spin" /> : <><Plus size={20} /> Enregistrer Fondateur</>}
+            </button>
+          </form>
+          <div className="grid gap-4">
+            {founders.map(f => (
+              <div key={f.id} className="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {f.imageUrl && <img src={f.imageUrl} className="w-10 h-10 rounded-full object-cover" alt="" />}
+                  <div>
+                    <span className="font-bold block">{f.name}</span>
+                    <span className="text-[9px] uppercase tracking-widest text-slate-400 font-black">{f.role}</span>
+                  </div>
+                </div>
+                <button onClick={() => handleDeleteDoc('founders', f.id, fetchFounders)} className="text-rose-500 p-2"><Trash2 size={18} /></button>
+              </div>
+            ))}
           </div>
         </div>
       ) : mode === 'admins' ? (

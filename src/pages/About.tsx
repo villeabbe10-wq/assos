@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { 
   History, 
@@ -10,12 +10,25 @@ import {
   Baby, 
   Droplets,
   HeartHandshake,
-  Quote
+  Quote,
+  LayoutDashboard
 } from 'lucide-react';
-import { useTranslation } from '../lib/i18n';
+import { db } from '../lib/firebase';
+import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 
 export default function About({ setActiveTab }: { setActiveTab: (tab: string) => void }) {
-  const { t } = useTranslation();
+  const [founders, setFounders] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchFounders = async () => {
+      try {
+        const q = query(collection(db, 'founders'), orderBy('order', 'asc'));
+        const snap = await getDocs(q);
+        setFounders(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      } catch (e) { console.error(e); }
+    };
+    fetchFounders();
+  }, []);
 
   const achievements = [
     { label: 'Sauver des vies', desc: 'Par l’éducation et la prévention' },
@@ -34,21 +47,21 @@ export default function About({ setActiveTab }: { setActiveTab: (tab: string) =>
 
   const testimonials = [
     {
-      name: t('story_1_role'),
+      name: "Bénéficiaire Lomé",
       title: "Une vie transformée",
-      text: t('story_1'),
+      text: "Grâce à SEDUCEP, ma maladie chronique est mieux suivie et j'ai reçu les kits nécessaires.",
       img: 'https://i.pravatar.cc/150?img=32'
     },
     {
-      name: t('story_2_role'),
+      name: "Volontaire Médical",
       title: "Un soutien humain et réel",
-      text: t('story_2'),
+      text: "Leur engagement sur le terrain est exemplaire. Les populations isolées ont enfin un accès au conseil.",
       img: 'https://i.pravatar.cc/150?img=12'
     },
     {
-      name: t('story_3_role'),
+      name: "Veuve Accompagnée",
       title: "Un partenaire de confiance",
-      text: t('story_3'),
+      text: "Un parrainage qui a changé la vie de mes enfants. Merci pour tout ce que vous faites.",
       img: 'https://i.pravatar.cc/150?img=44'
     }
   ];
@@ -127,6 +140,47 @@ export default function About({ setActiveTab }: { setActiveTab: (tab: string) =>
         </div>
       </section>
 
+      {/* Founders Section */}
+      {founders.length > 0 && (
+        <section className="space-y-16">
+          <div className="text-center space-y-4">
+            <h3 className="text-3xl font-black text-slate-900 tracking-tight">Nos Fondateurs</h3>
+            <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.3em]">Une vision partagée pour la santé</p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {founders.map((f, i) => (
+              <motion.div
+                key={f.id}
+                initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="bg-white p-12 rounded-[4rem] border border-slate-100 shadow-sm flex flex-col md:flex-row gap-10 items-center md:items-start group hover:border-sky-200 transition-colors"
+              >
+                <div className="w-48 h-48 rounded-[3rem] overflow-hidden bg-slate-100 shrink-0 shadow-2xl shadow-slate-200 group-hover:rotate-3 transition-transform">
+                  {f.imageUrl ? (
+                    <img src={f.imageUrl} alt={f.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-slate-300">
+                      <Users size={64} />
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-6 flex-1 text-center md:text-left">
+                  <div>
+                    <h4 className="text-3xl font-black text-slate-900 tracking-tight">{f.name}</h4>
+                    <span className="text-[11px] font-black uppercase tracking-[0.4em] text-sky-600 block mt-1">{f.role}</span>
+                  </div>
+                  <p className="text-slate-500 font-medium leading-relaxed italic">
+                    "{f.bio}"
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Why Support Us */}
       <section className="bg-slate-900 rounded-[4rem] p-10 sm:p-20 text-white relative overflow-hidden">
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -169,8 +223,8 @@ export default function About({ setActiveTab }: { setActiveTab: (tab: string) =>
       {/* Testimonials */}
       <section className="space-y-12">
         <div className="text-center space-y-4">
-          <h3 className="text-3xl font-black text-slate-900 tracking-tight">{t('stories_title')}</h3>
-          <p className="text-slate-500 font-medium leading-relaxed max-w-xl mx-auto">{t('stories_desc')}</p>
+          <h3 className="text-3xl font-black text-slate-900 tracking-tight">Témoignages</h3>
+          <p className="text-slate-500 font-medium leading-relaxed max-w-xl mx-auto">Découvrez l'impact de nos actions à travers ceux qui les vivent.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

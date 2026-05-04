@@ -6,7 +6,6 @@ import { Calendar, User, ArrowLeft, Share2, BookOpen, Search, ArrowRight, Heart 
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import { motion, AnimatePresence } from 'motion/react';
-import { useTranslation } from '../lib/i18n';
 
 // ... (MOCK_POSTS unchanged but could be translated if needed, for now focusing on UI)
 const MOCK_POSTS: BlogPost[] = [
@@ -167,13 +166,12 @@ Un diagnostic rapide empêche l’évolution vers des formes graves et réduit l
 ];
 
 export default function Blog() {
-  const { t, language } = useTranslation();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState(t('blog_cat_all'));
+  const [activeCategory, setActiveCategory] = useState('Tout');
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -192,11 +190,11 @@ export default function Blog() {
   };
 
   const categories = [
-    t('blog_cat_all'), 
-    t('blog_cat_prev'), 
-    t('blog_cat_hyg'), 
-    t('blog_cat_nut'), 
-    t('blog_cat_mat')
+    'Tout', 
+    'Prévention', 
+    'Hygiène', 
+    'Nutrition', 
+    'Maternité'
   ];
 
   useEffect(() => {
@@ -221,8 +219,8 @@ export default function Blog() {
 
   useEffect(() => {
     let result = posts;
-    if (activeCategory !== t('blog_cat_all')) {
-      result = result.filter(p => p.category === activeCategory || (activeCategory === t('blog_cat_prev') && p.category === 'Prévention'));
+    if (activeCategory !== 'Tout') {
+      result = result.filter(p => p.category === activeCategory || (activeCategory === 'Prévention' && p.category === 'Prévention'));
     }
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -232,7 +230,7 @@ export default function Blog() {
       );
     }
     setFilteredPosts(result);
-  }, [searchQuery, activeCategory, posts, t]);
+  }, [searchQuery, activeCategory, posts]);
 
   if (selectedPost) {
     return (
@@ -304,7 +302,7 @@ export default function Blog() {
                 <p className="text-lg font-black text-slate-900 tracking-tight">{selectedPost.author}</p>
                 <div className="flex items-center gap-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">
                   <Calendar size={12} className="text-emerald-500" /> 
-                  {selectedPost.publishedAt instanceof Timestamp ? selectedPost.publishedAt.toDate().toLocaleDateString(language === 'fr' ? 'fr-FR' : 'en-GB') : 'Date'}
+                  {selectedPost.publishedAt instanceof Timestamp ? selectedPost.publishedAt.toDate().toLocaleDateString('fr-FR') : 'Date'}
                   <span className="w-1 h-1 rounded-full bg-slate-200" />
                   SEDUCEP TEAM
                 </div>
@@ -371,10 +369,10 @@ export default function Blog() {
             <span className="text-[10px] font-black uppercase tracking-widest">Journal des Actions</span>
           </motion.div>
           <motion.h2 variants={itemVariants} className="text-5xl sm:text-7xl font-black text-slate-900 tracking-tighter leading-none">
-            {t('blog_title')}
+            Journal SEDUCEP
           </motion.h2>
           <motion.p variants={itemVariants} className="text-slate-500 font-medium text-xl max-w-xl leading-relaxed italic">
-            "{t('blog_desc')}"
+            "Chroniques de nos actions sur le terrain et conseils de santé communautaire."
           </motion.p>
         </div>
       </div>
@@ -385,7 +383,7 @@ export default function Blog() {
             <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" size={24} />
             <input 
               type="text" 
-              placeholder={t('blog_search')} 
+              placeholder="Rechercher un article..." 
               className="w-full bg-slate-50/50 border border-slate-100 rounded-3xl py-6 pl-16 pr-8 text-lg font-medium focus:bg-white focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all shadow-inner"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -457,7 +455,7 @@ export default function Blog() {
                   <div className="flex items-center justify-between pb-6 border-b border-slate-50">
                     <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-slate-400">
                       <Calendar size={12} className="text-emerald-500" />
-                      {post.publishedAt instanceof Timestamp ? post.publishedAt.toDate().toLocaleDateString(language === 'fr' ? 'fr-FR' : 'en-GB') : 'Date'}
+                      {post.publishedAt instanceof Timestamp ? post.publishedAt.toDate().toLocaleDateString('fr-FR') : 'Date'}
                     </div>
                     <span className="text-[10px] font-black text-slate-300">0{idx + 1}</span>
                   </div>
@@ -494,7 +492,7 @@ export default function Blog() {
                 <BookOpen size={60} />
               </div>
               <div className="space-y-4">
-                <p className="text-slate-900 font-black text-3xl tracking-tight">{t('blog_no_results')}</p>
+                <p className="text-slate-900 font-black text-3xl tracking-tight">Aucun résultat</p>
                 <p className="text-slate-500 text-lg font-medium max-w-sm mx-auto">Nous n'avons trouvé aucun article correspondant à votre recherche.</p>
               </div>
               <motion.button 
@@ -502,7 +500,7 @@ export default function Blog() {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => {
                   setSearchQuery('');
-                  setActiveCategory(t('blog_cat_all'));
+                  setActiveCategory('Tout');
                 }}
                 className="bg-slate-900 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest"
               >
