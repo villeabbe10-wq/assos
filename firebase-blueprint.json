@@ -184,6 +184,20 @@
         "addedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["email", "role"]
+    },
+    "config": {
+      "title": "General Settings",
+      "description": "General association configuration (logo, name, links).",
+      "type": "object",
+      "properties": {
+        "associationName": { "type": "string" },
+        "logoUrl": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "facebook": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "instagram": { "type": "string" }
+      }
     }
   },
   "firestore": {
@@ -200,6 +214,7 @@
     "pharmacies/{pharmacyId}": { "schema": "pharmacyList", "description": "Lomé Pharmacies on duty list" },
     "beneficiaries/{beneficiaryId}": { "schema": "beneficiary", "description": "List of supported individuals" },
     "founders/{founderId}": { "schema": "founder", "description": "NGO founders bios" },
-    "system_admins/{email}": { "schema": "system_admin", "description": "List of authorized administrators" }
+    "system_admins/{email}": { "schema": "system_admin", "description": "List of authorized administrators" },
+    "config/{docId}": { "schema": "config", "description": "Association global settings" }
   }
 }

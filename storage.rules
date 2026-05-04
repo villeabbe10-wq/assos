@@ -1,0 +1,34 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper: is the user a SEDUCEP admin?
+    function isInternalAdmin() {
+      return request.auth != null && 
+             request.auth.token.email_verified == true && 
+             (request.auth.token.email == 'seduceconseil@gmail.com' || 
+              firestore.exists(/databases/(default)/documents/system_admins/$(request.auth.token.email)));
+    }
+
+    // Public read for images, videos and documents
+    match /images/{allPaths=**} {
+      allow read: if true;
+      allow write: if isInternalAdmin();
+    }
+
+    match /videos/{allPaths=**} {
+      allow read: if true;
+      allow write: if isInternalAdmin();
+    }
+
+    match /documents/{allPaths=**} {
+      allow read: if true;
+      allow write: if isInternalAdmin();
+    }
+
+    // Default deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

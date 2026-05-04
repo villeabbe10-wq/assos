@@ -1,8 +1,24 @@
-import React from 'react';
-import { HandHeart, Phone, MapPin, ExternalLink, ShieldPlus, FileText, Download, HeartHandshake, ArrowRight, Sparkles, BriefcaseMedical } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { HandHeart, Phone, MapPin, ExternalLink, ShieldPlus, FileText, Download, HeartHandshake, ArrowRight, Sparkles, BriefcaseMedical, Layout } from 'lucide-react';
 import { motion } from 'motion/react';
+import { db } from '../lib/firebase';
+import { collection, query, getDocs } from 'firebase/firestore';
 
 export default function Resources() {
+  const [dynamicResources, setDynamicResources] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        const snap = await getDocs(collection(db, 'resources'));
+        setDynamicResources(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchResources();
+  }, []);
+
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } as any }
@@ -15,10 +31,10 @@ export default function Resources() {
   ];
 
   const CONTACTS = [
-    { name: 'Sapeurs-Pompiers', value: '118', category: 'Urgences', icon: Sparkles },
+    { name: 'Sapeurs-Pompiers / SAMU', value: '171', category: 'Urgences', icon: Sparkles },
+    { name: 'Sapeurs-Pompiers (Secours)', value: '118', category: 'Urgences', icon: ShieldPlus },
     { name: 'Police Secours', value: '117', category: 'Sécurité', icon: ShieldPlus },
     { name: 'Gendarmerie Nationale', value: '172', category: 'Sécurité', icon: MapPin },
-    { name: 'Allo Santé (Conseils)', value: '115', category: 'Santé', icon: BriefcaseMedical },
   ];
 
   return (
@@ -78,9 +94,34 @@ export default function Resources() {
                   </div>
                 </div>
                 <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-all">
-                  <ArrowRight size={18} />
+                   <ArrowRight size={18} />
                 </div>
               </motion.div>
+            ))}
+
+            {dynamicResources.map((res, i) => (
+              <motion.a
+                key={res.id}
+                href={res.documentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                variants={itemVariants}
+                whileHover={{ x: 10 }}
+                className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all flex items-center justify-between group"
+              >
+                <div className="flex items-center gap-5">
+                  <div className="w-14 h-14 bg-sky-50 text-sky-600 rounded-2xl flex items-center justify-center transition-transform group-hover:rotate-6">
+                    <FileText size={24} />
+                  </div>
+                  <div>
+                    <h4 className="font-black text-slate-800 text-lg leading-tight group-hover:text-sky-600 transition-colors">{res.title}</h4>
+                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-1">DOC • PDF / LIEN</p>
+                  </div>
+                </div>
+                <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-all">
+                  <Download size={18} />
+                </div>
+              </motion.a>
             ))}
           </motion.div>
         </section>

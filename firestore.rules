@@ -31,7 +31,7 @@ service cloud.firestore {
     }
 
     match /system_admins/{email} {
-      allow read: if isInternalAdmin();
+      allow read: if isSignedIn() && (request.auth.token.email == email || isInternalAdmin());
       allow write: if isPrimaryAdmin();
     }
 
@@ -103,6 +103,16 @@ service cloud.firestore {
     }
 
     match /beneficiaries/{beneficiaryId} {
+      allow read: if true;
+      allow write: if isInternalAdmin();
+    }
+
+    match /founders/{founderId} {
+      allow read: if true;
+      allow write: if isInternalAdmin();
+    }
+
+    match /config/{docId} {
       allow read: if true;
       allow write: if isInternalAdmin();
     }

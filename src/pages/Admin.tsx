@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { db, auth, handleFirestoreError, OperationType } from '../lib/firebase';
+import { db, auth, handleFirestoreError, OperationType, storage } from '../lib/firebase';
 import { collection, addDoc, Timestamp, getDocs, query, orderBy, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { motion } from 'motion/react';
 import { Plus, LayoutDashboard, FileText, Calendar, Loader2, CheckCircle, Users, Mail, Phone, Briefcase, ArrowLeft, BriefcaseMedical, UserPlus, Shield, Trash2 } from 'lucide-react';
@@ -13,13 +14,15 @@ export default function Admin({ onBack }: AdminProps) {
   const [user] = useAuthState(auth);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [mode, setMode] = useState<'post' | 'event' | 'volunteers' | 'resources' | 'pharmacies' | 'beneficiaries' | 'activity' | 'admins' | 'partners' | 'founders'>('post');
+  const [uploading, setUploading] = useState(false);
+  const [mode, setMode] = useState<'post' | 'event' | 'volunteers' | 'resources' | 'pharmacies' | 'beneficiaries' | 'activity' | 'admins' | 'partners' | 'founders' | 'settings'>('post');
   const [volunteers, setVolunteers] = useState<any[]>([]);
   const [resources, setResources] = useState<any[]>([]);
   const [beneficiaries, setBeneficiaries] = useState<any[]>([]);
   const [admins, setAdmins] = useState<any[]>([]);
   const [partners, setPartners] = useState<any[]>([]);
   const [founders, setFounders] = useState<any[]>([]);
+  const [settings, setSettings] = useState({ logoUrl: '', associationName: 'SEDUCEP', phone: '+228 92004436', email: 'seduceconseil@gmail.com', facebook: '', whatsapp: '', instagram: '' });
   const [isAuthorized, setIsAuthorized] = useState(user?.email === 'seduceconseil@gmail.com');
   const [activity, setActivity] = useState<{ proposals: any[], reviews: any[], campaigns: any[] }>({ proposals: [], reviews: [], campaigns: [] });
 
@@ -33,39 +36,59 @@ export default function Admin({ onBack }: AdminProps) {
   const [partnerForm, setPartnerForm] = useState({ name: '', logoUrl: '', description: '', website: '' });
   const [founderForm, setFounderForm] = useState({ name: '', role: 'Fondateur', bio: '', imageUrl: '', order: 0 });
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, target: 'post' | 'partner' | 'founder' | 'event') => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        alert("L'image est trop volumineuse (max 2Mo)");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        if (target === 'post') setPost({ ...post, imageUrl: result });
-        else if (target === 'partner') setPartnerForm({ ...partnerForm, logoUrl: result });
-        else if (target === 'founder') setFounderForm({ ...founderForm, imageUrl: result });
-        else if (target === 'event') setEvent({ ...event, imageUrl: result });
-      };
-      reader.readAsDataURL(file);
+  const uploadToStorage = async (file: File, folder: string) => {
+    setUploading(true);
+    try {
+      const storageRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(snapshot.ref);
+      return url;
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("Erreur lors de l'envoi du fichier.");
+      return null;
+    } finally {
+      setUploading(false);
     }
   };
 
-  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>, target: 'post' | 'event') => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>, target: 'post' | 'partner' | 'founder' | 'event' | 'logo') => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 800 * 1024) {
-        alert("La vidéo est trop volumineuse (max 800Ko).");
+      const url = await uploadToStorage(file, 'images');
+      if (url) {
+        if (target === 'post') setPost({ ...post, imageUrl: url });
+        else if (target === 'partner') setPartnerForm({ ...partnerForm, logoUrl: url });
+        else if (target === 'founder') setFounderForm({ ...founderForm, imageUrl: url });
+        else if (target === 'event') setEvent({ ...event, imageUrl: url });
+        else if (target === 'logo') setSettings({ ...settings, logoUrl: url });
+      }
+    }
+  };
+
+  const handleVideoChange = async (e: React.ChangeEvent<HTMLInputElement>, target: 'post' | 'event') => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Pour les vidéos, on peut être plus généreux avec Storage
+      if (file.size > 20 * 1024 * 1024) {
+        alert("La vidéo est trop volumineuse (max 20Mo).");
         return;
       }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        if (target === 'post') setPost({ ...post, videoUrl: result });
-        else if (target === 'event') setEvent({ ...event, videoUrl: result });
-      };
-      reader.readAsDataURL(file);
+      const url = await uploadToStorage(file, 'videos');
+      if (url) {
+        if (target === 'post') setPost({ ...post, videoUrl: url });
+        else if (target === 'event') setEvent({ ...event, videoUrl: url });
+      }
+    }
+  };
+
+  const handleDocumentChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = await uploadToStorage(file, 'documents');
+      if (url) {
+        setResource({ ...resource, documentUrl: url });
+      }
     }
   };
 
@@ -97,8 +120,30 @@ export default function Admin({ onBack }: AdminProps) {
       case 'admins': fetchAdmins(); break;
       case 'partners': fetchPartners(); break;
       case 'founders': fetchFounders(); break;
+      case 'settings': fetchSettings(); break;
     }
   }, [mode, isAuthorized]);
+
+  const fetchSettings = async () => {
+    try {
+      const docSnap = await getDoc(doc(db, 'config', 'general'));
+      if (docSnap.exists()) {
+        setSettings(docSnap.data() as any);
+      }
+    } catch (error) { 
+      handleFirestoreError(error, OperationType.GET, 'config/general'); 
+    }
+  };
+
+  const handleSaveSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await setDoc(doc(db, 'config', 'general'), settings);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (error) { handleFirestoreError(error, OperationType.UPDATE, 'config/general'); } finally { setLoading(false); }
+  };
 
   const fetchPartners = async () => {
     setLoading(true);
@@ -301,7 +346,7 @@ export default function Admin({ onBack }: AdminProps) {
         date: Timestamp.fromDate(new Date(event.date))
       });
       setSuccess(true);
-      setEvent({ title: '', description: '', location: '', type: 'mission', date: '' });
+      setEvent({ title: '', description: '', location: '', type: 'mission', date: '', imageUrl: '', videoUrl: '' });
       setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, 'events');
@@ -318,7 +363,7 @@ export default function Admin({ onBack }: AdminProps) {
         ...resource
       });
       setSuccess(true);
-      setResource({ title: '', description: '', type: 'kit', contact: '' });
+      setResource({ title: '', description: '', type: 'kit', contact: '', documentUrl: '' });
       fetchResources();
       setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
@@ -391,6 +436,7 @@ export default function Admin({ onBack }: AdminProps) {
             { id: 'volunteers', label: 'Volontaires' },
             { id: 'activity', label: 'Activité' },
             { id: 'admins', label: 'Membres Team' },
+            { id: 'settings', label: 'Paramètres' },
           ].map((item) => (
             <button 
               key={item.id}
@@ -472,12 +518,12 @@ export default function Admin({ onBack }: AdminProps) {
                     {post.imageUrl ? (
                       <div className="flex items-center gap-3 w-full truncate">
                         <img src={post.imageUrl} alt="" className="w-10 h-10 object-cover rounded-lg" />
-                        <span className="truncate text-xs">Image sélectionnée</span>
+                        <span className="truncate text-xs">Image envoyée</span>
                       </div>
                     ) : (
                       <>
-                        <Plus size={20} />
-                        <span className="text-xs uppercase tracking-widest">Choisir une image</span>
+                        {uploading ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
+                        <span className="text-xs uppercase tracking-widest">{uploading ? 'Upload...' : 'Choisir une image'}</span>
                       </>
                     )}
                   </label>
@@ -509,14 +555,14 @@ export default function Admin({ onBack }: AdminProps) {
                     htmlFor="post-video-upload"
                     className="flex items-center justify-center gap-3 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-4 cursor-pointer hover:border-sky-500 hover:bg-sky-50 transition-all font-bold text-slate-400 hover:text-sky-600"
                   >
-                    {post.videoUrl && post.videoUrl.startsWith('data:') ? (
+                    {post.videoUrl && (post.videoUrl.startsWith('data:') || post.videoUrl.includes('firebasestorage')) ? (
                       <div className="flex items-center gap-3 w-full truncate">
-                        <span className="truncate text-xs">Vidéo chargée</span>
+                        <span className="truncate text-xs">Vidéo envoyée</span>
                       </div>
                     ) : (
                       <>
-                        <Plus size={20} />
-                        <span className="text-xs uppercase tracking-widest">Ajouter Vidéo</span>
+                        {uploading ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
+                        <span className="text-xs uppercase tracking-widest">{uploading ? 'Upload...' : 'Ajouter Vidéo'}</span>
                       </>
                     )}
                   </label>
@@ -524,7 +570,7 @@ export default function Admin({ onBack }: AdminProps) {
                 <input 
                   className="flex-1 bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs outline-none"
                   placeholder="Ou lien Vidéo (YouTube/URL)"
-                  value={post.videoUrl && post.videoUrl.startsWith('data:') ? '' : post.videoUrl}
+                  value={(post.videoUrl && (post.videoUrl.startsWith('data:') || (post.videoUrl.includes('firebasestorage') && !post.videoUrl.includes('youtube')))) ? '' : post.videoUrl}
                   onChange={e => setPost({...post, videoUrl: e.target.value})}
                 />
               </div>
@@ -635,10 +681,28 @@ export default function Admin({ onBack }: AdminProps) {
                 />
               </div>
             <div className="space-y-2">
-                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Document / Guide (Lien PDF)</label>
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Document / Guide (PDF)</label>
+                <div className="flex gap-2">
+                  <input 
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleDocumentChange}
+                    className="flex-1 bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none font-medium text-xs"
+                  />
+                  {resource.documentUrl && (
+                    <div className="flex items-center justify-center px-4 bg-emerald-50 text-emerald-600 rounded-xl">
+                      <CheckCircle size={20} />
+                    </div>
+                  )}
+                  {uploading && (
+                    <div className="flex items-center justify-center px-4 bg-sky-50 text-sky-600 rounded-xl">
+                      <Loader2 size={20} className="animate-spin" />
+                    </div>
+                  )}
+                </div>
                 <input 
-                  className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none font-medium text-xs"
-                  placeholder="Lien vers le document PDF"
+                  className="w-full bg-slate-50 border border-slate-100 rounded-xl p-2 outline-none font-medium text-[10px]"
+                  placeholder="Ou lien direct PDF"
                   value={resource.documentUrl}
                   onChange={e => setResource({...resource, documentUrl: e.target.value})}
                 />
@@ -944,6 +1008,61 @@ export default function Admin({ onBack }: AdminProps) {
               </div>
             ))}
           </div>
+        </div>
+      ) : mode === 'settings' ? (
+        <div className="space-y-8">
+          <form onSubmit={handleSaveSettings} className="space-y-6 bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm">
+            <h3 className="text-sm font-black uppercase text-slate-400 tracking-widest px-2 mb-4">Paramètres Généraux de l'Association</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest block">Logo Principal</label>
+                <div className="flex items-center gap-6">
+                  <div className="w-24 h-24 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden">
+                    {settings.logoUrl ? <img src={settings.logoUrl} className="w-full h-full object-contain" /> : <Plus className="text-slate-300" />}
+                  </div>
+                  <input type="file" accept="image/*" onChange={(e) => handleImageChange(e, 'logo')} className="text-xs font-bold text-sky-600" />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Nom de l'association</label>
+                  <input className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none font-bold" value={settings.associationName} onChange={e => setSettings({...settings, associationName: e.target.value})} />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Email de contact</label>
+                <input className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none" value={settings.email} onChange={e => setSettings({...settings, email: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Téléphone / WhatsApp</label>
+                <input className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none" value={settings.phone} onChange={e => setSettings({...settings, phone: e.target.value})} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Lien Facebook</label>
+                <input className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none text-xs" value={settings.facebook} onChange={e => setSettings({...settings, facebook: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Lien Instagram</label>
+                <input className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none text-xs" value={settings.instagram} onChange={e => setSettings({...settings, instagram: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Lien WhatsApp Direct</label>
+                <input className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none text-xs" value={settings.whatsapp} onChange={e => setSettings({...settings, whatsapp: e.target.value})} />
+              </div>
+            </div>
+
+            <button disabled={loading} className="w-full bg-slate-900 text-white font-black py-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-black transition-all">
+              {loading ? <Loader2 className="animate-spin" /> : 'Enregistrer les Paramètres'}
+            </button>
+          </form>
         </div>
       ) : mode === 'admins' ? (
         <div className="space-y-8">

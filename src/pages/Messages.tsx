@@ -114,6 +114,7 @@ export default function Messages({ onOpenAdmin }: MessagesProps) {
     { id: 'campaign', label: 'Campagnes', icon: Megaphone, color: 'text-orange-500' },
     { id: 'review', label: 'Laisser un avis', icon: Star, color: 'text-yellow-500' },
     { id: 'proposal', label: 'Proposer', icon: Lightbulb, color: 'text-emerald-500' },
+    { id: 'chat', label: 'Discussion', icon: MessageSquare, color: 'text-sky-500' },
   ];
 
   return (
@@ -347,6 +348,62 @@ export default function Messages({ onOpenAdmin }: MessagesProps) {
                     {loading ? 'Soumission...' : 'Soumettre le projet'}
                     <Send size={16} />
                   </motion.button>
+                </div>
+              </motion.section>
+            )}
+
+            {activeSection === 'chat' && (
+              <motion.section 
+                key="chat"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="flex flex-col h-full max-h-[800px]"
+              >
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar" ref={scrollRef}>
+                  {messages.length === 0 ? (
+                    <div className="h-full flex flex-col items-center justify-center text-slate-300 space-y-4 opacity-50">
+                      <MessageSquare size={64} strokeWidth={1} />
+                      <p className="font-black text-xs uppercase tracking-widest">Aucun message pour le moment</p>
+                    </div>
+                  ) : (
+                    messages.map((msg) => (
+                      <div 
+                        key={msg.id} 
+                        className={`flex flex-col ${msg.userId === auth.currentUser?.uid ? 'items-end' : 'items-start'}`}
+                      >
+                        <div className={`max-w-[80%] rounded-[1.5rem] p-4 text-sm font-medium shadow-sm ${
+                          msg.userId === auth.currentUser?.uid 
+                          ? 'bg-sky-500 text-white rounded-tr-none' 
+                          : 'bg-slate-50 text-slate-800 rounded-tl-none border border-slate-100'
+                        }`}>
+                          {msg.text}
+                        </div>
+                        <span className="text-[9px] font-black uppercase text-slate-300 mt-1 px-2">
+                          {msg.userName} • {msg.createdAt?.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                <div className="p-4 border-t border-slate-50 bg-slate-50/50">
+                  <form onSubmit={handleSendMessage} className="flex gap-2">
+                    <input 
+                      type="text"
+                      value={newMessage}
+                      onChange={e => setNewMessage(e.target.value)}
+                      placeholder="Votre message ici..."
+                      className="flex-1 bg-white border border-slate-200 rounded-2xl px-6 py-4 text-sm outline-none focus:ring-4 focus:ring-sky-500/10 transition-all font-medium"
+                    />
+                    <motion.button 
+                      whileTap={{ scale: 0.9 }}
+                      disabled={!newMessage.trim()}
+                      className="w-14 h-14 bg-sky-500 text-white rounded-2xl flex items-center justify-center hover:bg-sky-600 transition-all shadow-lg shadow-sky-500/20 disabled:opacity-50"
+                    >
+                      <Send size={20} />
+                    </motion.button>
+                  </form>
                 </div>
               </motion.section>
             )}

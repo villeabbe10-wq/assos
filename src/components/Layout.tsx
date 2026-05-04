@@ -3,6 +3,7 @@ import { Menu, X, Home, BookOpen, Calendar, Users, HandHeart, Info, LogIn, LogOu
 import { motion, AnimatePresence } from 'motion/react';
 import { auth, signInWithGoogle, logout, db } from '../lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import PharmacyModal from './PharmacyModal';
 
 interface LayoutProps {
@@ -15,8 +16,20 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPharmacyModalOpen, setIsPharmacyModalOpen] = useState(false);
   const [user] = useAuthState(auth);
-
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [settings, setSettings] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const docSnap = await getDoc(doc(db, 'config', 'general'));
+        if (docSnap.exists()) setSettings(docSnap.data());
+      } catch (e) { 
+        console.error("Error fetching settings:", e);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const isAdmin = user?.email === 'seduceconseil@gmail.com';
 
@@ -28,7 +41,6 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
       } else {
         const checkAuth = async () => {
           try {
-            const { doc, getDoc } = await import('firebase/firestore');
             const docRef = doc(db, 'system_admins', user.email!);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
@@ -94,10 +106,16 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
           >
             <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center shadow-2xl group-hover:rotate-6 transition-transform overflow-hidden relative">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-sky-500 opacity-20" />
-              <span className="text-white font-black text-2xl relative z-10">S</span>
+              {settings?.logoUrl ? (
+                <img src={settings.logoUrl} alt="Logo" className="w-full h-full object-cover relative z-10" />
+              ) : (
+                <span className="text-white font-black text-2xl relative z-10">S</span>
+              )}
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight leading-none text-slate-900">SEDUCEP</h1>
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight leading-none text-slate-900">
+                {settings?.associationName || 'SEDUCEP'}
+              </h1>
               <p className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 -mt-0.5">Conseils</p>
             </div>
           </motion.div>
@@ -241,7 +259,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
 
       {/* WhatsApp Floating Action Button */}
       <motion.a
-        href="https://wa.me/22892004436?text=Bonjour SEDUCEP-CONSEILS, j'ai une question."
+        href={settings?.whatsapp || "https://wa.me/22892004436?text=Bonjour SEDUCEP-CONSEILS, j'ai une question."}
         target="_blank"
         rel="noopener noreferrer"
         initial={{ scale: 0, opacity: 0 }}
@@ -282,23 +300,29 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
           {/* About Column */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <div className="bg-sky-500 p-1.5 rounded-lg">
-                <div className="w-8 h-8 text-white flex items-center justify-center font-black">S</div>
+              <div className="w-12 h-12 bg-sky-500 rounded-2xl flex items-center justify-center text-white shadow-lg overflow-hidden">
+                {settings?.logoUrl ? (
+                  <img src={settings.logoUrl} alt="Logo" className="w-full h-full object-contain" />
+                ) : (
+                  <div className="font-black text-xl text-white">S</div>
+                )}
               </div>
-              <h1 className="text-lg font-black tracking-tighter text-slate-900 uppercase">SEDUCEP</h1>
+              <h1 className="text-lg font-black tracking-tighter text-slate-900 uppercase">
+                {settings?.associationName || 'SEDUCEP'}
+              </h1>
             </div>
             <p className="text-sm text-slate-500 font-medium leading-relaxed">
               SEDUCEP Conseil & Social est une association dédiée à l'accompagnement des populations vulnérables et à la lutte contre les maladies chroniques au Togo.
             </p>
             <div className="flex items-center gap-4">
-              <a href="#" className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-sky-500 hover:text-white transition-all shadow-sm">
+              <a href={settings?.facebook || "#"} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-sky-500 hover:text-white transition-all shadow-sm">
                 <Facebook size={18} />
               </a>
-              <a href="#" className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-sky-500 hover:text-white transition-all shadow-sm">
+              <a href={settings?.instagram || "#"} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-pink-500 hover:text-white transition-all shadow-sm">
                 <Instagram size={18} />
               </a>
-              <a href="#" className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-sky-500 hover:text-white transition-all shadow-sm">
-                <Twitter size={18} />
+              <a href={settings?.whatsapp || "#"} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-emerald-500 hover:text-white transition-all shadow-sm">
+                <Phone size={18} />
               </a>
             </div>
           </div>
