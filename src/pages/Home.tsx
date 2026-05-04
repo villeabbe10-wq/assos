@@ -82,7 +82,7 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rejoignez nous</span>
           </motion.div>
           
-          <motion.h2 variants={itemVariants} className="text-5xl sm:text-8xl font-black text-slate-900 mb-8 leading-[0.9] tracking-tighter">
+          <motion.h2 variants={itemVariants} className="text-4xl sm:text-7xl lg:text-8xl font-black text-slate-900 mb-8 leading-[0.9] tracking-tighter">
             Sensibiliser <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-sky-600 relative">
               Éduquer
@@ -96,16 +96,16 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
             <span className="text-slate-400">Protéger</span>
           </motion.h2>
 
-          <motion.p variants={itemVariants} className="text-slate-500 text-lg sm:text-xl mb-12 leading-relaxed font-medium max-w-2xl">
+          <motion.p variants={itemVariants} className="text-slate-500 text-base sm:text-xl mb-12 leading-relaxed font-medium max-w-2xl">
             L'excellence du conseil médical couplée à l'engagement social pour les populations vulnérables du Togo.
           </motion.p>
           
-          <motion.div variants={itemVariants} className="flex flex-wrap gap-5">
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-5">
             <motion.button 
               whileHover={{ scale: 1.05, x: 5 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setActiveTab('volunteer')}
-              className="bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-sm hover:bg-slate-800 transition-all shadow-2xl shadow-slate-900/20 flex items-center gap-3 uppercase tracking-widest"
+              className="bg-slate-900 text-white px-8 sm:px-10 py-4 sm:py-5 rounded-2xl font-black text-xs sm:text-sm hover:bg-slate-800 transition-all shadow-2xl shadow-slate-900/20 flex items-center justify-center gap-3 uppercase tracking-widest sm:w-auto w-full"
             >
               Nous Rejoindre <ArrowRight size={18} />
             </motion.button>
@@ -113,7 +113,7 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setActiveTab('donation')}
-              className="bg-white border-2 border-slate-100 text-slate-700 px-10 py-5 rounded-2xl font-black text-sm hover:border-emerald-500/30 hover:text-emerald-600 transition-all flex items-center gap-2 uppercase tracking-widest"
+              className="bg-white border-2 border-slate-100 text-slate-700 px-8 sm:px-10 py-4 sm:py-5 rounded-2xl font-black text-xs sm:text-sm hover:border-emerald-500/30 hover:text-emerald-600 transition-all flex items-center justify-center gap-2 uppercase tracking-widest sm:w-auto w-full"
             >
               <Heart size={18} className="fill-current" />
               Soutenir

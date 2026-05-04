@@ -49,10 +49,10 @@ export default function Resources() {
           <HandHeart size={36} />
         </motion.div>
         <div className="space-y-4">
-          <h2 className="text-5xl sm:text-7xl font-black text-slate-900 tracking-tighter leading-none">
+          <h2 className="text-4xl sm:text-7xl font-black text-slate-900 tracking-tighter leading-none">
             Ressources & Prévention
           </h2>
-          <p className="text-slate-500 font-medium text-xl leading-relaxed max-w-2xl">
+          <p className="text-slate-500 font-medium text-lg sm:text-xl leading-relaxed max-w-2xl">
             Accédez à nos guides pratiques, rapports d'activité et numéros utiles pour votre santé au quotidien.
           </p>
         </div>

@@ -97,26 +97,26 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
     <div className="min-h-screen flex flex-col font-sans bg-slate-50/50">
       {/* Sleek Header - Glass Morphism */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 h-24 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 h-20 sm:h-24 flex items-center justify-between">
           <motion.div 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="flex items-center gap-3 cursor-pointer group" 
+            className="flex items-center gap-2 sm:gap-3 cursor-pointer group" 
             onClick={() => setActiveTab('home')}
           >
-            <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center shadow-2xl group-hover:rotate-6 transition-transform overflow-hidden relative">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-2xl group-hover:rotate-6 transition-transform overflow-hidden relative">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-sky-500 opacity-20" />
               {settings?.logoUrl ? (
                 <img src={settings.logoUrl} alt="Logo" className="w-full h-full object-cover relative z-10" />
               ) : (
-                <span className="text-white font-black text-2xl relative z-10">S</span>
+                <span className="text-white font-black text-xl sm:text-2xl relative z-10">S</span>
               )}
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight leading-none text-slate-900">
+              <h1 className="text-lg sm:text-2xl font-black tracking-tight leading-none text-slate-900">
                 {settings?.associationName || 'SEDUCEP'}
               </h1>
-              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 -mt-0.5">Conseils</p>
+              <p className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 -mt-0.5">Conseils</p>
             </div>
           </motion.div>
 
@@ -137,7 +137,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
             ))}
           </nav>
           
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="hidden sm:flex items-center gap-3 sm:gap-4">
             {!user ? (
               <motion.button 
                 whileHover={{ scale: 1.05 }}
@@ -224,13 +224,47 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 </button>
               ))}
 
-              <div className="mt-auto pt-8 border-t border-slate-100">
+              <div className="mt-auto pt-8 border-t border-slate-100 flex flex-col gap-4">
+                {!user ? (
+                  <button 
+                    onClick={() => {
+                      signInWithGoogle();
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 uppercase tracking-widest text-xs"
+                  >
+                    <LogIn size={18} /> Connexion
+                  </button>
+                ) : (
+                  <div className="space-y-3">
+                    <button 
+                      onClick={() => {
+                        setActiveTab(isAuthorized ? 'admin' : 'messages');
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full bg-emerald-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 uppercase tracking-widest text-xs shadow-lg shadow-emerald-500/20"
+                    >
+                      <img src={user.photoURL || ''} alt="" className="w-6 h-6 rounded-full border border-white/20" />
+                      {isAuthorized ? 'Tableau de bord' : 'Mon Espace'}
+                    </button>
+                    <button 
+                      onClick={() => {
+                        logout();
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full bg-slate-100 text-rose-500 font-black py-4 rounded-2xl flex items-center justify-center gap-3 uppercase tracking-widest text-xs border border-slate-200"
+                    >
+                      <LogOut size={18} /> Déconnexion
+                    </button>
+                  </div>
+                )}
+                
                 <button 
                   onClick={() => {
                     setActiveTab('donation');
                     setIsMenuOpen(false);
                   }}
-                  className="w-full bg-orange-500 hover:bg-orange-600 transition-colors text-white font-black py-5 rounded-2xl shadow-xl shadow-orange-500/20 mb-6 flex items-center justify-center gap-3 uppercase tracking-widest text-xs"
+                  className="w-full bg-orange-500 hover:bg-orange-600 transition-colors text-white font-black py-5 rounded-2xl shadow-xl shadow-orange-500/20 mb-2 flex items-center justify-center gap-3 uppercase tracking-widest text-xs"
                 >
                   <HandHeart size={18} /> Faire un Don
                 </button>
@@ -383,7 +417,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
               </div>
               <div className="flex gap-3">
                 <div className="mt-1 text-sky-600"><Phone size={18} /></div>
-                <p className="text-sm text-slate-500 font-medium">+228 92004436 / +33 663940084</p>
+                <p className="text-sm text-slate-500 font-medium">+228 97682466 / +33 663940084</p>
               </div>
               <div className="flex gap-3">
                 <div className="mt-1 text-sky-600"><Mail size={18} /></div>

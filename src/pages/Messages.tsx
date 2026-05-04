@@ -29,7 +29,7 @@ interface MessagesProps {
   onOpenAdmin: () => void;
 }
 
-type Section = 'campaign' | 'review' | 'proposal';
+type Section = 'campaign' | 'review' | 'proposal' | 'chat';
 
 export default function Messages({ onOpenAdmin }: MessagesProps) {
   const [activeSection, setActiveSection] = useState<Section>('campaign');
@@ -185,7 +185,7 @@ export default function Messages({ onOpenAdmin }: MessagesProps) {
           </motion.div>
         )}
 
-        <div className="p-10 lg:p-20 flex-1 overflow-y-auto w-full no-scrollbar relative min-h-[500px]">
+        <div className="p-6 sm:p-10 lg:p-20 flex-1 overflow-y-auto w-full no-scrollbar relative min-h-[500px]">
           <AnimatePresence mode="wait">
             {activeSection === 'campaign' && (
               <motion.section 

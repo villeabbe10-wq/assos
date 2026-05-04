@@ -82,7 +82,7 @@ export default function FAQ() {
                   </div>
                   <div>
                     <span className="block text-[10px] font-black uppercase text-slate-400 tracking-widest">Phone</span>
-                    <span className="text-sm font-black text-slate-800 tracking-tight">+228 92004436</span>
+                    <span className="text-sm font-black text-slate-800 tracking-tight">+228 97682466</span>
                   </div>
                 </a>
                 <a href="mailto:seduceconseils@gmail.com" className="flex items-center gap-4 bg-slate-50 p-5 rounded-[2rem] border border-slate-100 hover:border-sky-200 transition-colors group">

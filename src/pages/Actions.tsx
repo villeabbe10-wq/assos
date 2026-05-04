@@ -170,11 +170,11 @@ export default function Actions({ setActiveTab }: { setActiveTab: (tab: string) 
           }}
           className="space-y-8"
         >
-          <motion.h2 variants={itemVariants} className="text-5xl sm:text-8xl font-black text-slate-900 tracking-tighter leading-[0.8]">
+          <motion.h2 variants={itemVariants} className="text-4xl sm:text-7xl lg:text-8xl font-black text-slate-900 tracking-tighter leading-[0.8]">
             Notre <span className="text-sky-600">Mission</span>, <br /> 
-            votre <span className="text-orange-500 font-serif italic font-normal text-6xl sm:text-8xl block mt-4">avenir</span>.
+            votre <span className="text-orange-500 font-serif italic font-normal text-4xl sm:text-7xl lg:text-8xl block mt-4">avenir</span>.
           </motion.h2>
-          <motion.p variants={itemVariants} className="text-slate-500 font-medium leading-relaxed text-xl max-w-3xl mx-auto">
+          <motion.p variants={itemVariants} className="text-slate-500 font-medium leading-relaxed text-base sm:text-xl max-w-3xl mx-auto">
             "La santé est un droit fondamental qui commence par la connaissance. Nous transformons la peur en compréhension et l'isolement en solidarité."
           </motion.p>
         </motion.div>
@@ -183,13 +183,13 @@ export default function Actions({ setActiveTab }: { setActiveTab: (tab: string) 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="flex flex-wrap justify-center gap-6"
+          className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6"
         >
           <motion.button 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setActiveTab('donation')}
-            className="bg-slate-900 text-white font-black py-5 px-10 rounded-2xl text-xs uppercase tracking-widest hover:bg-sky-600 transition-all shadow-2xl shadow-slate-900/10"
+            className="bg-slate-900 text-white font-black py-5 px-10 rounded-2xl text-xs uppercase tracking-widest hover:bg-sky-600 transition-all shadow-2xl shadow-slate-900/10 w-full sm:w-auto"
           >
             Soutenir la mission
           </motion.button>
@@ -197,7 +197,7 @@ export default function Actions({ setActiveTab }: { setActiveTab: (tab: string) 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setActiveTab('volunteer')}
-            className="bg-white border border-slate-200 text-slate-700 font-black py-5 px-10 rounded-2xl text-xs uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm"
+            className="bg-white border border-slate-200 text-slate-700 font-black py-5 px-10 rounded-2xl text-xs uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm w-full sm:w-auto"
           >
             Devenir volontaire
           </motion.button>
@@ -205,7 +205,7 @@ export default function Actions({ setActiveTab }: { setActiveTab: (tab: string) 
       </header>
 
       {/* MISSION PILLARS */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-4 sm:px-0">
         {missions.map((m, i) => (
           <motion.div
             key={i}
@@ -213,13 +213,13 @@ export default function Actions({ setActiveTab }: { setActiveTab: (tab: string) 
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, delay: i * 0.1, ease: [0.23, 1, 0.32, 1] }}
-            className="bg-white p-12 rounded-[4rem] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-3xl transition-all"
+            className="bg-white p-10 sm:p-12 rounded-[3rem] sm:rounded-[4rem] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-3xl transition-all"
           >
-            <div className={`w-16 h-16 ${m.color} rounded-2xl flex items-center justify-center mb-10 shadow-inner group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
-              <m.icon size={32} />
+            <div className={`w-14 h-14 sm:w-16 sm:h-16 ${m.color} rounded-2xl flex items-center justify-center mb-8 sm:mb-10 shadow-inner group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
+              <m.icon size={28} />
             </div>
-            <h3 className="text-3xl font-black text-slate-900 mb-6 leading-tight tracking-tight">{m.title}</h3>
-            <p className="text-slate-500 text-base font-medium leading-relaxed mb-10">{m.desc}</p>
+            <h3 className="text-2xl sm:text-3xl font-black text-slate-900 mb-6 leading-tight tracking-tight">{m.title}</h3>
+            <p className="text-slate-500 text-sm sm:text-base font-medium leading-relaxed mb-8 sm:mb-10">{m.desc}</p>
             
             <ul className="space-y-4">
               {m.points.map((p, pi) => (

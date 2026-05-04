@@ -79,32 +79,32 @@ export default function About({ setActiveTab }: { setActiveTab: (tab: string) =>
           <span className="text-[10px] font-black uppercase tracking-widest">Le savoir et la prévention</span>
         </motion.div>
         
-        <h2 className="text-4xl sm:text-7xl font-black text-slate-900 tracking-tight leading-[0.9]">
+        <h2 className="text-3xl sm:text-7xl font-black text-slate-900 tracking-tight leading-[0.9]">
           S'engager pour le <br /> <span className="text-sky-500">bien-être</span> de tous.
         </h2>
         
-        <p className="text-slate-500 text-lg font-medium leading-relaxed max-w-2xl mx-auto">
+        <p className="text-slate-500 text-base sm:text-lg font-medium leading-relaxed max-w-2xl mx-auto">
           Une association caritative basée au Togo, engagée avec conviction à améliorer la santé et le bien-être des populations les plus vulnérables.
         </p>
       </section>
 
       {/* Historique */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center bg-white p-8 sm:p-16 rounded-[4rem] border border-slate-100 shadow-sm relative overflow-hidden">
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 items-center bg-white p-8 sm:p-16 rounded-[3rem] sm:rounded-[4rem] border border-slate-100 shadow-sm relative overflow-hidden">
         <div className="space-y-6 relative z-10">
-          <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-3xl flex items-center justify-center shadow-lg shadow-orange-100">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-orange-100 text-orange-600 rounded-2xl sm:rounded-3xl flex items-center justify-center shadow-lg shadow-orange-100">
             <History size={32} />
           </div>
-          <h3 className="text-4xl font-black text-slate-900 tracking-tight">Historique</h3>
-          <p className="text-slate-500 font-medium leading-relaxed text-lg">
+          <h3 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">Historique</h3>
+          <p className="text-slate-500 font-medium leading-relaxed text-base sm:text-lg">
             Les membres fondateurs, dévoués à améliorer la qualité de vie des personnes vulnérables, défavorisées et promouvoir de la santé dans les communautés rurales.
           </p>
         </div>
         <div className="grid grid-cols-2 gap-4 relative z-10">
-          <div className="aspect-square bg-slate-100 rounded-[2.5rem] overflow-hidden">
+          <div className="aspect-square bg-slate-100 rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden">
             <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=400" alt="" className="w-full h-full object-cover grayscale opacity-80" />
           </div>
-          <div className="aspect-square bg-sky-500 rounded-[2.5rem] p-8 flex flex-col justify-end text-white">
-            <span className="text-4xl font-black mb-2">2026</span>
+          <div className="aspect-square bg-sky-500 rounded-[2.5rem] p-6 sm:p-8 flex flex-col justify-end text-white">
+            <span className="text-3xl sm:text-4xl font-black mb-2">2026</span>
             <span className="text-[10px] font-black uppercase tracking-widest opacity-80">Fondation</span>
           </div>
         </div>

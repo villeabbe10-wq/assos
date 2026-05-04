@@ -32,38 +32,38 @@ export default function Donation({ setActiveTab }: { setActiveTab: (tab: string)
         </motion.div>
         
         <div className="space-y-4">
-          <h2 className="text-4xl sm:text-7xl font-black text-slate-900 tracking-tight leading-none">
+          <h2 className="text-3xl sm:text-7xl font-black text-slate-900 tracking-tight leading-none">
             Soutenir notre <span className="text-sky-600">mission</span>
           </h2>
-          <p className="text-slate-500 font-medium leading-relaxed text-lg max-w-3xl mx-auto">
+          <p className="text-slate-500 font-medium leading-relaxed text-base sm:text-lg max-w-3xl mx-auto">
             Votre don permet de financer nos missions de dépistage, l'éducation des enfants de la rue et l'accompagnement des malades chroniques au Togo.
           </p>
         </div>
       </section>
 
       {/* Pourquoi faire un don ? */}
-      <section className="bg-white rounded-[3rem] p-8 sm:p-14 border border-slate-100 shadow-sm">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <section className="bg-white rounded-[2.5rem] sm:rounded-[3rem] p-6 sm:p-14 border border-slate-100 shadow-sm">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
           <div className="space-y-8">
-            <h3 className="text-3xl font-black text-slate-900 tracking-tight">Pourquoi nous soutenir ?</h3>
+            <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Pourquoi nous soutenir ?</h3>
             <div className="space-y-6">
               {whyDonate.map((item, i) => (
                 <div key={i} className="flex gap-4 items-start">
                   <div className="w-8 h-8 bg-sky-50 text-sky-600 rounded-lg flex items-center justify-center shrink-0 mt-1">
                     <item.icon size={18} />
                   </div>
-                  <p className="text-slate-600 font-medium leading-snug">{item.text}</p>
+                  <p className="text-slate-600 font-medium leading-snug text-sm sm:text-base">{item.text}</p>
                 </div>
               ))}
             </div>
           </div>
           <div className="relative">
-            <div className="aspect-video bg-slate-100 rounded-[2rem] overflow-hidden">
+            <div className="aspect-video bg-slate-100 rounded-[2rem] overflow-hidden shadow-xl shadow-slate-200">
               <img src="https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?auto=format&fit=crop&q=80&w=600" alt="" className="w-full h-full object-cover" />
             </div>
-            <div className="absolute -bottom-6 -right-6 bg-orange-500 text-white p-6 rounded-2xl shadow-xl rotate-3">
-              <span className="text-2xl font-black">100%</span>
-              <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Transparence</p>
+            <div className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 bg-orange-500 text-white p-4 sm:p-6 rounded-2xl shadow-xl rotate-3">
+              <span className="text-xl sm:text-2xl font-black">100%</span>
+              <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest opacity-80">Transparence</p>
             </div>
           </div>
         </div>
@@ -77,7 +77,7 @@ export default function Donation({ setActiveTab }: { setActiveTab: (tab: string)
             <div className="h-px bg-slate-100 flex-1"></div>
           </div>
           
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {inKindItems.map((item, i) => (
               <motion.div
                 key={i}
@@ -85,39 +85,40 @@ export default function Donation({ setActiveTab }: { setActiveTab: (tab: string)
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
-                className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm flex items-center gap-4 hover:shadow-lg transition-all group"
+                className="bg-white p-5 sm:p-6 rounded-[2rem] sm:rounded-[2.5rem] border border-slate-100 shadow-sm flex items-center gap-4 hover:shadow-lg transition-all group"
               >
-                <div className={`w-12 h-12 ${item.color} rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform shrink-0`}>
-                  <item.icon size={24} />
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 ${item.color} rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform shrink-0`}>
+                  <item.icon size={20} />
                 </div>
                 <div className="min-w-0">
                   <p className="font-black text-slate-800 text-sm tracking-tight leading-tight">{item.label}</p>
-                  <p className="text-[10px] text-slate-400 font-medium truncate">{item.sub}</p>
+                  <p className="text-[9px] sm:text-[10px] text-slate-400 font-medium truncate">{item.sub}</p>
                 </div>
               </motion.div>
             ))}
           </div>
 
-          <div className="bg-sky-50 p-8 rounded-[2.5rem] border border-sky-100 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-sky-600 text-white rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-sky-600/20">
+          <div className="bg-sky-50 p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border border-sky-100 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex items-center gap-4 text-center md:text-left">
+              <div className="w-12 h-12 bg-sky-600 text-white rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-sky-600/20 mx-auto md:mx-0">
                 <Info size={24} />
               </div>
-              <p className="text-sky-900 font-bold leading-snug">
+              <p className="text-sky-900 font-bold leading-snug text-sm sm:text-base">
                 Nous acceptons les dons de matériel médical, scolaire et de première nécessité. <br />
-                <span className="text-xs text-sky-600 opacity-80 uppercase tracking-widest font-black">Nous organisons la logistique pour vous</span>
+                <span className="text-[10px] sm:text-xs text-sky-600 opacity-80 uppercase tracking-widest font-black">Nous organisons la logistique pour vous</span>
               </p>
             </div>
             <a 
               href="https://wa.me/22890000000?text=Bonjour, je souhaite proposer des dons en nature pour SEDUCEP."
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-sky-600 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-sky-700 transition-all shadow-xl shadow-sky-600/20 whitespace-nowrap"
+              className="w-full md:w-auto text-center bg-sky-600 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-sky-700 transition-all shadow-xl shadow-sky-600/20 whitespace-nowrap"
             >
               Organiser la collecte
             </a>
           </div>
         </section>
+
 
         {/* Secure Cash Section */}
         <section className="space-y-8">

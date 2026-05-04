@@ -22,7 +22,7 @@ export default function Admin({ onBack }: AdminProps) {
   const [admins, setAdmins] = useState<any[]>([]);
   const [partners, setPartners] = useState<any[]>([]);
   const [founders, setFounders] = useState<any[]>([]);
-  const [settings, setSettings] = useState({ logoUrl: '', associationName: 'SEDUCEP', phone: '+228 92004436', email: 'seduceconseil@gmail.com', facebook: '', whatsapp: '', instagram: '' });
+  const [settings, setSettings] = useState({ logoUrl: '', associationName: 'SEDUCEP', phone: '+228 97682466', email: 'seduceconseil@gmail.com', facebook: '', whatsapp: '', instagram: '' });
   const [isAuthorized, setIsAuthorized] = useState(user?.email === 'seduceconseil@gmail.com');
   const [activity, setActivity] = useState<{ proposals: any[], reviews: any[], campaigns: any[] }>({ proposals: [], reviews: [], campaigns: [] });
 
@@ -424,7 +424,7 @@ export default function Admin({ onBack }: AdminProps) {
           )}
           <h2 className="text-3xl font-black text-slate-900 tracking-tight">Admin Dashboard</h2>
         </div>
-        <div className="flex bg-slate-100 p-1 rounded-xl w-fit flex-wrap gap-1">
+        <div className="flex bg-slate-100 p-1.5 rounded-2xl w-full sm:w-fit overflow-x-auto no-scrollbar gap-1">
           {[
             { id: 'post', label: 'Publication' },
             { id: 'event', label: 'Événement' },
@@ -441,7 +441,7 @@ export default function Admin({ onBack }: AdminProps) {
             <button 
               key={item.id}
               onClick={() => setMode(item.id as any)}
-              className={`px-4 py-2 rounded-lg text-[10px] sm:text-xs font-bold transition-all ${mode === item.id ? 'bg-white shadow-sm text-sky-600' : 'text-slate-400'}`}
+              className={`px-5 py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${mode === item.id ? 'bg-white shadow-md text-sky-600' : 'text-slate-400 hover:text-slate-600'}`}
             >
               {item.label}
             </button>
