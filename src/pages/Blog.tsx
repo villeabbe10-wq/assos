@@ -335,6 +335,23 @@ export default function Blog() {
           ">
             <ReactMarkdown rehypePlugins={[rehypeRaw]}>{selectedPost.content}</ReactMarkdown>
           </div>
+
+          {selectedPost.gallery && selectedPost.gallery.length > 0 && (
+            <div className="space-y-8 pt-12 border-t border-slate-50">
+              <h3 className="text-2xl font-black text-slate-900 tracking-tight">Galerie Photo</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {selectedPost.gallery.map((img, idx) => (
+                  <motion.div 
+                    key={idx}
+                    whileHover={{ scale: 1.02 }}
+                    className="aspect-square rounded-[2rem] overflow-hidden shadow-lg border border-slate-100"
+                  >
+                    <img src={img} alt="" className="w-full h-full object-cover" />
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
           
           <div className="pt-20 border-t border-slate-100 text-center space-y-6">
             <p className="text-xs font-black text-slate-400 uppercase tracking-[0.3em]">Fin de l'article</p>

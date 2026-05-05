@@ -10,6 +10,7 @@
         "author": { "type": "string", "description": "Author name" },
         "category": { "type": "string", "description": "Category (e.g., Sensibilisation, Conseils, Autre)" },
         "imageUrl": { "type": "string", "description": "Base64 or URL image" },
+        "gallery": { "type": "array", "items": { "type": "string" }, "description": "List of secondary images" },
         "videoUrl": { "type": "string", "description": "Base64 or URL video" },
         "publishedAt": { "type": "string", "format": "date-time" },
         "featured": { "type": "boolean" }
@@ -27,6 +28,7 @@
         "location": { "type": "string" },
         "type": { "type": "string", "description": "mission, campaign, general" },
         "imageUrl": { "type": "string" },
+        "gallery": { "type": "array", "items": { "type": "string" }, "description": "Secondary images" },
         "videoUrl": { "type": "string", "description": "URL for campaign video" }
       },
       "required": ["title", "date", "location"]

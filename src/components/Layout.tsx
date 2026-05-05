@@ -163,7 +163,10 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 </motion.button>
                 <motion.button 
                   whileHover={{ rotate: 15 }}
-                  onClick={() => logout()}
+                  onClick={() => {
+                    logout();
+                    setActiveTab('home');
+                  }}
                   className="text-slate-400 hover:text-rose-500 transition-colors"
                 >
                   <LogOut className="w-5 h-5" />
@@ -250,6 +253,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                     <button 
                       onClick={() => {
                         logout();
+                        setActiveTab('home');
                         setIsMenuOpen(false);
                       }}
                       className="w-full bg-slate-100 text-rose-500 font-black py-4 rounded-2xl flex items-center justify-center gap-3 uppercase tracking-widest text-xs border border-slate-200"
@@ -417,7 +421,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
               </div>
               <div className="flex gap-3">
                 <div className="mt-1 text-sky-600"><Phone size={18} /></div>
-                <p className="text-sm text-slate-500 font-medium">+228 97682466 / +33 663940084</p>
+                <p className="text-sm text-slate-500 font-medium">+228 97682466 / +32 465796529</p>
               </div>
               <div className="flex gap-3">
                 <div className="mt-1 text-sky-600"><Mail size={18} /></div>

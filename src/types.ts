@@ -5,6 +5,7 @@ export interface BlogPost {
   author: string;
   category: string;
   imageUrl?: string;
+  gallery?: string[];
   videoUrl?: string;
   publishedAt: any;
   featured?: boolean;
@@ -18,6 +19,8 @@ export interface CommunityEvent {
   location: string;
   type: 'mission' | 'campaign' | 'general';
   imageUrl?: string;
+  gallery?: string[];
+  videoUrl?: string;
 }
 
 export interface Volunteer {

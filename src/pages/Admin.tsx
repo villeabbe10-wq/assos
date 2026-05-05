@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth, handleFirestoreError, OperationType, storage } from '../lib/firebase';
-import { collection, addDoc, Timestamp, getDocs, query, orderBy, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, Timestamp, getDocs, query, orderBy, doc, getDoc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { motion } from 'motion/react';
@@ -17,18 +17,18 @@ export default function Admin({ onBack }: AdminProps) {
   const [uploading, setUploading] = useState(false);
   const [mode, setMode] = useState<'post' | 'event' | 'volunteers' | 'resources' | 'pharmacies' | 'beneficiaries' | 'activity' | 'admins' | 'partners' | 'founders' | 'settings'>('post');
   const [volunteers, setVolunteers] = useState<any[]>([]);
-  const [resources, setResources] = useState<any[]>([]);
   const [beneficiaries, setBeneficiaries] = useState<any[]>([]);
   const [admins, setAdmins] = useState<any[]>([]);
   const [partners, setPartners] = useState<any[]>([]);
   const [founders, setFounders] = useState<any[]>([]);
+  const [resources, setResources] = useState<any[]>([]);
   const [settings, setSettings] = useState({ logoUrl: '', associationName: 'SEDUCEP', phone: '+228 97682466', email: 'seduceconseil@gmail.com', facebook: '', whatsapp: '', instagram: '' });
   const [isAuthorized, setIsAuthorized] = useState(user?.email === 'seduceconseil@gmail.com');
   const [activity, setActivity] = useState<{ proposals: any[], reviews: any[], campaigns: any[] }>({ proposals: [], reviews: [], campaigns: [] });
 
   // Form states
-  const [post, setPost] = useState({ title: '', content: '', category: 'Sensibilisation', author: 'SEDUCEP Team', imageUrl: '', videoUrl: '' });
-  const [event, setEvent] = useState({ title: '', description: '', location: '', type: 'mission', date: '', imageUrl: '', videoUrl: '' });
+  const [post, setPost] = useState({ title: '', content: '', category: 'Sensibilisation', author: 'SEDUCEP Team', imageUrl: '', gallery: [] as string[], videoUrl: '' });
+  const [event, setEvent] = useState({ title: '', description: '', location: '', type: 'mission', date: '', imageUrl: '', gallery: [] as string[], videoUrl: '' });
   const [resource, setResource] = useState({ title: '', description: '', type: 'kit', contact: '', documentUrl: '' });
   const [pharmacy, setPharmacy] = useState({ title: '', content: '' });
   const [beneficiary, setBeneficiary] = useState({ name: '', detail: '', location: '', type: 'scolarite' });
@@ -322,13 +322,15 @@ export default function Admin({ onBack }: AdminProps) {
     e.preventDefault();
     setLoading(true);
     try {
+      const cleanGallery = post.gallery.filter(url => url.trim() !== '');
       await addDoc(collection(db, 'blogPosts'), {
         ...post,
+        gallery: cleanGallery,
         publishedAt: Timestamp.now(),
         featured: false
       });
       setSuccess(true);
-      setPost({ title: '', content: '', category: 'Sensibilisation', author: 'SEDUCEP Team', imageUrl: '', videoUrl: '' });
+      setPost({ title: '', content: '', category: 'Sensibilisation', author: 'SEDUCEP Team', imageUrl: '', gallery: [], videoUrl: '' });
       setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, 'blogPosts');
@@ -341,12 +343,14 @@ export default function Admin({ onBack }: AdminProps) {
     e.preventDefault();
     setLoading(true);
     try {
+      const cleanGallery = event.gallery.filter(url => url.trim() !== '');
       await addDoc(collection(db, 'events'), {
         ...event,
+        gallery: cleanGallery,
         date: Timestamp.fromDate(new Date(event.date))
       });
       setSuccess(true);
-      setEvent({ title: '', description: '', location: '', type: 'mission', date: '', imageUrl: '', videoUrl: '' });
+      setEvent({ title: '', description: '', location: '', type: 'mission', date: '', imageUrl: '', gallery: [], videoUrl: '' });
       setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, 'events');
@@ -502,77 +506,79 @@ export default function Admin({ onBack }: AdminProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Image de couverture</label>
-              <div className="flex items-center gap-4">
-                <div className="flex-1 relative">
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 relative">
+                    <input 
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageChange(e, 'post')}
+                      className="hidden"
+                      id="post-image-upload"
+                    />
+                    <label 
+                      htmlFor="post-image-upload"
+                      className="flex items-center justify-center gap-3 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-4 cursor-pointer hover:border-sky-500 hover:bg-sky-50 transition-all font-bold text-slate-400 hover:text-sky-600"
+                    >
+                      {post.imageUrl && post.imageUrl.includes('firebasestorage') ? (
+                        <div className="flex items-center gap-3 w-full truncate">
+                          <img src={post.imageUrl} alt="" className="w-10 h-10 object-cover rounded-lg" />
+                          <span className="truncate text-xs">Image Firebase</span>
+                        </div>
+                      ) : (
+                        <>
+                          {uploading ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
+                          <span className="text-xs uppercase tracking-widest">{uploading ? 'Upload Firebase' : 'Choisir une image'}</span>
+                        </>
+                      )}
+                    </label>
+                  </div>
                   <input 
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleImageChange(e, 'post')}
-                    className="hidden"
-                    id="post-image-upload"
+                    className="flex-1 bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs outline-none focus:ring-2 focus:ring-sky-500"
+                    placeholder="Ou chemin local (ex: /images/publications/photo.jpg)"
+                    value={post.imageUrl || ''}
+                    onChange={e => setPost({...post, imageUrl: e.target.value})}
                   />
-                  <label 
-                    htmlFor="post-image-upload"
-                    className="flex items-center justify-center gap-3 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-4 cursor-pointer hover:border-sky-500 hover:bg-sky-50 transition-all font-bold text-slate-400 hover:text-sky-600"
-                  >
-                    {post.imageUrl ? (
-                      <div className="flex items-center gap-3 w-full truncate">
-                        <img src={post.imageUrl} alt="" className="w-10 h-10 object-cover rounded-lg" />
-                        <span className="truncate text-xs">Image envoyée</span>
-                      </div>
-                    ) : (
-                      <>
-                        {uploading ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
-                        <span className="text-xs uppercase tracking-widest">{uploading ? 'Upload...' : 'Choisir une image'}</span>
-                      </>
-                    )}
-                  </label>
                 </div>
-                {post.imageUrl && (
-                  <button 
-                    type="button" 
-                    onClick={() => setPost({ ...post, imageUrl: '' })}
-                    className="text-xs font-black text-rose-500 uppercase tracking-widest p-2"
-                  >
-                    Effacer
-                  </button>
-                )}
+                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest italic ml-2">Note: Les fichiers locaux doivent être placés dans le dossier "public".</p>
               </div>
             </div>
 
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Vidéo (Optionnel)</label>
-              <div className="flex items-center gap-4">
-                <div className="flex-1 relative">
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 relative">
+                    <input 
+                      type="file"
+                      accept="video/*"
+                      onChange={(e) => handleVideoChange(e, 'post')}
+                      className="hidden"
+                      id="post-video-upload"
+                    />
+                    <label 
+                      htmlFor="post-video-upload"
+                      className="flex items-center justify-center gap-3 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-4 cursor-pointer hover:border-sky-500 hover:bg-sky-50 transition-all font-bold text-slate-400 hover:text-sky-600"
+                    >
+                      {post.videoUrl && post.videoUrl.includes('firebasestorage') ? (
+                        <div className="flex items-center gap-3 w-full truncate">
+                          <span className="truncate text-xs">Vidéo Firebase</span>
+                        </div>
+                      ) : (
+                        <>
+                          {uploading ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
+                          <span className="text-xs uppercase tracking-widest">{uploading ? 'Upload Firebase' : 'Ajouter Vidéo'}</span>
+                        </>
+                      )}
+                    </label>
+                  </div>
                   <input 
-                    type="file"
-                    accept="video/*"
-                    onChange={(e) => handleVideoChange(e, 'post')}
-                    className="hidden"
-                    id="post-video-upload"
+                    className="flex-1 bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs outline-none focus:ring-2 focus:ring-sky-500"
+                    placeholder="Ou chemin local / lien (ex: /videos/pub.mp4)"
+                    value={post.videoUrl || ''}
+                    onChange={e => setPost({...post, videoUrl: e.target.value})}
                   />
-                  <label 
-                    htmlFor="post-video-upload"
-                    className="flex items-center justify-center gap-3 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-4 cursor-pointer hover:border-sky-500 hover:bg-sky-50 transition-all font-bold text-slate-400 hover:text-sky-600"
-                  >
-                    {post.videoUrl && (post.videoUrl.startsWith('data:') || post.videoUrl.includes('firebasestorage')) ? (
-                      <div className="flex items-center gap-3 w-full truncate">
-                        <span className="truncate text-xs">Vidéo envoyée</span>
-                      </div>
-                    ) : (
-                      <>
-                        {uploading ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
-                        <span className="text-xs uppercase tracking-widest">{uploading ? 'Upload...' : 'Ajouter Vidéo'}</span>
-                      </>
-                    )}
-                  </label>
                 </div>
-                <input 
-                  className="flex-1 bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs outline-none"
-                  placeholder="Ou lien Vidéo (YouTube/URL)"
-                  value={(post.videoUrl && (post.videoUrl.startsWith('data:') || (post.videoUrl.includes('firebasestorage') && !post.videoUrl.includes('youtube')))) ? '' : post.videoUrl}
-                  onChange={e => setPost({...post, videoUrl: e.target.value})}
-                />
               </div>
             </div>
           </div>
@@ -585,6 +591,42 @@ export default function Admin({ onBack }: AdminProps) {
               value={post.content}
               onChange={e => setPost({...post, content: e.target.value})}
             />
+          </div>
+          <div className="space-y-4">
+            <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Galerie d'images (Optionnel)</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {post.gallery.map((img, idx) => (
+                <div key={idx} className="flex gap-2">
+                  <input 
+                    className="flex-1 bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs outline-none"
+                    placeholder="Chemin ou URL"
+                    value={img}
+                    onChange={e => {
+                      const newGallery = [...post.gallery];
+                      newGallery[idx] = e.target.value;
+                      setPost({...post, gallery: newGallery});
+                    }}
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      const newGallery = post.gallery.filter((_, i) => i !== idx);
+                      setPost({...post, gallery: newGallery});
+                    }}
+                    className="p-3 text-rose-500 hover:bg-rose-50 rounded-xl"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button 
+              type="button"
+              onClick={() => setPost({...post, gallery: [...post.gallery, '']})}
+              className="text-[10px] font-black uppercase tracking-widest text-sky-600 flex items-center gap-2 hover:bg-sky-50 p-3 rounded-xl w-fit"
+            >
+              <Plus size={16} /> Ajouter une image à la galerie
+            </button>
           </div>
           <button 
             disabled={loading}
@@ -625,6 +667,115 @@ export default function Admin({ onBack }: AdminProps) {
                 onChange={e => setEvent({...event, location: e.target.value})}
               />
             </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Image de l'événement</label>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 relative">
+                    <input 
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageChange(e, 'event')}
+                      className="hidden"
+                      id="event-image-upload"
+                    />
+                    <label 
+                      htmlFor="event-image-upload"
+                      className="flex items-center justify-center gap-3 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-4 cursor-pointer hover:border-sky-50 hover:bg-sky-50 transition-all font-bold text-slate-400"
+                    >
+                      {event.imageUrl && event.imageUrl.includes('firebasestorage') ? (
+                        <div className="flex items-center gap-3 w-full truncate text-sky-600">
+                          <img src={event.imageUrl} alt="" className="w-10 h-10 object-cover rounded-lg" />
+                          <span className="truncate text-xs">Image Firebase</span>
+                        </div>
+                      ) : (
+                        <>
+                          {uploading ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
+                          <span className="text-xs uppercase tracking-widest">{uploading ? 'Envoi...' : 'Upload Image'}</span>
+                        </>
+                      )}
+                    </label>
+                  </div>
+                  <input 
+                    className="flex-1 bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs outline-none focus:ring-2 focus:ring-sky-500"
+                    placeholder="Ou chemin local (ex: /images/events/pic.jpg)"
+                    value={event.imageUrl || ''}
+                    onChange={e => setEvent({...event, imageUrl: e.target.value})}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Vidéo (Optionnel)</label>
+              <div className="flex items-center gap-4">
+                <div className="flex-1 relative">
+                  <input 
+                    type="file"
+                    accept="video/*"
+                    onChange={(e) => handleVideoChange(e, 'event')}
+                    className="hidden"
+                    id="event-video-upload"
+                  />
+                  <label 
+                    htmlFor="event-video-upload"
+                    className="flex items-center justify-center gap-3 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-4 cursor-pointer hover:border-sky-50 hover:bg-sky-50 transition-all font-bold text-slate-400"
+                  >
+                    {event.videoUrl && event.videoUrl.includes('firebasestorage') ? (
+                      <span className="text-xs text-sky-600 font-black">Vidéo Firebase</span>
+                    ) : (
+                      <>
+                        {uploading ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
+                        <span className="text-xs uppercase tracking-widest">Upload Vidéo</span>
+                      </>
+                    )}
+                  </label>
+                </div>
+                <input 
+                  className="flex-1 bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs outline-none focus:ring-2 focus:ring-sky-500"
+                  placeholder="Ou chemin local / lien"
+                  value={event.videoUrl || ''}
+                  onChange={e => setEvent({...event, videoUrl: e.target.value})}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Galerie d'images (Optionnel)</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {event.gallery.map((img, idx) => (
+                <div key={idx} className="flex gap-2">
+                  <input 
+                    className="flex-1 bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs outline-none"
+                    placeholder="Chemin ou URL"
+                    value={img}
+                    onChange={e => {
+                      const newGallery = [...event.gallery];
+                      newGallery[idx] = e.target.value;
+                      setEvent({...event, gallery: newGallery});
+                    }}
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      const newGallery = event.gallery.filter((_, i) => i !== idx);
+                      setEvent({...event, gallery: newGallery});
+                    }}
+                    className="p-3 text-rose-500 hover:bg-rose-50 rounded-xl"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button 
+              type="button"
+              onClick={() => setEvent({...event, gallery: [...event.gallery, '']})}
+              className="text-[10px] font-black uppercase tracking-widest text-sky-600 flex items-center gap-2 hover:bg-sky-50 p-3 rounded-xl w-fit"
+            >
+              <Plus size={16} /> Ajouter une image à la galerie
+            </button>
           </div>
           <div className="space-y-2">
             <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Description courte</label>
@@ -682,30 +833,39 @@ export default function Admin({ onBack }: AdminProps) {
               </div>
             <div className="space-y-2">
                 <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Document / Guide (PDF)</label>
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-3">
+                  <div className="flex gap-2">
+                    <div className="flex-1 relative">
+                      <input 
+                        type="file"
+                        accept=".pdf"
+                        onChange={handleDocumentChange}
+                        className="hidden"
+                        id="document-upload"
+                      />
+                      <label 
+                        htmlFor="document-upload"
+                        className="flex items-center justify-center gap-3 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-4 cursor-pointer hover:border-sky-500 transition-all font-bold text-slate-400"
+                      >
+                        {resource.documentUrl && resource.documentUrl.includes('firebasestorage') ? (
+                          <span className="text-xs text-emerald-600 font-black">PDF Firebase Envoyé</span>
+                        ) : (
+                          <>
+                            {uploading ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
+                            <span className="text-xs uppercase tracking-widest">{uploading ? 'Envoi...' : 'Upload Firebase'}</span>
+                          </>
+                        )}
+                      </label>
+                    </div>
+                  </div>
                   <input 
-                    type="file"
-                    accept=".pdf"
-                    onChange={handleDocumentChange}
-                    className="flex-1 bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none font-medium text-xs"
+                    className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none focus:ring-2 focus:ring-sky-500 font-medium text-xs"
+                    placeholder="Ou chemin local (ex: /documents/guide.pdf)"
+                    value={resource.documentUrl || ''}
+                    onChange={e => setResource({...resource, documentUrl: e.target.value})}
                   />
-                  {resource.documentUrl && (
-                    <div className="flex items-center justify-center px-4 bg-emerald-50 text-emerald-600 rounded-xl">
-                      <CheckCircle size={20} />
-                    </div>
-                  )}
-                  {uploading && (
-                    <div className="flex items-center justify-center px-4 bg-sky-50 text-sky-600 rounded-xl">
-                      <Loader2 size={20} className="animate-spin" />
-                    </div>
-                  )}
+                  <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest italic ml-2">Note: Les fichiers locaux doivent être placés dans le dossier "public".</p>
                 </div>
-                <input 
-                  className="w-full bg-slate-50 border border-slate-100 rounded-xl p-2 outline-none font-medium text-[10px]"
-                  placeholder="Ou lien direct PDF"
-                  value={resource.documentUrl}
-                  onChange={e => setResource({...resource, documentUrl: e.target.value})}
-                />
               </div>
             </div>
             <div className="space-y-2">
@@ -946,7 +1106,38 @@ export default function Admin({ onBack }: AdminProps) {
             </div>
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Logo</label>
-              <input type="file" accept="image/*" onChange={(e) => handleImageChange(e, 'partner')} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none text-xs" />
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 relative">
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={(e) => handleImageChange(e, 'partner')} 
+                      className="hidden"
+                      id="partner-logo-upload"
+                    />
+                    <label 
+                      htmlFor="partner-logo-upload"
+                      className="flex items-center justify-center gap-3 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-4 cursor-pointer hover:border-sky-500 transition-all font-bold text-slate-400"
+                    >
+                      {partnerForm.logoUrl && partnerForm.logoUrl.includes('firebasestorage') ? (
+                        <span className="text-xs text-sky-600 font-black">Logo Firebase</span>
+                      ) : (
+                        <>
+                          {uploading ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
+                          <span className="text-xs uppercase tracking-widest">Upload Firebase</span>
+                        </>
+                      )}
+                    </label>
+                  </div>
+                  <input 
+                    className="flex-1 bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none text-xs" 
+                    placeholder="Ou chemin local (ex: /partners/logo.png)"
+                    value={partnerForm.logoUrl || ''}
+                    onChange={e => setPartnerForm({...partnerForm, logoUrl: e.target.value})}
+                  />
+                </div>
+              </div>
             </div>
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Description courte</label>
@@ -984,7 +1175,38 @@ export default function Admin({ onBack }: AdminProps) {
             </div>
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Photo</label>
-              <input type="file" accept="image/*" onChange={(e) => handleImageChange(e, 'founder')} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none text-xs" />
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 relative">
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={(e) => handleImageChange(e, 'founder')} 
+                      className="hidden"
+                      id="founder-photo-upload"
+                    />
+                    <label 
+                      htmlFor="founder-photo-upload"
+                      className="flex items-center justify-center gap-3 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-4 cursor-pointer hover:border-sky-500 transition-all font-bold text-slate-400"
+                    >
+                      {founderForm.imageUrl && founderForm.imageUrl.includes('firebasestorage') ? (
+                        <span className="text-xs text-sky-600 font-black">Photo Firebase</span>
+                      ) : (
+                        <>
+                          {uploading ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
+                          <span className="text-xs uppercase tracking-widest">Upload Firebase</span>
+                        </>
+                      )}
+                    </label>
+                  </div>
+                  <input 
+                    className="flex-1 bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none text-xs" 
+                    placeholder="Ou chemin local (ex: /founders/photo.jpg)"
+                    value={founderForm.imageUrl || ''}
+                    onChange={e => setFounderForm({...founderForm, imageUrl: e.target.value})}
+                  />
+                </div>
+              </div>
             </div>
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Biographie</label>
@@ -1018,10 +1240,32 @@ export default function Admin({ onBack }: AdminProps) {
               <div className="space-y-4">
                 <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest block">Logo Principal</label>
                 <div className="flex items-center gap-6">
-                  <div className="w-24 h-24 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden">
+                  <div className="w-24 h-24 bg-white rounded-[2rem] border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden shadow-sm">
                     {settings.logoUrl ? <img src={settings.logoUrl} className="w-full h-full object-contain" /> : <Plus className="text-slate-300" />}
                   </div>
-                  <input type="file" accept="image/*" onChange={(e) => handleImageChange(e, 'logo')} className="text-xs font-bold text-sky-600" />
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={(e) => handleImageChange(e, 'logo')} 
+                        className="hidden"
+                        id="logo-upload"
+                      />
+                      <label 
+                        htmlFor="logo-upload"
+                        className="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest cursor-pointer transition-all"
+                      >
+                        {uploading ? 'Upload...' : 'Choisir Fichier'}
+                      </label>
+                    </div>
+                    <input 
+                      className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs outline-none focus:ring-2 focus:ring-sky-500" 
+                      placeholder="Ou lien / chemin local"
+                      value={settings.logoUrl || ''}
+                      onChange={e => setSettings({...settings, logoUrl: e.target.value})}
+                    />
+                  </div>
                 </div>
               </div>
 

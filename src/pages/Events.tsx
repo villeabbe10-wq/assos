@@ -131,6 +131,20 @@ export default function Events() {
                 <p className="text-slate-500 text-sm font-medium leading-relaxed line-clamp-2">
                   {event.description}
                 </p>
+                {event.gallery && event.gallery.length > 0 && (
+                  <div className="flex gap-2 pt-2">
+                    {event.gallery.slice(0, 3).map((img, i) => (
+                      <div key={i} className="w-12 h-12 rounded-lg overflow-hidden border border-slate-100 shadow-sm">
+                        <img src={img} alt="" className="w-full h-full object-cover" />
+                      </div>
+                    ))}
+                    {event.gallery.length > 3 && (
+                      <div className="w-12 h-12 rounded-lg bg-slate-50 flex items-center justify-center text-[10px] font-black text-slate-400 border border-slate-100">
+                        +{event.gallery.length - 3}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="space-y-6">

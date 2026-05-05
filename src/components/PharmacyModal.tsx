@@ -159,16 +159,7 @@ export default function PharmacyModal({ isOpen, onClose }: PharmacyModalProps) {
             </div>
 
             {/* Footer info */}
-            <div className="p-6 bg-slate-900 text-white flex items-center justify-between rounded-b-[2rem]">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-sky-500 rounded-lg flex items-center justify-center">
-                  <MessageSquare size={16} />
-                </div>
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest opacity-60 leading-none">Besoin médical urgent ?</p>
-                  <p className="text-xs font-bold text-sky-400">Contactez le 171 (SAMU)</p>
-                </div>
-              </div>
+            <div className="p-6 bg-slate-900 text-white flex items-center justify-end rounded-b-[2rem]">
               <p className="text-[8px] font-black uppercase tracking-[0.2em] opacity-40">Source: SEDUCEP-CONSEILS</p>
             </div>
           </motion.div>

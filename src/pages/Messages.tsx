@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { collection, query, orderBy, limit, addDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import { db, auth, handleFirestoreError, OperationType } from '../lib/firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 interface Message {
   id: string;
@@ -32,6 +33,7 @@ interface MessagesProps {
 type Section = 'campaign' | 'review' | 'proposal' | 'chat';
 
 export default function Messages({ onOpenAdmin }: MessagesProps) {
+  const [user, authLoading] = useAuthState(auth);
   const [activeSection, setActiveSection] = useState<Section>('campaign');
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -45,6 +47,8 @@ export default function Messages({ onOpenAdmin }: MessagesProps) {
   const [proposalForm, setProposalForm] = useState({ title: '', description: '', targets: '' });
 
   useEffect(() => {
+    if (!user) return;
+
     const q = query(
       collection(db, 'admin_messages'),
       orderBy('createdAt', 'asc'),
@@ -61,11 +65,14 @@ export default function Messages({ onOpenAdmin }: MessagesProps) {
         scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
       }, 100);
     }, (error) => {
-      handleFirestoreError(error, OperationType.GET, 'admin_messages');
+      // Only handle error if we are still signed in
+      if (auth.currentUser) {
+        handleFirestoreError(error, OperationType.GET, 'admin_messages');
+      }
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   const showSuccess = (msg: string) => {
     setSuccess(msg);
