@@ -137,27 +137,27 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
             ))}
           </nav>
           
-          <div className="hidden sm:flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             {!user ? (
               <motion.button 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => signInWithGoogle()}
-                className="bg-slate-900 text-white px-5 py-2.5 rounded-2xl text-xs font-black shadow-xl shadow-slate-900/10 transition-all flex items-center gap-2"
+                className="bg-slate-900 text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-[10px] sm:text-xs font-black shadow-xl shadow-slate-900/10 transition-all flex items-center gap-2"
               >
-                <LogIn className="w-4 h-4" />
+                <LogIn className="w-3.5 h-3.5 sm:w-4 h-4" />
                 <span className="hidden sm:inline uppercase tracking-widest">Connexion</span>
               </motion.button>
             ) : (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <motion.button 
                   whileHover={{ y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setActiveTab(isAuthorized ? 'admin' : 'messages')}
-                  className="flex items-center gap-2 bg-emerald-500 text-white px-4 py-2 rounded-2xl transition-all shadow-lg shadow-emerald-500/20"
+                  className="flex items-center gap-2 bg-emerald-500 text-white px-3 sm:px-4 py-2 rounded-xl sm:rounded-2xl transition-all shadow-lg shadow-emerald-500/20"
                 >
-                  <img src={user.photoURL || ''} alt="" className="w-6 h-6 rounded-full border-2 border-white/20" />
-                  <span className="text-[10px] font-black uppercase tracking-widest hidden sm:block">
+                  <img src={user.photoURL || ''} alt="" className="w-5 h-5 sm:w-6 h-6 rounded-full border-2 border-white/20" />
+                  <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest hidden sm:block">
                     {isAuthorized ? 'Dash' : 'Membre'}
                   </span>
                 </motion.button>
@@ -167,18 +167,18 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                     logout();
                     setActiveTab('home');
                   }}
-                  className="text-slate-400 hover:text-rose-500 transition-colors"
+                  className="text-slate-400 hover:text-rose-500 transition-colors p-1"
                 >
-                  <LogOut className="w-5 h-5" />
+                  <LogOut className="w-4 h-4 sm:w-5 h-5" />
                 </motion.button>
               </div>
             )}
 
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-3 bg-slate-100 text-slate-900 rounded-2xl hover:bg-slate-200 transition-colors lg:hidden flex items-center justify-center border border-slate-200/50"
+              className="p-2.5 sm:p-3 bg-slate-100 text-slate-900 rounded-xl sm:rounded-2xl hover:bg-slate-200 transition-colors lg:hidden flex items-center justify-center border border-slate-200/50"
             >
-              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
           </div>
         </div>
