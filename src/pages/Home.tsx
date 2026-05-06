@@ -321,6 +321,7 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
               text: "Grâce à SEDUCEP, ma maladie chronique est mieux suivie et j'ai reçu les kits nécessaires.",
               author: "Koffi M.",
               role: "Bénéficiaire Lomé",
+              photo: "https://images.unsplash.com/photo-1531384441138-2736e62e0919?auto=format&fit=crop&q=80&w=200",
               bg: "bg-emerald-50",
               dot: "bg-emerald-500"
             },
@@ -328,6 +329,7 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
               text: "Leur engagement sur le terrain est exemplaire. Les populations isolées ont enfin un accès au conseil.",
               author: "Amenvi P.",
               role: "Volontaire Médical",
+              photo: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200",
               bg: "bg-sky-50",
               dot: "bg-sky-500"
             },
@@ -335,6 +337,7 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
               text: "Un parrainage qui a changé la vie de mes enfants. Merci pour tout ce que vous faites.",
               author: "Sika G.",
               role: "Veuve Accompagnée",
+              photo: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&q=80&w=200",
               bg: "bg-orange-50",
               dot: "bg-orange-500"
             }
@@ -352,8 +355,8 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
                 "{story.text}"
               </p>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center font-black text-slate-900 shadow-sm border border-slate-100">
-                  {story.author[0]}
+                <div className="w-12 h-12 bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
+                  <img src={story.photo} alt={story.author} className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <p className="font-black text-slate-900 text-sm tracking-tight">{story.author}</p>

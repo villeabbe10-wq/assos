@@ -47,22 +47,22 @@ export default function About({ setActiveTab }: { setActiveTab: (tab: string) =>
 
   const testimonials = [
     {
-      name: "Bénéficiaire Lomé",
-      title: "Une vie transformée",
+      name: "Koffi M.",
+      title: "Bénéficiaire Lomé",
       text: "Grâce à SEDUCEP, ma maladie chronique est mieux suivie et j'ai reçu les kits nécessaires.",
-      img: 'https://i.pravatar.cc/150?img=32'
+      img: 'https://images.unsplash.com/photo-1531384441138-2736e62e0919?auto=format&fit=crop&q=80&w=200'
     },
     {
-      name: "Volontaire Médical",
-      title: "Un soutien humain et réel",
+      name: "Amenvi P.",
+      title: "Volontaire Médical",
       text: "Leur engagement sur le terrain est exemplaire. Les populations isolées ont enfin un accès au conseil.",
-      img: 'https://i.pravatar.cc/150?img=12'
+      img: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=200'
     },
     {
-      name: "Veuve Accompagnée",
-      title: "Un partenaire de confiance",
+      name: "Sika G.",
+      title: "Veuve Accompagnée",
       text: "Un parrainage qui a changé la vie de mes enfants. Merci pour tout ce que vous faites.",
-      img: 'https://i.pravatar.cc/150?img=44'
+      img: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&q=80&w=200'
     }
   ];
 

@@ -246,6 +246,23 @@ export default function Admin({ onBack }: AdminProps) {
     }
   };
 
+  const handleUpdateAdminRole = async (email: string, newRole: string) => {
+    if (!isPrimaryAdmin) return;
+    setLoading(true);
+    try {
+      await setDoc(doc(db, 'system_admins', email), { 
+        role: newRole 
+      }, { merge: true });
+      fetchAdmins();
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, 'system_admins');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchVolunteers = async () => {
     setLoading(true);
     try {
@@ -1383,9 +1400,15 @@ export default function Admin({ onBack }: AdminProps) {
                     )}
                   </div>
                   <div className="flex items-center justify-between mt-4">
-                    <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${adm.role === 'Fondateur' ? 'bg-amber-50 text-amber-600' : 'bg-sky-50 text-sky-600'}`}>
-                      {adm.role}
-                    </span>
+                    <select 
+                      disabled={!isPrimaryAdmin || loading}
+                      className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full outline-none appearance-none cursor-pointer border-none ${adm.role === 'Fondateur' ? 'bg-amber-50 text-amber-600' : 'bg-sky-50 text-sky-600'}`}
+                      value={adm.role}
+                      onChange={(e) => handleUpdateAdminRole(adm.id, e.target.value)}
+                    >
+                      <option value="Admin">Admin</option>
+                      <option value="Fondateur">Fondateur</option>
+                    </select>
                     <span className="text-[9px] font-bold text-slate-300">{adm.addedAt?.toDate().toLocaleDateString()}</span>
                   </div>
                 </div>
