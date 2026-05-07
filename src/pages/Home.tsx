@@ -248,8 +248,8 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
             <div className="aspect-[4/5] bg-slate-100 rounded-[4rem] overflow-hidden rotate-2 shadow-2xl transition-transform group-hover:rotate-0 duration-700">
               <motion.img 
                 whileHover={{ scale: 1.1 }}
-                src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=600" 
-                alt="Association mission" 
+                src="/images/publications/tournoi/tournoi.jpg" 
+                alt="Tournoi Seducep" 
                 className="w-full h-full object-cover grayscale opacity-90 transition-all group-hover:grayscale-0"
               />
             </div>
@@ -298,8 +298,8 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
           <motion.div variants={itemVariants} className="relative hidden lg:block">
             <div className="absolute inset-0 bg-white/10 rounded-[3rem] blur-2xl -rotate-6" />
             <img 
-              src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=600" 
-              alt="Helping children" 
+              src="/images/publications/tournoi/joueurs.jpg" 
+              alt="Jeunesse et Sport" 
               className="relative rounded-[3rem] shadow-2xl rotate-3 w-full h-[400px] object-cover border-8 border-white/10"
             />
           </motion.div>

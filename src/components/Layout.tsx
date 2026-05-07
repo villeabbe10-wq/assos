@@ -143,10 +143,10 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => signInWithGoogle()}
-                className="bg-slate-900 text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-[10px] sm:text-xs font-black shadow-xl shadow-slate-900/10 transition-all flex items-center gap-2"
+                className="bg-slate-900 text-white px-3 sm:px-5 py-2.5 sm:py-2.5 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-black shadow-xl shadow-slate-900/10 transition-all flex items-center gap-1.5 sm:gap-2 border border-slate-700/50"
               >
                 <LogIn className="w-3.5 h-3.5 sm:w-4 h-4" />
-                <span className="hidden sm:inline uppercase tracking-widest">Connexion</span>
+                <span className="uppercase tracking-widest">Connexion</span>
               </motion.button>
             ) : (
               <div className="flex items-center gap-2 sm:gap-3">
