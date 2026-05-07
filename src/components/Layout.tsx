@@ -143,7 +143,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => signInWithGoogle()}
-                className="bg-slate-900 text-white px-3 sm:px-5 py-2.5 sm:py-2.5 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-black shadow-xl shadow-slate-900/10 transition-all flex items-center gap-1.5 sm:gap-2 border border-slate-700/50"
+                className="bg-slate-900 text-white px-3.5 sm:px-5 py-2.5 sm:py-2.5 rounded-xl sm:rounded-2xl text-[12px] sm:text-xs font-black shadow-xl shadow-slate-900/10 transition-all flex items-center gap-1.5 sm:gap-2 border border-slate-700/50"
               >
                 <LogIn className="w-3.5 h-3.5 sm:w-4 h-4" />
                 <span className="uppercase tracking-widest">Connexion</span>
@@ -176,9 +176,9 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
 
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2.5 sm:p-3 bg-slate-100 text-slate-900 rounded-xl sm:rounded-2xl hover:bg-slate-200 transition-colors lg:hidden flex items-center justify-center border border-slate-200/50"
+              className="p-2.5 sm:p-3 bg-slate-100 text-slate-900 rounded-xl sm:rounded-2xl hover:bg-slate-200 transition-colors hidden lg:flex items-center justify-center border border-slate-200/50"
             >
-              {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
+              <Menu size={18} />
             </button>
           </div>
         </div>

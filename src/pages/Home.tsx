@@ -249,19 +249,20 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
               <motion.img 
                 whileHover={{ scale: 1.1 }}
                 src="/images/publications/tournoi/tournoi.jpg" 
+                onError={(e: any) => e.target.src = "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=600"}
                 alt="Tournoi Seducep" 
-                className="w-full h-full object-cover grayscale opacity-90 transition-all group-hover:grayscale-0"
+                className="w-full h-full object-cover grayscale-0 opacity-100 transition-all group-hover:grayscale-0"
               />
             </div>
             <motion.div 
               initial={{ x: 20, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.8 }}
-              className="absolute -bottom-10 -right-10 bg-slate-900 text-white p-10 rounded-[3rem] shadow-2xl border border-white/10 max-w-[280px] -rotate-3 hover:rotate-1 transition-transform"
+              className="absolute -bottom-10 -right-10 bg-slate-900 text-white p-6 sm:p-10 rounded-[3rem] shadow-2xl border border-white/10 max-w-[280px] -rotate-3 hover:rotate-1 transition-transform"
             >
-              <ShieldCheck size={40} className="text-emerald-400 mb-6" />
+              <ShieldCheck size={40} className="text-emerald-400 mb-4 sm:mb-6" />
               <p className="font-black text-lg leading-tight text-white mb-2 tracking-tight">Pacte de Solidarité</p>
-              <p className="text-xs font-medium text-slate-400 leading-relaxed">
+              <p className="text-[10px] sm:text-xs font-medium text-slate-400 leading-relaxed">
                 Intervention directe et transparente sur le terrain. 100% de vos dons vont aux actions.
               </p>
             </motion.div>
@@ -299,6 +300,7 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
             <div className="absolute inset-0 bg-white/10 rounded-[3rem] blur-2xl -rotate-6" />
             <img 
               src="/images/publications/tournoi/joueurs.jpg" 
+              onError={(e: any) => e.target.src = "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=600"}
               alt="Jeunesse et Sport" 
               className="relative rounded-[3rem] shadow-2xl rotate-3 w-full h-[400px] object-cover border-8 border-white/10"
             />
