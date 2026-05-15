@@ -176,7 +176,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
 
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2.5 sm:p-3 bg-slate-100 text-slate-900 rounded-xl sm:rounded-2xl hover:bg-slate-200 transition-colors hidden lg:flex items-center justify-center border border-slate-200/50"
+              className="p-2.5 sm:p-3 bg-slate-100 text-slate-900 rounded-xl sm:rounded-2xl hover:bg-slate-200 transition-colors lg:hidden flex items-center justify-center border border-slate-200/50"
             >
               <Menu size={18} />
             </button>

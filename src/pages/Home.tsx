@@ -82,7 +82,7 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rejoignez nous</span>
           </motion.div>
           
-          <motion.h2 variants={itemVariants} className="text-4xl sm:text-7xl lg:text-8xl font-black text-slate-900 mb-8 leading-[0.9] tracking-tighter">
+          <motion.h1 variants={itemVariants} className="text-4xl sm:text-7xl lg:text-8xl font-black text-slate-900 mb-8 leading-[0.9] tracking-tighter">
             Sensibiliser <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-sky-600 relative">
               Éduquer
@@ -94,7 +94,7 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
               />
             </span> <br />
             <span className="text-slate-400">Protéger</span>
-          </motion.h2>
+          </motion.h1>
 
           <motion.p variants={itemVariants} className="text-slate-500 text-base sm:text-xl mb-12 leading-relaxed font-medium max-w-2xl">
             L'excellence du conseil médical couplée à l'engagement social pour les populations vulnérables du Togo.

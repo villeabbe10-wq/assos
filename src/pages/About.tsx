@@ -79,9 +79,9 @@ export default function About({ setActiveTab }: { setActiveTab: (tab: string) =>
           <span className="text-[10px] font-black uppercase tracking-widest">Le savoir et la prévention</span>
         </motion.div>
         
-        <h2 className="text-3xl sm:text-7xl font-black text-slate-900 tracking-tight leading-[0.9]">
+        <h1 className="text-3xl sm:text-7xl font-black text-slate-900 tracking-tight leading-[0.9]">
           S'engager pour le <br /> <span className="text-sky-500">bien-être</span> de tous.
-        </h2>
+        </h1>
         
         <p className="text-slate-500 text-base sm:text-lg font-medium leading-relaxed max-w-2xl mx-auto">
           Une association caritative basée au Togo, engagée avec conviction à améliorer la santé et le bien-être des populations les plus vulnérables.

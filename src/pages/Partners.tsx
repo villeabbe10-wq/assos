@@ -1,12 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Handshake, Star, Building2, Globe2, Heart, ArrowRight, ShieldCheck, Sparkles, Layout } from 'lucide-react';
-import { db } from '../lib/firebase';
-import { collection, query, orderBy, getDocs } from 'firebase/firestore';
+import { Handshake, Star, Building2, Globe2, Heart, ArrowRight, ShieldCheck, Sparkles, Layout, Lock } from 'lucide-react';
+import { db, auth } from '../lib/firebase';
+import { collection, query, orderBy, getDocs, doc, getDoc } from 'firebase/firestore';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
-export default function Partners() {
+export default function Partners({ setActiveTab }: { setActiveTab: (tab: string) => void }) {
   const [partners, setPartners] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [user, authLoading] = useAuthState(auth);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (user?.email) {
+      const allowedEmails = ['seduceconseil@gmail.com'];
+      if (allowedEmails.includes(user.email)) {
+        setIsAuthorized(true);
+      } else {
+        const checkAuth = async () => {
+          try {
+            const docRef = doc(db, 'system_admins', user.email!);
+            const docSnap = await getDoc(docRef);
+            setIsAuthorized(docSnap.exists());
+          } catch (e) {
+            console.error(e);
+            setIsAuthorized(false);
+          }
+        };
+        checkAuth();
+      }
+    } else {
+      setIsAuthorized(false);
+    }
+  }, [user, authLoading]);
 
   useEffect(() => {
     const fetchPartners = async () => {
@@ -62,9 +89,9 @@ export default function Partners() {
             <Handshake size={48} />
           </motion.div>
           <div className="space-y-6">
-            <h2 className="text-5xl sm:text-8xl font-black text-white tracking-tighter leading-[0.8]">
+            <h1 className="text-5xl sm:text-8xl font-black text-white tracking-tighter leading-[0.8]">
               Synergie & <br /><span className="text-sky-400 font-serif italic font-normal text-6xl sm:text-8xl block mt-4 tracking-normal">Impact Collectif</span>
-            </h2>
+            </h1>
             <p className="text-slate-400 font-medium text-xl leading-relaxed max-w-2xl mx-auto">
               Nous croyons en la force du collectif. Ensemble, nous multiplions l'impact pour une santé accessible à tous.
             </p>
@@ -153,7 +180,11 @@ export default function Partners() {
               whileInView={{ rotate: 0, scale: 1 }}
               className="aspect-[4/5] bg-slate-200 rounded-[5rem] overflow-hidden shadow-4xl relative z-20"
             >
-              <img src="https://images.unsplash.com/photo-1521791136064-7986c29596ba?auto=format&fit=crop&q=80&w=800" alt="Collaboration" className="w-full h-full object-cover" />
+              <img 
+                src="https://images.unsplash.com/photo-1576091160550-2173dad99961?auto=format&fit=crop&q=80&w=800" 
+                alt="Collaboration médicale" 
+                className="w-full h-full object-cover" 
+              />
             </motion.div>
             <div className="absolute -bottom-12 -right-12 bg-white p-12 rounded-[4rem] shadow-4xl border border-slate-100 max-w-[320px] rotate-3 z-30">
               <Heart size={48} className="text-rose-500 mb-8" strokeWidth={1.5} fill="currentColor" />
@@ -214,14 +245,28 @@ export default function Partners() {
               « Chaque nouveau partenariat est une porte qui s'ouvre pour des milliers de personnes privées de soins. »
             </p>
           </div>
-          <div className="flex justify-center pt-4">
+          <div className="flex flex-col items-center gap-4 pt-4">
             <motion.button 
-              whileHover={{ scale: 1.05, y: -5 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-sky-600 hover:bg-sky-500 text-white font-black py-8 px-16 rounded-[2.5rem] shadow-3xl shadow-sky-600/30 transition-all uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-4"
+              whileHover={isAuthorized ? { scale: 1.05, y: -5 } : {}}
+              whileTap={isAuthorized ? { scale: 0.95 } : {}}
+              onClick={() => isAuthorized && setActiveTab('messages')}
+              className={`font-black py-8 px-16 rounded-[2.5rem] shadow-3xl transition-all uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-4 ${
+                isAuthorized 
+                ? 'bg-sky-600 hover:bg-sky-500 text-white shadow-sky-600/30' 
+                : 'bg-slate-800 text-slate-500 cursor-not-allowed opacity-50'
+              }`}
             >
-              Initier une collaboration <ArrowRight size={24} />
+              {isAuthorized ? (
+                <>Initier une collaboration <ArrowRight size={24} /></>
+              ) : (
+                <>Accès réservé aux membres <Lock size={20} /></>
+              )}
             </motion.button>
+            {!isAuthorized && (
+              <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
+                Connectez-vous en tant que fondateur pour accéder à cet espace
+              </p>
+            )}
           </div>
         </div>
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-sky-500/15 rounded-full blur-[140px] -translate-y-1/2 translate-x-1/2" />

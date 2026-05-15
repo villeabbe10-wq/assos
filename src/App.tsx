@@ -41,7 +41,7 @@ export default function App() {
               case 'about': return <About setActiveTab={setActiveTab} />;
               case 'faq': return <FAQ />;
               case 'sponsorship': return <Sponsorship />;
-              case 'partners': return <Partners />;
+              case 'partners': return <Partners setActiveTab={setActiveTab} />;
               case 'messages': return <Messages onOpenAdmin={() => setActiveTab('admin')} />;
               case 'admin': return <Admin onBack={() => setActiveTab('messages')} />;
               case 'donation': return <Donation setActiveTab={setActiveTab} />;

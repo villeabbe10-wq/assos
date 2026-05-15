@@ -14,7 +14,7 @@ import {
   Smile,
   Megaphone
 } from 'lucide-react';
-import { collection, query, orderBy, limit, addDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import { collection, query, orderBy, limit, addDoc, onSnapshot, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import { db, auth, handleFirestoreError, OperationType } from '../lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
@@ -34,6 +34,7 @@ type Section = 'campaign' | 'review' | 'proposal' | 'chat';
 
 export default function Messages({ onOpenAdmin }: MessagesProps) {
   const [user, authLoading] = useAuthState(auth);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const [activeSection, setActiveSection] = useState<Section>('campaign');
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -45,6 +46,29 @@ export default function Messages({ onOpenAdmin }: MessagesProps) {
   const [campaignForm, setCampaignForm] = useState({ name: '', engagement: '' });
   const [reviewForm, setReviewForm] = useState({ content: '' });
   const [proposalForm, setProposalForm] = useState({ title: '', description: '', targets: '' });
+
+  useEffect(() => {
+    if (user?.email) {
+      const allowedEmails = ['seduceconseil@gmail.com'];
+      if (allowedEmails.includes(user.email)) {
+        setIsAuthorized(true);
+      } else {
+        const checkAuth = async () => {
+          try {
+            const docRef = doc(db, 'system_admins', user.email!);
+            const docSnap = await getDoc(docRef);
+            setIsAuthorized(docSnap.exists());
+          } catch (e) {
+            console.error(e);
+            setIsAuthorized(false);
+          }
+        };
+        checkAuth();
+      }
+    } else {
+      setIsAuthorized(false);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -156,15 +180,17 @@ export default function Messages({ onOpenAdmin }: MessagesProps) {
             ))}
           </nav>
 
-          <div className="pt-4 border-t border-slate-50">
-             <button 
-              onClick={onOpenAdmin}
-              className="w-full flex items-center justify-center gap-2 bg-rose-50 text-rose-600 p-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-rose-100 transition-all"
-            >
-              <LayoutDashboard size={16} />
-              Console Admin
-            </button>
-          </div>
+          {isAuthorized && (
+            <div className="pt-4 border-t border-slate-50">
+               <button 
+                onClick={onOpenAdmin}
+                className="w-full flex items-center justify-center gap-2 bg-rose-50 text-rose-600 p-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-rose-100 transition-all"
+              >
+                <LayoutDashboard size={16} />
+                Console Admin
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="bg-sky-900 p-8 rounded-[2.5rem] text-white overflow-hidden relative group">
