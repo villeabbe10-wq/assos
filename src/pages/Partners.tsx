@@ -181,8 +181,8 @@ export default function Partners({ setActiveTab }: { setActiveTab: (tab: string)
               className="aspect-[4/5] bg-slate-200 rounded-[5rem] overflow-hidden shadow-4xl relative z-20"
             >
               <img 
-                src="https://images.unsplash.com/photo-1576091160550-2173dad99961?auto=format&fit=crop&q=80&w=800" 
-                alt="Collaboration médicale" 
+                src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&q=80&w=800" 
+                alt="Action sur le terrain" 
                 className="w-full h-full object-cover" 
               />
             </motion.div>

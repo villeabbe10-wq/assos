@@ -268,7 +268,7 @@ export default function Actions({ setActiveTab }: { setActiveTab: (tab: string) 
               whileInView={{ rotate: 2, scale: 1, opacity: 1 }}
               className="aspect-square bg-slate-200 rounded-[5rem] overflow-hidden shadow-4xl relative z-20"
             >
-              <img src="/images/publications/tournoi/tournoi1.jpg" alt="Tournoi de sensibilisation" className="w-full h-full object-cover" />
+              <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=800" alt="Action terrain association" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-sky-900/40 to-transparent" />
             </motion.div>
             <motion.div 
