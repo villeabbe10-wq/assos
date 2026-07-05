@@ -1,11 +1,6 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Default deny
-    match /{document=**} {
-      allow read, write: if false;
-    }
-
     // Helper functions
     function isSignedIn() {
       return request.auth != null;
@@ -26,20 +21,16 @@ service cloud.firestore {
       return isEmailVerified() && request.auth.token.email == 'seduceconseil@gmail.com';
     }
 
-    function isValidId(id) {
-      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
-    }
-
-    match /system_admins/{email} {
-      allow read: if isSignedIn() && (request.auth.token.email == email || isInternalAdmin());
-      allow write: if isPrimaryAdmin();
-    }
-
     function incoming() {
       return request.resource.data;
     }
 
     // --- Collections ---
+
+    match /system_admins/{email} {
+      allow read: if isSignedIn() && (request.auth.token.email == email || isInternalAdmin());
+      allow write: if isPrimaryAdmin();
+    }
 
     match /blogPosts/{postId} {
       allow read: if true;

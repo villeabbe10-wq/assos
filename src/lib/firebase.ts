@@ -5,7 +5,18 @@ import { getStorage } from 'firebase/storage';
 import firebaseConfig from '../../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+
+// If the database ID matches the AI Studio sandbox database pattern but the project is custom,
+// we fall back to '(default)' because custom user projects use the default database.
+const databaseId = (firebaseConfig.firestoreDatabaseId && 
+  firebaseConfig.firestoreDatabaseId.includes('ai-studio-') && 
+  !firebaseConfig.projectId.includes('ai-studio-'))
+    ? '(default)'
+    : firebaseConfig.firestoreDatabaseId || '(default)';
+
+export const db = (databaseId && databaseId !== '(default)')
+  ? getFirestore(app, databaseId)
+  : getFirestore(app);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();

@@ -20,6 +20,8 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
         ...doc.data()
       }));
       setLatestEvents(events);
+    }, (error) => {
+      console.error("Error listening to events:", error);
     });
 
     return () => unsubscribe();
