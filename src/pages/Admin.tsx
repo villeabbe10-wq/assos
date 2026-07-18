@@ -4,7 +4,7 @@ import { collection, addDoc, Timestamp, getDocs, query, orderBy, doc, getDoc, se
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { motion } from 'motion/react';
-import { Plus, LayoutDashboard, FileText, Calendar, Loader2, CheckCircle, Users, Mail, Phone, Briefcase, ArrowLeft, BriefcaseMedical, UserPlus, Shield, Trash2 } from 'lucide-react';
+import { Plus, LayoutDashboard, FileText, Calendar, Loader2, CheckCircle, Users, Mail, Phone, Briefcase, ArrowLeft, BriefcaseMedical, UserPlus, Shield, Trash2, Sparkles, Wand2 } from 'lucide-react';
 
 interface AdminProps {
   onBack?: () => void;
@@ -31,6 +31,113 @@ export default function Admin({ onBack }: AdminProps) {
   const [event, setEvent] = useState({ title: '', description: '', location: '', type: 'mission', date: '', imageUrl: '', gallery: [] as string[], videoUrl: '' });
   const [resource, setResource] = useState({ title: '', description: '', type: 'kit', contact: '', documentUrl: '' });
   const [pharmacy, setPharmacy] = useState({ title: '', content: '' });
+  const [rawPharmacyText, setRawPharmacyText] = useState('');
+  const [pharmacyFormat, setPharmacyFormat] = useState<'name-address-phone' | 'name-phone-address'>('name-address-phone');
+
+  const handleAutoOrganizePharmacies = () => {
+    if (!rawPharmacyText.trim()) return;
+
+    const lines = rawPharmacyText.split('\n');
+    const resultLines: string[] = [];
+
+    lines.forEach((line) => {
+      const trimmedLine = line.trim();
+      if (!trimmedLine) return;
+
+      // 1. Detect telephone number
+      // Togo on-duty list numbers are typically 8 digits, e.g., 22 21 29 64, or with spaces, or beginning with ☎ or Tél
+      const phoneRegex = /(?:☎|Tél\.?|Tel\.?|TÉL\.?|phone|contact)?\s*:?\s*(\+?[0-9]{2,4}[-.\s]?[0-9]{2}[-.\s]?[0-9]{2}[-.\s]?[0-9]{2}[-.\s]?[0-9]{2,4})/i;
+      const phoneFallbackRegex = /(\+?[0-9\s.-]{8,15})/;
+
+      let phone = '';
+      let textWithoutPhone = trimmedLine;
+
+      let match = trimmedLine.match(phoneRegex);
+      if (!match) {
+        match = trimmedLine.match(phoneFallbackRegex);
+      }
+
+      if (match) {
+        phone = match[0].trim();
+        // Clean prefix symbols/text
+        phone = phone.replace(/(?:☎|Tél\.?|Tel\.?|TÉL\.?|phone|contact)\s*:?/i, '').trim();
+        textWithoutPhone = trimmedLine.replace(match[0], ' ').trim();
+      }
+
+      // 2. Identify Name and Address
+      // If the line has tabs (pasted from Excel) or multiple spaces (3 or more)
+      const parts = trimmedLine.split(/\t| {3,}/).map(p => p.trim()).filter(Boolean);
+      
+      let name = '';
+      let address = '';
+
+      if (parts.length >= 2) {
+        name = parts[0];
+        
+        // Find the part that is not the phone or the name
+        const otherParts = parts.slice(1).filter(p => {
+          if (phone && p.includes(phone)) return false;
+          return p.length > 2;
+        });
+
+        if (otherParts.length > 0) {
+          address = otherParts.join(', ');
+        }
+      } else {
+        // Fallback parsing: split textWithoutPhone by common separators
+        let cleanedText = textWithoutPhone.trim();
+        
+        // Match a name: typically starting capitalized or uppercase words
+        const nameMatch = cleanedText.match(/^([A-Z0-9'’\s\-\.\/]{4,})(?:,|\-|\s{2,}|$)/);
+        if (nameMatch) {
+          name = nameMatch[1].trim();
+          address = cleanedText.replace(nameMatch[1], '').trim();
+        } else {
+          // Fallback: split by first separator
+          const separatorIndex = cleanedText.search(/[,-]/);
+          if (separatorIndex !== -1) {
+            name = cleanedText.substring(0, separatorIndex).trim();
+            address = cleanedText.substring(separatorIndex + 1).trim();
+          } else {
+            name = cleanedText;
+            address = '';
+          }
+        }
+      }
+
+      // Clean up symbols and formatting
+      name = name.replace(/^[-,\s’'\t]+|[-,\s’'\t]+$/g, '').trim();
+      address = address.replace(/^[-,\s☎\:\t’']+|[-,\s☎\:\t’']+$/g, '').trim();
+
+      // Normalize name to uppercase if it starts with pharmacy
+      if (name.toUpperCase().startsWith('PHARMACIE')) {
+        name = name.toUpperCase();
+      } else {
+        // Capitalize first letters of each word
+        name = name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+      }
+
+      if (!address) address = 'Lomé';
+      if (!phone) phone = 'Non spécifié';
+
+      // Apply selected format
+      if (pharmacyFormat === 'name-address-phone') {
+        resultLines.push(`${name} - ${address} - ${phone}`);
+      } else {
+        resultLines.push(`${name} - ${phone} - ${address}`);
+      }
+    });
+
+    if (resultLines.length > 0) {
+      const formattedResult = resultLines.join('\n');
+      setPharmacy(prev => ({
+        ...prev,
+        content: prev.content ? prev.content + '\n' + formattedResult : formattedResult
+      }));
+      setRawPharmacyText('');
+      alert(`${resultLines.length} pharmacies ont été organisées et ajoutées à la liste !`);
+    }
+  };
   const [beneficiary, setBeneficiary] = useState({ name: '', detail: '', location: '', type: 'scolarite' });
   const [adminForm, setAdminForm] = useState({ email: '', role: 'Admin' });
   const [partnerForm, setPartnerForm] = useState({ name: '', logoUrl: '', description: '', website: '' });
@@ -92,15 +199,16 @@ export default function Admin({ onBack }: AdminProps) {
     }
   };
 
-  const isPrimaryAdmin = user?.email === 'seduceconseil@gmail.com';
+  const isPrimaryAdmin = user?.email?.trim().toLowerCase() === 'seduceconseil@gmail.com';
 
   useEffect(() => {
     if (user?.email) {
-      if (user.email === 'seduceconseil@gmail.com') {
+      const emailLower = user.email.trim().toLowerCase();
+      if (emailLower === 'seduceconseil@gmail.com') {
         setIsAuthorized(true);
       } else {
         const checkAuth = async () => {
-          const docRef = doc(db, 'system_admins', user.email!);
+          const docRef = doc(db, 'system_admins', emailLower);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) setIsAuthorized(true);
         };
@@ -938,8 +1046,69 @@ export default function Admin({ onBack }: AdminProps) {
             />
           </div>
 
+          {/* Assistant de formatage intelligent */}
+          <div className="p-6 bg-gradient-to-br from-sky-50/60 to-indigo-50/40 border-2 border-dashed border-sky-100/80 rounded-3xl space-y-4">
+            <div className="flex items-center gap-2 text-sky-700">
+              <Sparkles size={18} className="animate-pulse" />
+              <h4 className="text-sm font-black uppercase tracking-wider">Assistant d'organisation intelligent</h4>
+            </div>
+            <p className="text-xs text-slate-500 font-medium leading-relaxed">
+              Collez ici des lignes de pharmacies brutes ou en désordre (depuis WhatsApp, Excel, etc.). L'assistant va automatiquement extraire le nom, l'adresse et le numéro pour les formater proprement.
+            </p>
+            
+            <div className="space-y-2">
+              <textarea 
+                rows={4}
+                className="w-full bg-white border border-slate-200 rounded-2xl p-4 outline-none focus:ring-4 focus:ring-sky-500/10 transition-all font-medium text-xs placeholder:text-slate-300 resize-none"
+                placeholder="Exemple en désordre :&#10;PHARMACIE MATTHIA  ☎22 21 29 64  1048, Avenue de la Libération...&#10;PHARMACIE DE L'UNION - Boulevard de la Paix - Tél : 22 21 34 56"
+                value={rawPharmacyText}
+                onChange={e => setRawPharmacyText(e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Format de sortie :</span>
+                <div className="flex bg-white p-1 rounded-xl border border-slate-100 gap-1 text-[10px] font-black uppercase">
+                  <button
+                    type="button"
+                    onClick={() => setPharmacyFormat('name-address-phone')}
+                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                      pharmacyFormat === 'name-address-phone'
+                        ? 'bg-slate-900 text-white shadow-sm'
+                        : 'text-slate-400 hover:text-slate-600'
+                    }`}
+                  >
+                    Nom - Adresse - Numéro
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPharmacyFormat('name-phone-address')}
+                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                      pharmacyFormat === 'name-phone-address'
+                        ? 'bg-slate-900 text-white shadow-sm'
+                        : 'text-slate-400 hover:text-slate-600'
+                    }`}
+                  >
+                    Nom - Numéro - Adresse
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleAutoOrganizePharmacies}
+                disabled={!rawPharmacyText.trim()}
+                className="w-full sm:w-auto bg-sky-600 hover:bg-sky-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-black px-5 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md text-xs uppercase tracking-wider cursor-pointer"
+              >
+                <Wand2 size={16} />
+                Organiser et insérer
+              </button>
+            </div>
+          </div>
+
           <div className="space-y-2">
-            <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest ml-1">Liste des pharmacies (Copier-Coller ici)</label>
+            <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest ml-1">Liste finale des pharmacies (Prête pour publication)</label>
             <textarea 
               required
               rows={12}

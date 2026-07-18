@@ -31,17 +31,18 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
     fetchSettings();
   }, []);
 
-  const isAdmin = user?.email === 'seduceconseil@gmail.com';
+  const isAdmin = user?.email?.trim().toLowerCase() === 'seduceconseil@gmail.com';
 
   useEffect(() => {
     if (user?.email) {
+      const emailLower = user.email.trim().toLowerCase();
       const allowedEmails = ['seduceconseil@gmail.com'];
-      if (allowedEmails.includes(user.email)) {
+      if (allowedEmails.includes(emailLower)) {
         setIsAuthorized(true);
       } else {
         const checkAuth = async () => {
           try {
-            const docRef = doc(db, 'system_admins', user.email!);
+            const docRef = doc(db, 'system_admins', emailLower);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
               setIsAuthorized(true);
