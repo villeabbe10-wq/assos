@@ -18,7 +18,13 @@ export default function PharmacyModal({ isOpen, onClose }: PharmacyModalProps) {
   useEffect(() => {
     if (isOpen) {
       fetchLatestList();
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
     }
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
 
   const fetchLatestList = async () => {
@@ -73,7 +79,7 @@ export default function PharmacyModal({ isOpen, onClose }: PharmacyModalProps) {
             className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col max-h-[85vh]"
           >
             {/* Header */}
-            <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white relative z-10">
+            <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white relative z-10 shrink-0">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-sky-50 text-sky-600 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-100">
                   <BriefcaseMedical size={24} />
@@ -85,14 +91,14 @@ export default function PharmacyModal({ isOpen, onClose }: PharmacyModalProps) {
               </div>
               <button 
                 onClick={onClose}
-                className="w-10 h-10 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center hover:bg-rose-50 hover:text-rose-500 transition-all"
+                className="w-10 h-10 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center hover:bg-rose-50 hover:text-rose-500 transition-all cursor-pointer"
               >
                 <X size={20} />
               </button>
             </div>
 
             {/* Search & Actions */}
-            <div className="px-8 py-4 bg-slate-50/50 border-b border-slate-100 flex flex-col sm:flex-row gap-4">
+            <div className="px-8 py-4 bg-slate-50/50 border-b border-slate-100 flex flex-col sm:flex-row gap-4 shrink-0">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                 <input 
@@ -105,7 +111,7 @@ export default function PharmacyModal({ isOpen, onClose }: PharmacyModalProps) {
               </div>
               <button 
                 onClick={copyToClipboard}
-                className={`flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${
+                className={`flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all cursor-pointer ${
                   copied ? 'bg-emerald-500 text-white' : 'bg-slate-900 text-white hover:bg-sky-600'
                 }`}
               >
@@ -115,7 +121,7 @@ export default function PharmacyModal({ isOpen, onClose }: PharmacyModalProps) {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-8 space-y-4">
+            <div className="flex-1 overflow-y-auto p-8 space-y-4 overscroll-contain touch-pan-y">
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-20 gap-4">
                   <div className="w-10 h-10 border-4 border-sky-100 border-t-sky-600 rounded-full animate-spin" />
@@ -159,7 +165,7 @@ export default function PharmacyModal({ isOpen, onClose }: PharmacyModalProps) {
             </div>
 
             {/* Footer info */}
-            <div className="p-6 bg-slate-900 text-white flex items-center justify-end rounded-b-[2rem]">
+            <div className="p-6 bg-slate-900 text-white flex items-center justify-end rounded-b-[2rem] shrink-0">
               <p className="text-[8px] font-black uppercase tracking-[0.2em] opacity-40">Source: SEDUCEP-CONSEILS</p>
             </div>
           </motion.div>

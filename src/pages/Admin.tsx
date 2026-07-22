@@ -35,99 +35,138 @@ export default function Admin({ onBack }: AdminProps) {
   const [rawPharmacyText, setRawPharmacyText] = useState('');
   const [pharmacyFormat, setPharmacyFormat] = useState<'name-address-phone' | 'name-phone-address'>('name-address-phone');
 
+  const parseAndFormatPharmacyLine = (line: string, format: 'name-address-phone' | 'name-phone-address') => {
+    const trimmedLine = line.trim();
+    if (!trimmedLine) return '';
+
+    let phone = '';
+    let textWithoutPhone = trimmedLine;
+
+    // 1. Detect Telephone Number
+    // Check for ☎ symbol first
+    const iconMatch = trimmedLine.match(/☎\s*([^\t\n,|–—-]+)/);
+    if (iconMatch) {
+      phone = iconMatch[1].trim();
+      textWithoutPhone = trimmedLine.replace(iconMatch[0], ' ').trim();
+    } else {
+      // Check for Tél/Tel/Phone prefix
+      const telMatch = trimmedLine.match(/(?:Tél\.?|Tel\.?|TÉL\.?|phone|contact)\s*:?\s*([^\t\n,|–—-]+)/i);
+      if (telMatch) {
+        phone = telMatch[1].trim();
+        textWithoutPhone = trimmedLine.replace(telMatch[0], ' ').trim();
+      } else {
+        // Check for 8+ digits or O/o letters as zero (e.g. 92 01 11 OO or 22 21 29 64)
+        const numberMatch = trimmedLine.match(/(?:\+?228[\s.-]*)?(?:[0-9oO]{2}[\s.-]?[0-9oO]{2}[\s.-]?[0-9oO]{2}[\s.-]?[0-9oO]{2})/);
+        if (numberMatch) {
+          phone = numberMatch[0].trim();
+          textWithoutPhone = trimmedLine.replace(numberMatch[0], ' ').trim();
+        }
+      }
+    }
+
+    // Clean telephone string: convert letter O/o to 0
+    if (phone) {
+      phone = phone.replace(/[oO]/g, '0');
+      phone = phone.replace(/^[-,\s☎\:\t’']+|[-,\s☎\:\t’']+$/g, '').trim();
+      // Format 8-digit Togo phone number nicely with spaces e.g. "92011100" -> "92 01 11 00"
+      const digitsOnly = phone.replace(/\D/g, '');
+      if (digitsOnly.length === 8) {
+        phone = `${digitsOnly.slice(0, 2)} ${digitsOnly.slice(2, 4)} ${digitsOnly.slice(4, 6)} ${digitsOnly.slice(6, 8)}`;
+      }
+    }
+
+    // 2. Separate remaining text into Name and Address
+    let name = '';
+    let address = '';
+
+    // Case A: Tabs (\t)
+    if (textWithoutPhone.includes('\t')) {
+      const parts = textWithoutPhone.split('\t').map(p => p.trim()).filter(Boolean);
+      if (parts.length >= 2) {
+        name = parts[0];
+        address = parts.slice(1).join(', ');
+      } else if (parts.length === 1) {
+        name = parts[0];
+      }
+    } 
+    // Case B: Separated by " - " or " – " or " | "
+    else if (/\s+[-–—|]\s+/.test(textWithoutPhone)) {
+      const parts = textWithoutPhone.split(/\s+[-–—|]\s+/).map(p => p.trim()).filter(Boolean);
+      if (parts.length >= 2) {
+        name = parts[0];
+        address = parts.slice(1).join(' - ');
+      } else if (parts.length === 1) {
+        name = parts[0];
+      }
+    } 
+    // Case C: Separated by multiple spaces (3 or more)
+    else if (/ {3,}/.test(textWithoutPhone)) {
+      const parts = textWithoutPhone.split(/ {3,}/).map(p => p.trim()).filter(Boolean);
+      if (parts.length >= 2) {
+        name = parts[0];
+        address = parts.slice(1).join(', ');
+      } else if (parts.length === 1) {
+        name = parts[0];
+      }
+    } 
+    // Case D: Fallback comma or dash split
+    else {
+      const cleanText = textWithoutPhone.replace(/^[-–—,\s]+|[-–—,\s]+$/g, '').trim();
+      const firstSepIndex = cleanText.search(/[,-]/);
+      if (firstSepIndex !== -1) {
+        name = cleanText.substring(0, firstSepIndex).trim();
+        address = cleanText.substring(firstSepIndex + 1).trim();
+      } else {
+        name = cleanText;
+        address = '';
+      }
+    }
+
+    name = name.replace(/^[-–—,\s’'\t]+|[-–—,\s’'\t]+$/g, '').trim();
+    address = address.replace(/^[-–—,\s☎\:\t’']+|[-–—,\s☎\:\t’']+$/g, '').trim();
+
+    if (!phone && !address) {
+      return trimmedLine;
+    }
+
+    if (name.toUpperCase().startsWith('PHARMACIE')) {
+      name = name.toUpperCase();
+    } else if (name) {
+      name = name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+    }
+
+    if (!address) address = 'Lomé';
+    if (!phone) phone = 'Non spécifié';
+
+    if (format === 'name-address-phone') {
+      return `${name} - ${address} - ${phone}`;
+    } else {
+      return `${name} - ${phone} - ${address}`;
+    }
+  };
+
+  const changePharmacyFormat = (newFormat: 'name-address-phone' | 'name-phone-address') => {
+    setPharmacyFormat(newFormat);
+    
+    // Automatically convert existing content lines to the newly selected format
+    if (pharmacy.content.trim()) {
+      const reformatted = pharmacy.content
+        .split('\n')
+        .map(line => parseAndFormatPharmacyLine(line, newFormat))
+        .filter(Boolean)
+        .join('\n');
+      
+      setPharmacy(prev => ({ ...prev, content: reformatted }));
+    }
+  };
+
   const handleAutoOrganizePharmacies = () => {
     if (!rawPharmacyText.trim()) return;
 
     const lines = rawPharmacyText.split('\n');
-    const resultLines: string[] = [];
-
-    lines.forEach((line) => {
-      const trimmedLine = line.trim();
-      if (!trimmedLine) return;
-
-      // 1. Detect telephone number
-      // Togo on-duty list numbers are typically 8 digits, e.g., 22 21 29 64, or with spaces, or beginning with ☎ or Tél
-      const phoneRegex = /(?:☎|Tél\.?|Tel\.?|TÉL\.?|phone|contact)?\s*:?\s*(\+?[0-9]{2,4}[-.\s]?[0-9]{2}[-.\s]?[0-9]{2}[-.\s]?[0-9]{2}[-.\s]?[0-9]{2,4})/i;
-      const phoneFallbackRegex = /(\+?[0-9\s.-]{8,15})/;
-
-      let phone = '';
-      let textWithoutPhone = trimmedLine;
-
-      let match = trimmedLine.match(phoneRegex);
-      if (!match) {
-        match = trimmedLine.match(phoneFallbackRegex);
-      }
-
-      if (match) {
-        phone = match[0].trim();
-        // Clean prefix symbols/text
-        phone = phone.replace(/(?:☎|Tél\.?|Tel\.?|TÉL\.?|phone|contact)\s*:?/i, '').trim();
-        textWithoutPhone = trimmedLine.replace(match[0], ' ').trim();
-      }
-
-      // 2. Identify Name and Address
-      // If the line has tabs (pasted from Excel) or multiple spaces (3 or more)
-      const parts = trimmedLine.split(/\t| {3,}/).map(p => p.trim()).filter(Boolean);
-      
-      let name = '';
-      let address = '';
-
-      if (parts.length >= 2) {
-        name = parts[0];
-        
-        // Find the part that is not the phone or the name
-        const otherParts = parts.slice(1).filter(p => {
-          if (phone && p.includes(phone)) return false;
-          return p.length > 2;
-        });
-
-        if (otherParts.length > 0) {
-          address = otherParts.join(', ');
-        }
-      } else {
-        // Fallback parsing: split textWithoutPhone by common separators
-        let cleanedText = textWithoutPhone.trim();
-        
-        // Match a name: typically starting capitalized or uppercase words
-        const nameMatch = cleanedText.match(/^([A-Z0-9'’\s\-\.\/]{4,})(?:,|\-|\s{2,}|$)/);
-        if (nameMatch) {
-          name = nameMatch[1].trim();
-          address = cleanedText.replace(nameMatch[1], '').trim();
-        } else {
-          // Fallback: split by first separator
-          const separatorIndex = cleanedText.search(/[,-]/);
-          if (separatorIndex !== -1) {
-            name = cleanedText.substring(0, separatorIndex).trim();
-            address = cleanedText.substring(separatorIndex + 1).trim();
-          } else {
-            name = cleanedText;
-            address = '';
-          }
-        }
-      }
-
-      // Clean up symbols and formatting
-      name = name.replace(/^[-,\s’'\t]+|[-,\s’'\t]+$/g, '').trim();
-      address = address.replace(/^[-,\s☎\:\t’']+|[-,\s☎\:\t’']+$/g, '').trim();
-
-      // Normalize name to uppercase if it starts with pharmacy
-      if (name.toUpperCase().startsWith('PHARMACIE')) {
-        name = name.toUpperCase();
-      } else {
-        // Capitalize first letters of each word
-        name = name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-      }
-
-      if (!address) address = 'Lomé';
-      if (!phone) phone = 'Non spécifié';
-
-      // Apply selected format
-      if (pharmacyFormat === 'name-address-phone') {
-        resultLines.push(`${name} - ${address} - ${phone}`);
-      } else {
-        resultLines.push(`${name} - ${phone} - ${address}`);
-      }
-    });
+    const resultLines = lines
+      .map(line => parseAndFormatPharmacyLine(line, pharmacyFormat))
+      .filter(Boolean);
 
     if (resultLines.length > 0) {
       const formattedResult = resultLines.join('\n');
@@ -136,7 +175,6 @@ export default function Admin({ onBack }: AdminProps) {
         content: prev.content ? prev.content + '\n' + formattedResult : formattedResult
       }));
       setRawPharmacyText('');
-      alert(`${resultLines.length} pharmacies ont été organisées et ajoutées à la liste !`);
     }
   };
   const [beneficiary, setBeneficiary] = useState({ name: '', detail: '', location: '', type: 'scolarite' });
@@ -1085,12 +1123,12 @@ export default function Admin({ onBack }: AdminProps) {
             </div>
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <span className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Format de sortie :</span>
                 <div className="flex bg-white p-1 rounded-xl border border-slate-100 gap-1 text-[10px] font-black uppercase">
                   <button
                     type="button"
-                    onClick={() => setPharmacyFormat('name-address-phone')}
+                    onClick={() => changePharmacyFormat('name-address-phone')}
                     className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                       pharmacyFormat === 'name-address-phone'
                         ? 'bg-slate-900 text-white shadow-sm'
@@ -1101,7 +1139,7 @@ export default function Admin({ onBack }: AdminProps) {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setPharmacyFormat('name-phone-address')}
+                    onClick={() => changePharmacyFormat('name-phone-address')}
                     className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                       pharmacyFormat === 'name-phone-address'
                         ? 'bg-slate-900 text-white shadow-sm'
@@ -1126,7 +1164,18 @@ export default function Admin({ onBack }: AdminProps) {
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest ml-1">Liste finale des pharmacies (Prête pour publication)</label>
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest ml-1">Liste finale des pharmacies (Prête pour publication)</label>
+              {pharmacy.content.trim() && (
+                <button
+                  type="button"
+                  onClick={() => changePharmacyFormat(pharmacyFormat)}
+                  className="text-[10px] font-black uppercase text-sky-600 hover:text-sky-700 hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <Wand2 size={12} /> Re-formater au format sélectionné
+                </button>
+              )}
+            </div>
             <textarea 
               required
               rows={12}
