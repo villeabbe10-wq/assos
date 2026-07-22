@@ -4,7 +4,8 @@ import { collection, addDoc, Timestamp, getDocs, query, orderBy, doc, getDoc, se
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { motion } from 'motion/react';
-import { Plus, LayoutDashboard, FileText, Calendar, Loader2, CheckCircle, Users, Mail, Phone, Briefcase, ArrowLeft, BriefcaseMedical, UserPlus, Shield, Trash2, Sparkles, Wand2 } from 'lucide-react';
+import { Plus, LayoutDashboard, FileText, Calendar, Loader2, CheckCircle, Users, Mail, Phone, Briefcase, ArrowLeft, BriefcaseMedical, UserPlus, Shield, Trash2, Sparkles, Wand2, LogIn } from 'lucide-react';
+import AuthModal from '../components/AuthModal';
 
 interface AdminProps {
   onBack?: () => void;
@@ -431,14 +432,31 @@ export default function Admin({ onBack }: AdminProps) {
     }
   };
 
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+
   if (!user || !isAuthorized) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 px-6 text-center space-y-4">
-        <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center">
+      <div className="flex flex-col items-center justify-center py-20 px-6 text-center space-y-4 max-w-md mx-auto">
+        <div className="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center shadow-inner">
           <LayoutDashboard size={32} />
         </div>
-        <h2 className="text-2xl font-black text-slate-900">Accès Refusé</h2>
-        <p className="text-slate-500">Cette section est réservée aux administrateurs de SEDUCEP-CONSEILS.</p>
+        <h2 className="text-2xl font-black text-slate-900">
+          {!user ? "Connexion Requise" : "Accès Refusé"}
+        </h2>
+        <p className="text-xs text-slate-500 leading-relaxed font-medium">
+          {!user 
+            ? "Veuillez vous connecter avec votre compte administrateur (seduceconseil@gmail.com) pour accéder à cette console."
+            : `Le compte connecté (${user.email}) n'a pas les droits administrateur de SEDUCEP-CONSEILS.`}
+        </p>
+        <button
+          onClick={() => setIsAuthOpen(true)}
+          className="mt-2 bg-slate-900 hover:bg-slate-800 text-white font-black px-6 py-3.5 rounded-2xl text-xs uppercase tracking-widest flex items-center gap-2 shadow-xl shadow-slate-900/10 cursor-pointer transition-all"
+        >
+          <LogIn size={16} />
+          Se Connecter / Changer De Compte
+        </button>
+
+        <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
       </div>
     );
   }

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f2b3c" />
+      <stop offset="100%" stop-color="#091d29" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#0ea5e9" />
+    </linearGradient>
+  </defs>
+  <!-- Rounded Container -->
+  <rect width="512" height="512" rx="140" fill="url(#bgGrad)" />
+  
+  <!-- Outer Glow Ring -->
+  <rect x="24" y="24" width="464" height="464" rx="116" fill="none" stroke="url(#accentGrad)" stroke-width="8" stroke-opacity="0.3" />
+
+  <!-- White Badge Icon -->
+  <g transform="translate(100, 100) scale(0.61)">
+    <!-- Stylized S shape with Health & Education leaf motif -->
+    <path d="M380,120 C380,53.7 326.3,0 260,0 C193.7,0 140,53.7 140,120 C140,165 165,204 202,224 L140,224 C62.7,224 0,286.7 0,364 C0,441.3 62.7,504 140,504 C206.3,504 260,450.3 260,384 C260,339 235,300 198,280 L260,280 C337.3,280 400,217.3 400,140 C400,133.2 399.5,126.5 398.5,120 Z" fill="none" />
+    
+    <!-- Bold 'S' with Green Accent -->
+    <path d="M 330 130 C 330 80, 290 40, 230 40 C 170 40, 130 80, 130 120 C 130 180, 330 190, 330 280 C 330 340, 280 380, 220 380 C 150 380, 110 330, 105 280 L 175 280 C 180 305, 200 320, 220 320 C 245 320, 260 305, 260 280 C 260 230, 80 215, 80 120 C 80 55, 145 0, 230 0 C 315 0, 380 55, 385 130 Z" fill="#ffffff" />
+    
+    <!-- Emerald Leaf/Cross Accent dot -->
+    <circle cx="360" cy="80" r="32" fill="#10b981" />
+    <path d="M 350 350 Q 420 320 420 400 Q 340 420 350 350 Z" fill="#0ea5e9" />
+  </g>
+</svg>

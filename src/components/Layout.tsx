@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Home, BookOpen, Calendar, Users, HandHeart, Info, LogIn, LogOut, MessageSquare, LayoutDashboard, Facebook, Instagram, Twitter, Mail, Phone, MapPin, ExternalLink, Activity, Handshake, HelpCircle, Heart, BriefcaseMedical } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { auth, signInWithGoogle, logout, db } from '../lib/firebase';
+import { auth, logout, db } from '../lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import PharmacyModal from './PharmacyModal';
+import AuthModal from './AuthModal';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ interface LayoutProps {
 export default function Layout({ children, activeTab, setActiveTab }: LayoutProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPharmacyModalOpen, setIsPharmacyModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [user] = useAuthState(auth);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [settings, setSettings] = useState<any>(null);
@@ -110,7 +112,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
               {settings?.logoUrl ? (
                 <img src={settings.logoUrl} alt="Logo" className="w-full h-full object-cover relative z-10" />
               ) : (
-                <span className="text-white font-black text-xl sm:text-2xl relative z-10">S</span>
+                <img src="/favicon.svg" alt="SEDUCEP Logo" className="w-full h-full object-cover relative z-10 p-1" />
               )}
             </div>
             <div>
@@ -143,8 +145,8 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
               <motion.button 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => signInWithGoogle()}
-                className="bg-slate-900 text-white px-3.5 sm:px-5 py-2.5 sm:py-2.5 rounded-xl sm:rounded-2xl text-[12px] sm:text-xs font-black shadow-xl shadow-slate-900/10 transition-all flex items-center gap-1.5 sm:gap-2 border border-slate-700/50"
+                onClick={() => setIsAuthModalOpen(true)}
+                className="bg-slate-900 text-white px-3.5 sm:px-5 py-2.5 sm:py-2.5 rounded-xl sm:rounded-2xl text-[12px] sm:text-xs font-black shadow-xl shadow-slate-900/10 transition-all flex items-center gap-1.5 sm:gap-2 border border-slate-700/50 cursor-pointer"
               >
                 <LogIn className="w-3.5 h-3.5 sm:w-4 h-4" />
                 <span className="uppercase tracking-widest">Connexion</span>
@@ -232,10 +234,10 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 {!user ? (
                   <button 
                     onClick={() => {
-                      signInWithGoogle();
+                      setIsAuthModalOpen(true);
                       setIsMenuOpen(false);
                     }}
-                    className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 uppercase tracking-widest text-xs"
+                    className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 uppercase tracking-widest text-xs cursor-pointer"
                   >
                     <LogIn size={18} /> Connexion
                   </button>
@@ -405,9 +407,12 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 </button>
               </li>
               <li>
-                <a href="#" className="text-sm text-slate-500 hover:text-sky-600 font-bold transition-colors">
+                <button 
+                  onClick={() => setActiveTab('resources')}
+                  className="text-sm text-slate-500 hover:text-sky-600 font-bold transition-colors cursor-pointer"
+                >
                   Nos Rapports
-                </a>
+                </button>
               </li>
             </ul>
           </div>
@@ -498,6 +503,9 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
           <span className="text-[8px] font-black uppercase tracking-widest">Plus</span>
         </button>
       </motion.nav>
+
+      {/* Auth Modal */}
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </div>
   );
 }
