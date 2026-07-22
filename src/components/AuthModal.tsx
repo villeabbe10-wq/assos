@@ -16,7 +16,7 @@ interface AuthModalProps {
 
 export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [tab, setTab] = useState<'login' | 'forgot'>('login');
-  const [email, setEmail] = useState('seduceconseil@gmail.com');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -95,10 +95,10 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               <ShieldCheck size={26} />
             </div>
             <h3 className="text-xl font-black text-slate-900 tracking-tight">
-              Espace Membres & Admin
+              Espace Réservé Aux Membres
             </h3>
             <p className="text-xs text-slate-500 font-medium max-w-xs leading-relaxed">
-              Accès réservé aux administrateurs et membres autorisés de SEDUCEP-CONSEILS.
+              Cet espace est exclusivement réservé aux membres de l'équipe et administrateurs SEDUCEP-CONSEILS.
             </p>
           </div>
 
