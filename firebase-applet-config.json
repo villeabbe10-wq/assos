@@ -1,10 +1,10 @@
 {
   "projectId": "collete-boutique",
-  "appId": "1:892450353576:web:f4b24c8431c38e25efad9d",
-  "apiKey": "AIzaSyAydhTd36tATuR-VhN8LDUviaAAJO_FRDQ",
+  "appId": "1:892450353576:web:94913bd671346bcbefad9d",
+  "apiKey": "AIzaSyAydHTd36tATuR-VhN8LDUviaAAJO_FRdQ",
   "authDomain": "collete-boutique.firebaseapp.com",
   "firestoreDatabaseId": "(default)",
   "storageBucket": "collete-boutique.firebasestorage.app",
   "messagingSenderId": "892450353576",
-  "measurementId": ""
+  "measurementId": "G-QN015TZ85Q"
 }

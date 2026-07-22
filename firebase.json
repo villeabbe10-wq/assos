@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "target": "collete-boutique",
+    "site": "seducep",
     "public": "dist",
     "ignore": ["firebase.json", "**/.git/**"],
     "rewrites": [{ "source": "**", "destination": "/index.html" }]
