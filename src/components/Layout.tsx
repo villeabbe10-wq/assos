@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Home, BookOpen, Calendar, Users, HandHeart, Info, LogIn, LogOut, MessageSquare, LayoutDashboard, Facebook, Instagram, Twitter, Mail, Phone, MapPin, ExternalLink, Activity, Handshake, HelpCircle, Heart, BriefcaseMedical } from 'lucide-react';
+import { Menu, X, Home, BookOpen, Calendar, Users, HandHeart, Info, LogIn, LogOut, MessageSquare, LayoutDashboard, Facebook, Instagram, Twitter, Mail, Phone, MapPin, ExternalLink, Activity, Handshake, HelpCircle, Heart, BriefcaseMedical, ShieldCheck, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { auth, logout, db } from '../lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -129,7 +129,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`px-5 py-2.5 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all ${
+                className={`px-4 py-2.5 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all cursor-pointer ${
                   activeTab === item.id 
                   ? 'bg-white text-sky-600 shadow-sm border border-slate-200/50' 
                   : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
@@ -138,20 +138,18 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 {item.label}
               </button>
             ))}
+            <button
+              onClick={() => setIsPharmacyModalOpen(true)}
+              className="px-4 py-2.5 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-sky-600 hover:text-sky-800 hover:bg-white/80 transition-all flex items-center gap-1.5 cursor-pointer bg-sky-50/60 border border-sky-100/80"
+              title="Pharmacies de garde"
+            >
+              <BriefcaseMedical size={13} className="text-sky-600" />
+              <span>Pharmacies</span>
+            </button>
           </nav>
           
           <div className="flex items-center gap-2 sm:gap-4">
-            {!user ? (
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsAuthModalOpen(true)}
-                className="bg-slate-900 text-white px-3.5 sm:px-5 py-2.5 sm:py-2.5 rounded-xl sm:rounded-2xl text-[12px] sm:text-xs font-black shadow-xl shadow-slate-900/10 transition-all flex items-center gap-1.5 sm:gap-2 border border-slate-700/50 cursor-pointer"
-              >
-                <LogIn className="w-3.5 h-3.5 sm:w-4 h-4" />
-                <span className="uppercase tracking-widest">Connexion</span>
-              </motion.button>
-            ) : (
+            {user && (
               <div className="flex items-center gap-2 sm:gap-3">
                 <motion.button 
                   whileHover={{ y: -2 }}
@@ -237,9 +235,10 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                       setIsAuthModalOpen(true);
                       setIsMenuOpen(false);
                     }}
-                    className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 uppercase tracking-widest text-xs cursor-pointer"
+                    className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2.5 text-xs border border-slate-200/80 transition-colors cursor-pointer"
                   >
-                    <LogIn size={18} /> Connexion
+                    <ShieldCheck size={16} className="text-emerald-600" />
+                    <span>Accès Restreint Membres</span>
                   </button>
                 ) : (
                   <div className="space-y-3">
@@ -315,20 +314,38 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
         </span>
       </motion.a>
 
-      {/* Pharmacy Floating Button */}
+      {/* Pharmacy Floating Button (Mobile & Tablet only, as it is in top menu on PC) */}
       <motion.button
         onClick={() => setIsPharmacyModalOpen(true)}
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.9 }}
-        className="fixed bottom-40 right-6 sm:bottom-28 sm:right-8 z-40 bg-sky-600 text-white p-4 rounded-2xl shadow-2xl shadow-sky-600/30 flex items-center justify-center group"
+        className="lg:hidden fixed bottom-40 right-6 sm:bottom-28 sm:right-8 z-40 bg-sky-600 text-white p-4 rounded-2xl shadow-2xl shadow-sky-600/30 flex items-center justify-center group cursor-pointer"
       >
         <BriefcaseMedical size={24} />
         <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 font-bold text-sm ml-0 group-hover:ml-2">
           Pharmacies de garde
         </span>
       </motion.button>
+
+      {/* Discrete Member Access Floating Bubble (When logged out) */}
+      {!user && (
+        <motion.button
+          onClick={() => setIsAuthModalOpen(true)}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.9 }}
+          className="fixed bottom-56 right-6 sm:bottom-48 sm:right-8 z-40 bg-slate-900/90 backdrop-blur-md text-white p-3.5 sm:p-4 rounded-2xl shadow-xl shadow-slate-900/20 border border-slate-700/50 flex items-center justify-center group cursor-pointer"
+          title="Espace Membres"
+        >
+          <ShieldCheck size={22} className="text-emerald-400" />
+          <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 font-bold text-xs ml-0 group-hover:ml-2 whitespace-nowrap">
+            Espace Membres
+          </span>
+        </motion.button>
+      )}
 
       <PharmacyModal 
         isOpen={isPharmacyModalOpen} 
@@ -412,6 +429,15 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                   className="text-sm text-slate-500 hover:text-sky-600 font-bold transition-colors cursor-pointer"
                 >
                   Nos Rapports
+                </button>
+              </li>
+              <li className="pt-2 border-t border-slate-100">
+                <button 
+                  onClick={() => setIsAuthModalOpen(true)}
+                  className="text-xs text-slate-400 hover:text-slate-700 font-bold transition-colors cursor-pointer flex items-center gap-1.5 group"
+                >
+                  <Lock size={12} className="text-slate-400 group-hover:text-emerald-600 transition-colors" />
+                  <span>Portail Membres & Staff</span>
                 </button>
               </li>
             </ul>
