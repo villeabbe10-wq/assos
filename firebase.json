@@ -2,7 +2,11 @@
   "hosting": {
     "site": "seducep",
     "public": "dist",
-    "ignore": ["firebase.json", "**/.git/**"],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
     "rewrites": [{ "source": "**", "destination": "/index.html" }]
   },
   "firestore": {
