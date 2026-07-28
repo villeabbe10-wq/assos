@@ -98,6 +98,10 @@ service cloud.firestore {
       allow write: if isInternalAdmin();
     }
 
+    match /team_tasks/{taskId} {
+      allow read, write: if isSignedIn();
+    }
+
     match /founders/{founderId} {
       allow read: if true;
       allow write: if isInternalAdmin();

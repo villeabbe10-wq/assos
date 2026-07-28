@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { db } from '../lib/firebase';
 import { collection, query, orderBy, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
+import TshirtShowcase from '../components/TshirtShowcase';
 
 export default function About({ setActiveTab }: { setActiveTab: (tab: string) => void }) {
   const [founders, setFounders] = useState<any[]>([]);
@@ -353,13 +354,6 @@ export default function About({ setActiveTab }: { setActiveTab: (tab: string) =>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <button
-              onClick={() => setShowSuggestModal(true)}
-              className="bg-slate-900 hover:bg-sky-600 text-white font-black px-5 py-3 rounded-2xl text-xs uppercase tracking-wider shadow-lg shadow-slate-900/10 transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <UserPlus size={16} className="text-amber-400" />
-              <span>Proposer un Hommage</span>
-            </button>
             <div className="bg-amber-100 text-amber-900 text-xs font-black px-4 py-3 rounded-2xl border border-amber-200/80 flex items-center gap-2">
               <Sparkles size={16} className="text-amber-600" />
               <span>{allHonorees.length} Personnalités Honores</span>
@@ -367,44 +361,21 @@ export default function About({ setActiveTab }: { setActiveTab: (tab: string) =>
           </div>
         </div>
 
-        {/* Filter Bar & Search */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10">
-          {/* Search bar */}
-          <div className="relative w-full sm:w-80">
-            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Rechercher un nom (ex: Dr SEHONOU)..."
-              className="w-full bg-white border border-slate-200 rounded-2xl py-2.5 pl-11 pr-4 text-xs font-bold text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-sky-500 shadow-sm"
-            />
-            {searchQuery && (
-              <button 
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
-              >
-                <X size={14} />
-              </button>
-            )}
-          </div>
-
-          {/* Category Chips */}
-          <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 scrollbar-none">
-            {['Tous', 'Médecins', 'Cadres', 'Terrain'].map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`text-xs font-black px-4 py-2 rounded-xl transition-all whitespace-nowrap cursor-pointer ${
-                  selectedCategory === cat
-                    ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
-                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+        {/* Category Chips Filter */}
+        <div className="flex items-center justify-end gap-2 overflow-x-auto w-full pb-2 sm:pb-0 scrollbar-none relative z-10">
+          {['Tous', 'Médecins', 'Cadres', 'Terrain'].map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`text-xs font-black px-4 py-2 rounded-xl transition-all whitespace-nowrap cursor-pointer ${
+                selectedCategory === cat
+                  ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
+                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
 
         {/* Honorees Grid */}
@@ -472,6 +443,11 @@ export default function About({ setActiveTab }: { setActiveTab: (tab: string) =>
             </button>
           </div>
         )}
+      </section>
+
+      {/* Tenue Officielle & T-Shirts de Sensibilisation */}
+      <section>
+        <TshirtShowcase />
       </section>
 
       {/* Nos Réseaux Sociaux & Communauté */}

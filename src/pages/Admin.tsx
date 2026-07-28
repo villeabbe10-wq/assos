@@ -4,7 +4,7 @@ import { collection, addDoc, Timestamp, getDocs, query, orderBy, doc, getDoc, se
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { motion } from 'motion/react';
-import { Plus, LayoutDashboard, FileText, Calendar, Loader2, CheckCircle, Users, Mail, Phone, Briefcase, ArrowLeft, BriefcaseMedical, UserPlus, Shield, Trash2, Sparkles, Wand2, LogIn } from 'lucide-react';
+import { Plus, LayoutDashboard, FileText, Calendar, Loader2, CheckCircle, Users, Mail, Phone, Briefcase, ArrowLeft, BriefcaseMedical, UserPlus, Shield, Trash2, Sparkles, Wand2, LogIn, CheckSquare, Clock, AlertCircle, ListTodo, UserCheck, MessageSquare } from 'lucide-react';
 import AuthModal from '../components/AuthModal';
 
 interface AdminProps {
@@ -16,13 +16,22 @@ export default function Admin({ onBack }: AdminProps) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [mode, setMode] = useState<'post' | 'event' | 'volunteers' | 'resources' | 'pharmacies' | 'beneficiaries' | 'activity' | 'admins' | 'partners' | 'founders' | 'settings'>('post');
+  const [mode, setMode] = useState<'post' | 'event' | 'volunteers' | 'resources' | 'pharmacies' | 'beneficiaries' | 'activity' | 'admins' | 'partners' | 'founders' | 'settings' | 'tasks'>('tasks');
   const [volunteers, setVolunteers] = useState<any[]>([]);
   const [beneficiaries, setBeneficiaries] = useState<any[]>([]);
   const [admins, setAdmins] = useState<any[]>([]);
   const [partners, setPartners] = useState<any[]>([]);
   const [founders, setFounders] = useState<any[]>([]);
   const [resources, setResources] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [taskForm, setTaskForm] = useState({
+    title: '',
+    description: '',
+    assignedToEmail: '',
+    assignedToName: '',
+    priority: 'Moyenne' as 'Haute' | 'Moyenne' | 'Basse',
+    deadline: ''
+  });
   const [settings, setSettings] = useState({ logoUrl: '', associationName: 'SEDUCEP', phone: '+228 97682466', email: 'seduceconseil@gmail.com', facebook: '', whatsapp: '', instagram: '' });
   const [isAuthorized, setIsAuthorized] = useState(user?.email === 'seduceconseil@gmail.com');
   const [activity, setActivity] = useState<{ proposals: any[], reviews: any[], campaigns: any[] }>({ proposals: [], reviews: [], campaigns: [] });
@@ -185,13 +194,27 @@ export default function Admin({ onBack }: AdminProps) {
   const uploadToStorage = async (file: File, folder: string) => {
     setUploading(true);
     try {
-      const storageRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
-      const snapshot = await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(snapshot.ref);
-      return url;
+      if (storage) {
+        try {
+          const storageRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
+          const snapshot = await uploadBytes(storageRef, file);
+          const url = await getDownloadURL(snapshot.ref);
+          if (url) return url;
+        } catch (stErr) {
+          console.warn("Firebase Storage non configuré ou indisponible, conversion locale en image Data URL:", stErr);
+        }
+      }
+
+      // Convert local file to Base64 Data URL so choosing a local photo always works!
+      return await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (err) => reject(err);
+        reader.readAsDataURL(file);
+      });
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Erreur lors de l'envoi du fichier.");
+      alert("Erreur lors de la sélection du fichier photo.");
       return null;
     } finally {
       setUploading(false);
@@ -207,7 +230,17 @@ export default function Admin({ onBack }: AdminProps) {
         else if (target === 'partner') setPartnerForm({ ...partnerForm, logoUrl: url });
         else if (target === 'founder') setFounderForm({ ...founderForm, imageUrl: url });
         else if (target === 'event') setEvent({ ...event, imageUrl: url });
-        else if (target === 'logo') setSettings({ ...settings, logoUrl: url });
+        else if (target === 'logo') {
+          const updatedSettings = { ...settings, logoUrl: url };
+          setSettings(updatedSettings);
+          try {
+            await setDoc(doc(db, 'config', 'general'), updatedSettings, { merge: true });
+            setSuccess(true);
+            setTimeout(() => setSuccess(false), 3000);
+          } catch (err) {
+            console.error("Error auto-saving logo settings:", err);
+          }
+        }
       }
     }
   };
@@ -268,8 +301,80 @@ export default function Admin({ onBack }: AdminProps) {
       case 'partners': fetchPartners(); break;
       case 'founders': fetchFounders(); break;
       case 'settings': fetchSettings(); break;
+      case 'tasks': fetchTasks(); fetchAdmins(); fetchVolunteers(); break;
     }
   }, [mode, isAuthorized]);
+
+  const fetchTasks = async () => {
+    setLoading(true);
+    try {
+      const q = query(collection(db, 'team_tasks'), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+      setTasks(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!taskForm.title.trim()) return;
+    setLoading(true);
+    try {
+      await addDoc(collection(db, 'team_tasks'), {
+        ...taskForm,
+        assignedToEmail: taskForm.assignedToEmail.trim().toLowerCase() || 'tous',
+        assignedToName: taskForm.assignedToName.trim() || 'Équipe Collective',
+        status: 'à faire',
+        createdAt: Timestamp.now(),
+        createdBy: user?.email || 'Admin',
+        updates: []
+      });
+      setSuccess(true);
+      setTaskForm({
+        title: '',
+        description: '',
+        assignedToEmail: '',
+        assignedToName: '',
+        priority: 'Moyenne',
+        deadline: ''
+      });
+      fetchTasks();
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, 'team_tasks');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateTaskStatus = async (taskId: string, newStatus: string) => {
+    setLoading(true);
+    try {
+      await setDoc(doc(db, 'team_tasks', taskId), { status: newStatus }, { merge: true });
+      fetchTasks();
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, 'team_tasks');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    if (confirm('Voulez-vous supprimer cette tâche ?')) {
+      setLoading(true);
+      try {
+        await deleteDoc(doc(db, 'team_tasks', taskId));
+        fetchTasks();
+      } catch (error) {
+        handleFirestoreError(error, OperationType.DELETE, 'team_tasks');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
 
   const fetchSettings = async () => {
     try {
@@ -611,8 +716,9 @@ export default function Admin({ onBack }: AdminProps) {
         </div>
         <div className="flex bg-slate-100 p-1.5 rounded-2xl w-full sm:w-fit overflow-x-auto no-scrollbar gap-1">
           {[
-            { id: 'post', label: 'Publication' },
-            { id: 'event', label: 'Événement' },
+            { id: 'post', label: 'Publication (Blog)' },
+            { id: 'event', label: 'Événement (Actions)' },
+            { id: 'tasks', label: 'Tâches Membres' },
             { id: 'beneficiaries', label: 'Bénéficiaires' },
             { id: 'resources', label: 'Ressources' },
             { id: 'pharmacies', label: 'Pharmacies' },
@@ -1494,7 +1600,7 @@ export default function Admin({ onBack }: AdminProps) {
                 <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest block">Logo Principal</label>
                 <div className="flex items-center gap-6">
                   <div className="w-24 h-24 bg-white rounded-[2rem] border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden shadow-sm">
-                    {settings.logoUrl ? <img src={settings.logoUrl} className="w-full h-full object-contain" /> : <Plus className="text-slate-300" />}
+                    {settings.logoUrl ? <img src={settings.logoUrl} className="w-full h-full object-contain rounded-2xl" /> : <Plus className="text-slate-300" />}
                   </div>
                   <div className="flex-1 space-y-3">
                     <div className="flex items-center gap-3">
@@ -1652,6 +1758,215 @@ export default function Admin({ onBack }: AdminProps) {
             </div>
             {admins.length === 0 && !loading && (
               <p className="text-center py-10 text-slate-400 font-bold uppercase text-[10px] tracking-widest">Aucun autre membre ajouté</p>
+            )}
+          </div>
+        </div>
+      ) : mode === 'tasks' ? (
+        <div className="space-y-8">
+          {/* Form to Assign Task */}
+          <form onSubmit={handleAddTask} className="bg-white p-6 sm:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center">
+                <CheckSquare size={20} />
+              </div>
+              <div>
+                <h3 className="text-xl font-black text-slate-900">Attribuer une Tâche Collective</h3>
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Travail collectif assigné aux membres</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Intitulé de la Tâche</label>
+                <input 
+                  required
+                  placeholder="Ex: Préparation des fournitures médicales"
+                  className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-sm outline-none focus:ring-2 focus:ring-sky-500 font-bold text-slate-800"
+                  value={taskForm.title}
+                  onChange={e => setTaskForm({ ...taskForm, title: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Assigner à un Membre / Équipe</label>
+                <div className="flex gap-2">
+                  <select
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-sky-500"
+                    value={taskForm.assignedToEmail}
+                    onChange={e => {
+                      const val = e.target.value;
+                      if (val === 'tous') {
+                        setTaskForm({ ...taskForm, assignedToEmail: 'tous', assignedToName: 'Tous les Membres' });
+                      } else {
+                        const foundAdmin = admins.find(a => a.email === val);
+                        const foundVol = volunteers.find(v => v.email === val);
+                        const name = foundAdmin?.email?.split('@')[0] || foundVol?.name || val;
+                        setTaskForm({ ...taskForm, assignedToEmail: val, assignedToName: name });
+                      }
+                    }}
+                  >
+                    <option value="">-- Sélectionner un destinataire --</option>
+                    <option value="tous">🌐 Tous les membres (Collectif)</option>
+                    <optgroup label="Membres Admin / Team">
+                      {admins.map(a => (
+                        <option key={a.id} value={a.email}>👤 {a.email} ({a.role})</option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="Volontaires">
+                      {volunteers.map(v => (
+                        <option key={v.id} value={v.email}>🤝 {v.name} ({v.email})</option>
+                      ))}
+                    </optgroup>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Instructions / Détail du travail</label>
+              <textarea 
+                rows={3}
+                placeholder="Précisez ce que le membre doit réaliser, les consignes et les livrables attendus..."
+                className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-sm outline-none focus:ring-2 focus:ring-sky-500 font-medium text-slate-800 resize-none"
+                value={taskForm.description}
+                onChange={e => setTaskForm({ ...taskForm, description: e.target.value })}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Niveau de Priorité</label>
+                <div className="flex gap-2">
+                  {(['Basse', 'Moyenne', 'Haute'] as const).map(p => (
+                    <button
+                      type="button"
+                      key={p}
+                      onClick={() => setTaskForm({ ...taskForm, priority: p })}
+                      className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
+                        taskForm.priority === p 
+                          ? p === 'Haute' ? 'bg-rose-500 text-white shadow-md' : p === 'Moyenne' ? 'bg-amber-500 text-white shadow-md' : 'bg-emerald-500 text-white shadow-md'
+                          : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Date d'échéance (Optionnel)</label>
+                <input 
+                  type="date"
+                  className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-3.5 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-sky-500"
+                  value={taskForm.deadline}
+                  onChange={e => setTaskForm({ ...taskForm, deadline: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-indigo-600/20 cursor-pointer transition-all w-full sm:w-auto"
+            >
+              {loading ? <Loader2 className="animate-spin" size={16} /> : <Plus size={16} />}
+              Assigner la Tâche
+            </button>
+          </form>
+
+          {/* List of Tasks */}
+          <div className="space-y-4">
+            <h4 className="text-lg font-black text-slate-900 flex items-center gap-2">
+              <ListTodo size={20} className="text-indigo-600" />
+              <span>Tâches en cours & Historique ({tasks.length})</span>
+            </h4>
+
+            {loading ? (
+              <div className="flex justify-center py-10">
+                <Loader2 className="animate-spin text-sky-600" size={32} />
+              </div>
+            ) : tasks.length === 0 ? (
+              <div className="bg-white p-12 rounded-[2.5rem] border border-slate-100 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">
+                Aucune tâche attribuée pour le moment
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {tasks.map(t => (
+                  <div key={t.id} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h5 className="font-black text-base text-slate-900">{t.title}</h5>
+                          <span className={`text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full ${
+                            t.priority === 'Haute' ? 'bg-rose-50 text-rose-600 border border-rose-100' :
+                            t.priority === 'Moyenne' ? 'bg-amber-50 text-amber-600 border border-amber-100' :
+                            'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                          }`}>
+                            Priorité {t.priority}
+                          </span>
+                          <span className={`text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full ${
+                            t.status === 'terminée' ? 'bg-emerald-500 text-white' :
+                            t.status === 'en cours' ? 'bg-sky-500 text-white' :
+                            'bg-slate-100 text-slate-600'
+                          }`}>
+                            {t.status}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 font-medium">{t.description}</p>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <select
+                          className="text-[10px] font-black uppercase px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 outline-none cursor-pointer"
+                          value={t.status}
+                          onChange={e => handleUpdateTaskStatus(t.id, e.target.value)}
+                        >
+                          <option value="à faire">À faire</option>
+                          <option value="en cours">En cours</option>
+                          <option value="terminée">Terminée</option>
+                        </select>
+
+                        <button
+                          onClick={() => handleDeleteTask(t.id)}
+                          className="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
+                          title="Supprimer la tâche"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider pt-2 border-t border-slate-50">
+                      <span className="flex items-center gap-1 text-indigo-600 font-black">
+                        <UserCheck size={12} /> Assigné : {t.assignedToName || t.assignedToEmail}
+                      </span>
+                      {t.deadline && (
+                        <span className="flex items-center gap-1 text-slate-500">
+                          <Clock size={12} /> Échéance : {t.deadline}
+                        </span>
+                      )}
+                      <span>Créé par {t.createdBy}</span>
+                    </div>
+
+                    {/* Member Updates / Notes */}
+                    {t.updates && t.updates.length > 0 && (
+                      <div className="bg-slate-50 p-4 rounded-xl space-y-2 border border-slate-100">
+                        <p className="text-[10px] font-black uppercase text-slate-500 tracking-wider flex items-center gap-1">
+                          <MessageSquare size={12} /> Notes d'avancement des membres :
+                        </p>
+                        {t.updates.map((u: any, idx: number) => (
+                          <div key={idx} className="text-xs font-medium text-slate-700 bg-white p-2.5 rounded-lg border border-slate-200/60">
+                            <span className="font-black text-slate-900">{u.author} : </span>
+                            <span>{u.text}</span>
+                            <span className="text-[9px] text-slate-400 block mt-0.5 italic">{new Date(u.createdAt).toLocaleString()}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>

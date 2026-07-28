@@ -3,6 +3,7 @@ import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2, Send, Mail, User, Phone, MessageSquare, Heart, ShieldCheck, Star } from 'lucide-react';
+import TshirtShowcase from '../components/TshirtShowcase';
 
 export default function Volunteer() {
   const [form, setForm] = useState({
@@ -200,6 +201,11 @@ export default function Volunteer() {
             </button>
           </form>
         </motion.div>
+
+        {/* Official T-Shirt Showcase Section */}
+        <div className="pt-10">
+          <TshirtShowcase />
+        </div>
       </div>
     </div>
   );

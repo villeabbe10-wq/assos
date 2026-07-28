@@ -91,7 +91,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
     { id: 'admin', label: 'Console Admin', icon: LayoutDashboard },
     { id: 'messages', label: 'Dashboard Membre', icon: MessageSquare },
     { id: 'blog', label: 'Gérer Blog', icon: BookOpen },
-    { id: 'events', label: 'Gérer Actions', icon: Calendar },
+    { id: 'actions', label: 'Gérer Actions', icon: Calendar },
   ];
 
   const navItems = isAuthorized ? adminNavItems : [
@@ -110,12 +110,11 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
             className="flex items-center gap-2 sm:gap-3 cursor-pointer group" 
             onClick={() => setActiveTab('home')}
           >
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-2xl group-hover:rotate-6 transition-transform overflow-hidden relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-sky-500 opacity-20" />
+            <div className="h-10 sm:h-12 min-w-[40px] max-w-[200px] bg-white rounded-xl sm:rounded-2xl flex items-center justify-center shadow-md p-1 border border-slate-100 group-hover:scale-105 transition-transform overflow-hidden relative">
               {settings?.logoUrl ? (
-                <img src={settings.logoUrl} alt="Logo" className="w-full h-full object-cover relative z-10" />
+                <img src={settings.logoUrl} alt="Logo" className="max-h-full max-w-full object-contain rounded-lg sm:rounded-xl relative z-10" />
               ) : (
-                <img src="/favicon.svg" alt="SEDUCEP Logo" className="w-full h-full object-cover relative z-10 p-1" />
+                <img src="/favicon.svg" alt="SEDUCEP Logo" className="max-h-full max-w-full object-contain rounded-lg sm:rounded-xl relative z-10 p-0.5" />
               )}
             </div>
             <div>
@@ -383,11 +382,11 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
           {/* About Column */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-sky-500 rounded-2xl flex items-center justify-center text-white shadow-lg overflow-hidden">
+              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-900 shadow-md border border-slate-100 p-1.5 overflow-hidden">
                 {settings?.logoUrl ? (
-                  <img src={settings.logoUrl} alt="Logo" className="w-full h-full object-contain" />
+                  <img src={settings.logoUrl} alt="Logo" className="max-h-full max-w-full object-contain rounded-xl" />
                 ) : (
-                  <div className="font-black text-xl text-white">S</div>
+                  <img src="/favicon.svg" alt="SEDUCEP Logo" className="max-h-full max-w-full object-contain rounded-xl" />
                 )}
               </div>
               <h1 className="text-lg font-black tracking-tighter text-slate-900 uppercase">
