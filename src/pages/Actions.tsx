@@ -27,11 +27,12 @@ export default function Actions({ setActiveTab }: { setActiveTab: (tab: string) 
       try {
         const q = query(
           collection(db, 'events'), 
-          where('type', '==', 'mission'),
-          orderBy('date', 'desc')
+          where('type', '==', 'mission')
         );
         const snap = await getDocs(q);
-        setMissionsFromDb(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        const docs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
+        docs.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+        setMissionsFromDb(docs);
       } catch (e) {
         console.error(e);
       }

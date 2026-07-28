@@ -16,8 +16,9 @@ export default function Admin({ onBack }: AdminProps) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [mode, setMode] = useState<'post' | 'event' | 'volunteers' | 'resources' | 'pharmacies' | 'beneficiaries' | 'activity' | 'admins' | 'partners' | 'founders' | 'settings' | 'tasks'>('tasks');
+  const [mode, setMode] = useState<'post' | 'event' | 'volunteers' | 'tshirts' | 'resources' | 'pharmacies' | 'beneficiaries' | 'activity' | 'admins' | 'partners' | 'founders' | 'settings' | 'tasks'>('tasks');
   const [volunteers, setVolunteers] = useState<any[]>([]);
+  const [tshirtOrders, setTshirtOrders] = useState<any[]>([]);
   const [beneficiaries, setBeneficiaries] = useState<any[]>([]);
   const [admins, setAdmins] = useState<any[]>([]);
   const [partners, setPartners] = useState<any[]>([]);
@@ -292,8 +293,13 @@ export default function Admin({ onBack }: AdminProps) {
   useEffect(() => {
     if (!isAuthorized) return;
     
+    // Always fetch initial counts for badges
+    fetchVolunteers();
+    fetchTshirtOrders();
+
     switch (mode) {
       case 'volunteers': fetchVolunteers(); break;
+      case 'tshirts': fetchTshirtOrders(); break;
       case 'resources': fetchResources(); break;
       case 'beneficiaries': fetchBeneficiaries(); break;
       case 'activity': fetchActivity(); break;
@@ -528,6 +534,19 @@ export default function Admin({ onBack }: AdminProps) {
     }
   };
 
+  const fetchTshirtOrders = async () => {
+    setLoading(true);
+    try {
+      const q = query(collection(db, 'tshirt_orders'), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+      setTshirtOrders(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    } catch (error) {
+      console.error('Error fetching tshirt orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchResources = async () => {
     setLoading(true);
     try {
@@ -724,7 +743,8 @@ export default function Admin({ onBack }: AdminProps) {
             { id: 'pharmacies', label: 'Pharmacies' },
             { id: 'partners', label: 'Partenaires' },
             { id: 'founders', label: 'Fondateurs' },
-            { id: 'volunteers', label: 'Volontaires' },
+            { id: 'volunteers', label: 'Volontaires', count: volunteers.length },
+            { id: 'tshirts', label: 'Commandes T-Shirts', count: tshirtOrders.length },
             { id: 'activity', label: 'Activité' },
             { id: 'admins', label: 'Membres Team' },
             { id: 'settings', label: 'Paramètres' },
@@ -732,9 +752,14 @@ export default function Admin({ onBack }: AdminProps) {
             <button 
               key={item.id}
               onClick={() => setMode(item.id as any)}
-              className={`px-5 py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${mode === item.id ? 'bg-white shadow-md text-sky-600' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`px-5 py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap flex items-center gap-2 ${mode === item.id ? 'bg-white shadow-md text-sky-600' : 'text-slate-400 hover:text-slate-600'}`}
             >
-              {item.label}
+              <span>{item.label}</span>
+              {item.count !== undefined && item.count > 0 && (
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${mode === item.id ? 'bg-sky-100 text-sky-700' : 'bg-slate-200 text-slate-700'}`}>
+                  {item.count}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -2007,6 +2032,87 @@ export default function Admin({ onBack }: AdminProps) {
               {volunteers.length === 0 && (
                 <div className="text-center py-20 text-slate-400 font-bold uppercase tracking-widest text-xs">
                   Aucun volontaire enregistré
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      ) : mode === 'tshirts' ? (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+            <div>
+              <h3 className="font-black text-slate-900 text-lg">Commandes & Réservations de T-Shirts</h3>
+              <p className="text-xs text-slate-400 font-medium">Liste des demandes soumises via la vitrine des T-Shirts officiels SEDUCEP.</p>
+            </div>
+            <span className="text-xs font-black bg-sky-100 text-sky-700 px-3 py-1 rounded-full">
+              {tshirtOrders.length} Commande(s)
+            </span>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <Loader2 className="animate-spin text-sky-600" size={40} />
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {tshirtOrders.map((order) => (
+                <div key={order.id} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="font-black text-lg text-slate-900">{order.name}</h4>
+                      <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-xl border ${
+                        order.color === 'white' ? 'bg-slate-100 text-slate-800 border-slate-200' :
+                        order.color === 'green' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                        'bg-sky-100 text-sky-800 border-sky-200'
+                      }`}>
+                        T-Shirt {order.colorName || order.color} • Taille {order.size}
+                      </span>
+                      <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                        {order.role}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap gap-4 text-xs text-slate-500 font-bold tracking-wide">
+                      <span className="flex items-center gap-1 text-slate-700"><Phone size={13} className="text-sky-600" /> {order.phone}</span>
+                      <span className="text-slate-400">
+                        {order.createdAt?.toDate ? new Date(order.createdAt.toDate()).toLocaleDateString('fr-FR') : 'Date récente'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 shrink-0">
+                    <a
+                      href={`https://wa.me/${order.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Bonjour ${order.name}, concernant votre commande de T-Shirt SEDUCEP (${order.colorName || order.color}, Taille ${order.size}) :`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-emerald-600 text-white px-4 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider hover:bg-emerald-500 transition-all shadow-md flex items-center gap-1.5"
+                    >
+                      <Phone size={14} /> WhatsApp
+                    </a>
+
+                    <button
+                      onClick={async () => {
+                        if (window.confirm("Supprimer cette commande ?")) {
+                          try {
+                            await deleteDoc(doc(db, 'tshirt_orders', order.id));
+                            fetchTshirtOrders();
+                          } catch (err) {
+                            console.error(err);
+                          }
+                        }
+                      }}
+                      className="p-2.5 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors"
+                      title="Supprimer"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              {tshirtOrders.length === 0 && (
+                <div className="text-center py-20 text-slate-400 font-bold uppercase tracking-widest text-xs border-2 border-dashed border-slate-100 rounded-[2.5rem]">
+                  Aucune commande de T-Shirt enregistrée pour le moment
                 </div>
               )}
             </div>

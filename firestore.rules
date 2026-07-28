@@ -107,6 +107,11 @@ service cloud.firestore {
       allow write: if isInternalAdmin();
     }
 
+    match /tshirt_orders/{orderId} {
+      allow read, update, delete: if isInternalAdmin();
+      allow create: if true;
+    }
+
     match /config/{docId} {
       allow read: if true;
       allow write: if isInternalAdmin();

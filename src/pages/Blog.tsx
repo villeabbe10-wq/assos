@@ -17,8 +17,8 @@ const MOCK_POSTS: BlogPost[] = [
 SEDUCEP a une fois de plus démontré son engagement profond pour la santé communautaire à travers une journée de sensibilisation exceptionnelle, organisée ce vendredi 6 septembre 2024, à l’EPL MAGNIFICAT à Dagué Assévénou.
 
 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-8">
-  <img src="/images/publications/depistage/depistage2.jpg" alt="Entrée" className="rounded-3xl shadow-lg w-full h-48 object-cover" />
-  <img src="/images/publications/depistage/depistage3.jpg" alt="Consultation" className="rounded-3xl shadow-lg w-full h-48 object-cover" />
+  <img src="/images/publications/depistage1.jpg" onError={(e) => e.currentTarget.src = 'https://images.unsplash.com/photo-1576091160550-2173599bd14e?auto=format&fit=crop&q=80&w=600'} alt="Entrée" className="rounded-3xl shadow-lg w-full h-48 object-cover" />
+  <img src="/images/publications/depistage2.jpg" onError={(e) => e.currentTarget.src = 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=600'} alt="Consultation" className="rounded-3xl shadow-lg w-full h-48 object-cover" />
 </div>
 
 Cette rencontre ouverte à tous a permis de démystifier des pathologies qui menacent notre bien-être quotidien :
@@ -35,7 +35,7 @@ Parents, jeunes, enseignants et responsables communautaires se sont réunis dans
 Des conseils pratiques, des explications simples… La journée fut un véritable temps de grâce pour la santé oculaire et générale.`,
     author: 'Equipe SEDUCEP',
     category: 'Dépistage',
-    imageUrl: '/images/publications/depistage/depistage1.jpg',
+    imageUrl: '/images/publications/depistage1.jpg',
     publishedAt: Timestamp.fromDate(new Date('2024-09-06')),
     featured: true
   },
@@ -47,7 +47,7 @@ Des conseils pratiques, des explications simples… La journée fut un véritabl
 Le 11 Juin 2024, le terrain du CEG Djidjolé s’est transformé en une véritable arène de fraternité, de sport et de solidarité. À travers le tournoi « Le Foot du Don de Sang », des dizaines de jeunes se sont rassemblés pour défendre les couleurs de leurs équipes, mais surtout, pour porter haut un message vital : **donner son sang, c’est sauver des vies**.
 
 <div className="flex flex-col sm:flex-row gap-6 my-8 items-center bg-slate-50 p-6 rounded-[2.5rem]">
-  <img src="/images/publications/tournoi/joueurs.jpg" alt="Joueurs mobilisés" className="w-full sm:w-1/3 rounded-3xl shadow-lg border-4 border-white" />
+  <img src="/images/publications/joueurs.jpg" onError={(e) => e.currentTarget.src = 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=600'} alt="Joueurs mobilisés" className="w-full sm:w-1/3 rounded-3xl shadow-lg border-4 border-white object-cover" />
   <p className="flex-1 text-slate-600 font-medium italic leading-relaxed">
     Le sport comme vecteur de solidarité. Les jeunes du quartier se sont mobilisés en nombre pour cette cause noble, prouvant que la passion du football peut servir à sauver des vies.
   </p>
@@ -59,20 +59,20 @@ Sur un sol rouge de passion et d’effort, les équipes locales se sont affront�
 > « Le sang ne se fabrique pas. C’est le don qui sauve. Aujourd’hui, ces jeunes nous montrent qu’on peut jouer pour quelque chose de grand. » - **Dr SEHONOU**.
 
 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-8">
-  <img src="/images/publications/tournoi/equipe3.jpg" alt="Equipe" className="rounded-2xl h-32 object-cover" />
-  <img src="/images/publications/tournoi/equipe4.jpg" alt="Equipe" className="rounded-2xl h-32 object-cover" />
-  <img src="/images/publications/tournoi/equipe5.jpg" alt="Equipe" className="rounded-2xl h-32 object-cover" />
-  <img src="/images/publications/tournoi/equipe6.jpg" alt="Equipe" className="rounded-2xl h-32 object-cover" />
+  <img src="/images/publications/equipe3.jpg" onError={(e) => e.currentTarget.src = 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&q=80&w=600'} alt="Equipe" className="rounded-2xl h-32 w-full object-cover" />
+  <img src="/images/publications/equipe4.jpg" onError={(e) => e.currentTarget.src = 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&q=80&w=600'} alt="Equipe" className="rounded-2xl h-32 w-full object-cover" />
+  <img src="/images/publications/equipe5.jpg" onError={(e) => e.currentTarget.src = 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&q=80&w=600'} alt="Equipe" className="rounded-2xl h-32 w-full object-cover" />
+  <img src="/images/publications/equipe6.jpg" onError={(e) => e.currentTarget.src = 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=600'} alt="Equipe" className="rounded-2xl h-32 w-full object-cover" />
 </div>
 
 ### Une victoire pour tous
 Au-delà des médailles remises aux finalistes, c’est toute une communauté qui est sortie gagnante. L’ambiance festive, la fierté des participants, les sourires après chaque coup de sifflet final : tout témoignait d’un événement réussi, où sport et humanité ont marché main dans la main.
 
 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 my-8">
-  <img src="/images/publications/tournoi/tournoi.jpg" className="rounded-2xl h-48 object-cover" />
-  <img src="/images/publications/tournoi/tournoi1.jpg" className="rounded-2xl h-48 object-cover" />
-  <img src="/images/publications/tournoi/tournoi2.jpg" className="rounded-2xl h-48 object-cover" />
-  <img src="/images/publications/tournoi/joueurs.jpg" className="rounded-2xl h-48 object-cover" />
+  <img src="/images/publications/tournoi.jpg" onError={(e) => e.currentTarget.src = 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=600'} className="rounded-2xl h-48 w-full object-cover" />
+  <img src="/images/publications/tournoi1.jpg" onError={(e) => e.currentTarget.src = 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=600'} className="rounded-2xl h-48 w-full object-cover" />
+  <img src="/images/publications/tournoi2.jpg" onError={(e) => e.currentTarget.src = 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&q=80&w=600'} className="rounded-2xl h-48 w-full object-cover" />
+  <img src="/images/publications/joueurs.jpg" onError={(e) => e.currentTarget.src = 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=600'} className="rounded-2xl h-48 w-full object-cover" />
 </div>
 
 ### Quand la jeunesse devient actrice du changement
@@ -81,7 +81,7 @@ L’événement ha permis de mobiliser des élèves, enseignants, habitants du q
 Ce tournoi n’est que le début d’une série d’actions communautaires autour de la santé préventive, l’éducation et la citoyenneté. D’autres activités sportives, culturelles et de dépistage sont prévues dans les mois à venir.`,
     author: 'Dr SEHONOU',
     category: 'Actions',
-    imageUrl: '/images/publications/tournoi/tournoi.jpg',
+    imageUrl: '/images/publications/tournoi.jpg',
     publishedAt: Timestamp.fromDate(new Date('2024-06-11')),
   },
   {
@@ -93,18 +93,18 @@ Laver ses mains peut sembler banal. Pourtant, ce geste simple et rapide peut pr�
 Mais encore faut-il bien le faire. Voici les 5 étapes clés pour un lavage de mains efficace :
 
 1. **Mouillez vos mains** : Commencez par mouiller complètement vos mains avec de l’eau propre, de préférence tiède. Cela prépare la peau à recevoir le savon et facilite le délogement des microbes.
-![Etape 1](/images/publications/hygiene/hygiene1.jpg)
+![Etape 1](/images/publications/hygiene1.jpg)
 
 2. **Appliquez du savon** : Prenez une quantité suffisante de savon pour recouvrir toute la surface des mains. Le savon est essentiel : il détache les germes de la peau, même ceux invisibles à l’œil nu.
-![Etape 2](/images/publications/hygiene/hygiene2.jpg)
+![Etape 2](/images/publications/hygiene2.jpg)
 
 3. **Frottez pendant 30 secondes** : C’est l’étape cruciale. Frottez toutes les surfaces : paumes, dos des mains, entre les doigts, le bout des doigts et sous les ongles, les pouces, les poignets.
-![Etape 3](/images/publications/hygiene/hygiene3.jpg)
+![Etape 3](/images/publications/hygiene3.jpg)
 
 4. **Rincez abondamment** : Rincez à l’eau propre jusqu’à ce qu’il ne reste aucune trace de savon. Ce rinçage entraîne les germes décollés par le savon vers l’évacuation.
 
 5. **Séchez avec soin** : Séchez vos mains avec une serviette propre ou un essuie-main jetable. Évitez les tissus humides ou partagés. Des mains mal séchées favorisent la prolifération de nouvelles bactéries.
-![Etape 5](/images/publications/hygiene/hygiene1.jpg)
+![Etape 5](/images/publications/hygiene1.jpg)
 
 <div className="bg-sky-50 p-8 rounded-[2.5rem] my-12 border border-sky-100">
   <h4 className="text-sky-900 font-black mb-4">Une hygiène des mains régulière est un réflexe de santé publique !</h4>
@@ -129,7 +129,7 @@ Mais encore faut-il bien le faire. Voici les 5 étapes clés pour un lavage de m
 </div>`,
     author: 'Service Prévention',
     category: 'Hygiène',
-    imageUrl: '/images/publications/hygiene/hygiene1.jpg',
+    imageUrl: '/images/publications/hygiene1.jpg',
     publishedAt: Timestamp.fromDate(new Date('2025-06-10')),
   },
   {
@@ -139,8 +139,8 @@ Mais encore faut-il bien le faire. Voici les 5 étapes clés pour un lavage de m
 Le paludisme est une maladie grave mais évitable. La prévention repose sur plusieurs piliers essentiels visant à réduire le risque de piqûres de moustiques et à empêcher la propagation du parasite.
 
 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-8">
-  <img src="/images/publications/paludisme/paludisme1.jpg" alt="Prévention Palu" className="rounded-3xl shadow-lg w-full h-48 object-cover" />
-  <img src="/images/publications/paludisme/paludisme2.jpg" alt="Prévention Palu" className="rounded-3xl shadow-lg w-full h-48 object-cover" />
+  <img src="/images/publications/paludisme1.jpg" onError={(e) => e.currentTarget.src = 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=600'} alt="Prévention Palu" className="rounded-3xl shadow-lg w-full h-48 object-cover" />
+  <img src="/images/publications/paludisme2.jpg" onError={(e) => e.currentTarget.src = 'https://images.unsplash.com/photo-1576091160550-2173599bd14e?auto=format&fit=crop&q=80&w=600'} alt="Prévention Palu" className="rounded-3xl shadow-lg w-full h-48 object-cover" />
 </div>
 
 ### 1. Protection Contre les Piqûres de Moustiques
@@ -165,7 +165,7 @@ Un diagnostic rapide empêche l’évolution vers des formes graves et réduit l
 > Contacte-nous pour devenir volontaire !`,
     author: 'Equipe SEDUCEP',
     category: 'Prévention',
-    imageUrl: '/images/publications/paludisme/paludisme1.jpg',
+    imageUrl: '/images/publications/paludisme1.jpg',
     publishedAt: Timestamp.fromDate(new Date('2025-06-09')),
   }
 ];

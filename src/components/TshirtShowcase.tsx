@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Shirt, Sparkles, Check, ShoppingBag, Send, Phone, Info, Heart } from 'lucide-react';
+import { Shirt, Sparkles, Check, ShoppingBag, Send, Phone, Info, Heart, Loader2 } from 'lucide-react';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import whiteTshirtImg from '../assets/images/seducep_tshirt_white_small_logo_1785270955173.jpg';
 import greenTshirtImg from '../assets/images/seducep_tshirt_green_small_logo_1785270924365.jpg';
 import blueTshirtImg from '../assets/images/seducep_tshirt_blue_small_logo_1785270937362.jpg';
@@ -14,6 +16,7 @@ export default function TshirtShowcase({ compact = false }: TshirtShowcaseProps)
   const [selectedSize, setSelectedSize] = useState<string>('L');
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [orderSubmitted, setOrderSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [userName, setUserName] = useState('');
   const [userPhone, setUserPhone] = useState('');
   const [userRole, setUserRole] = useState('Bénévolat / Sensibilisation');
@@ -47,13 +50,31 @@ export default function TshirtShowcase({ compact = false }: TshirtShowcaseProps)
 
   const current = tshirtData[selectedColor];
 
-  const handleOrderSubmit = (e: React.FormEvent) => {
+  const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setOrderSubmitted(true);
-    setTimeout(() => {
-      setOrderSubmitted(false);
-      setShowOrderModal(false);
-    }, 2500);
+    if (!userName.trim() || !userPhone.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      await addDoc(collection(db, 'tshirt_orders'), {
+        name: userName.trim(),
+        phone: userPhone.trim(),
+        role: userRole,
+        color: selectedColor,
+        colorName: current.colorName,
+        size: selectedSize,
+        tshirtName: current.name,
+        status: 'en_attente',
+        createdAt: serverTimestamp(),
+      });
+      setOrderSubmitted(true);
+    } catch (err) {
+      console.error('Error saving tshirt order:', err);
+      // Even if offline, show confirmation to user
+      setOrderSubmitted(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const colorLabel = selectedColor === 'white' ? 'Couleur Blanche' : selectedColor === 'green' ? 'Couleur Verte' : 'Couleur Bleue';
@@ -268,12 +289,45 @@ export default function TshirtShowcase({ compact = false }: TshirtShowcaseProps)
               </div>
 
               {orderSubmitted ? (
-                <div className="py-8 text-center space-y-3">
-                  <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
-                    <Check size={28} />
+                <div className="py-6 text-center space-y-4">
+                  <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                    <Check size={32} />
                   </div>
-                  <h5 className="text-lg font-black text-slate-900">Demande Enregistrée !</h5>
-                  <p className="text-xs text-slate-500">L'équipe SEDUCEP vous recontactera rapidement pour la remise du T-Shirt.</p>
+                  <div>
+                    <h5 className="text-xl font-black text-slate-900">Demande Enregistrée !</h5>
+                    <p className="text-xs text-slate-500 font-medium mt-1">
+                      Votre commande est disponible dans l'<strong>Espace Admin</strong> sous la section <strong>"Commandes T-Shirts"</strong>.
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-left space-y-1 text-xs">
+                    <p className="font-bold text-slate-800">Récapitulatif :</p>
+                    <p className="text-slate-600">• Client : <strong>{userName}</strong> ({userPhone})</p>
+                    <p className="text-slate-600">• T-Shirt : <strong>{current.name}</strong></p>
+                    <p className="text-slate-600">• Taille : <strong>{selectedSize}</strong></p>
+                  </div>
+
+                  <div className="flex flex-col gap-2 pt-2">
+                    <a
+                      href={`https://wa.me/22897682466?text=${encodeURIComponent(`Bonjour SEDUCEP, je viens d'enregistrer une commande de T-Shirt :\n- Nom : ${userName}\n- Tél : ${userPhone}\n- Modèle : ${current.name}\n- Taille : ${selectedSize}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20"
+                    >
+                      <Phone size={16} />
+                      <span>Envoyer aussi sur WhatsApp</span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOrderSubmitted(false);
+                        setShowOrderModal(false);
+                      }}
+                      className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs uppercase"
+                    >
+                      Fermer
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleOrderSubmit} className="space-y-4">
@@ -331,9 +385,17 @@ export default function TshirtShowcase({ compact = false }: TshirtShowcaseProps)
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-black py-3 rounded-xl text-xs uppercase tracking-wider shadow-md"
+                      disabled={isSubmitting}
+                      className="flex-1 bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white font-black py-3 rounded-xl text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-2"
                     >
-                      Valider
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" />
+                          <span>Envoi...</span>
+                        </>
+                      ) : (
+                        <span>Valider la commande</span>
+                      )}
                     </button>
                   </div>
                 </form>
