@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Home, BookOpen, Calendar, Users, HandHeart, Info, LogIn, LogOut, MessageSquare, LayoutDashboard, Facebook, Instagram, Twitter, Mail, Phone, MapPin, ExternalLink, Activity, Handshake, HelpCircle, Heart, BriefcaseMedical, ShieldCheck, Lock } from 'lucide-react';
+import { Menu, X, Home, BookOpen, Calendar, Users, HandHeart, Info, LogIn, LogOut, MessageSquare, LayoutDashboard, Facebook, Instagram, Twitter, Mail, Phone, MapPin, ExternalLink, Activity, Handshake, HelpCircle, Heart, BriefcaseMedical, ShieldCheck, Lock, Compass, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { auth, logout, db } from '../lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import PharmacyModal from './PharmacyModal';
+import PharmacyGuideModal from './PharmacyGuideModal';
 import AuthModal from './AuthModal';
 
 interface LayoutProps {
@@ -16,6 +17,8 @@ interface LayoutProps {
 export default function Layout({ children, activeTab, setActiveTab }: LayoutProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPharmacyModalOpen, setIsPharmacyModalOpen] = useState(false);
+  const [isPharmacyGuideModalOpen, setIsPharmacyGuideModalOpen] = useState(false);
+  const [pharmacyInitialSearch, setPharmacyInitialSearch] = useState('');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [user] = useAuthState(auth);
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -228,6 +231,17 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
                 </button>
               ))}
 
+              <button
+                onClick={() => {
+                  setIsPharmacyGuideModalOpen(true);
+                  setIsMenuOpen(false);
+                }}
+                className="flex items-center gap-4 p-4 rounded-2xl bg-sky-50 text-sky-700 font-bold border border-sky-100/80 cursor-pointer hover:bg-sky-100 transition-all"
+              >
+                <Compass size={22} className="text-sky-600" />
+                <span>Guide Pharmacies</span>
+              </button>
+
               <div className="mt-auto pt-8 border-t border-slate-100 flex flex-col gap-4">
                 {!user ? (
                   <button 
@@ -347,9 +361,20 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
         </motion.button>
       )}
 
+      <PharmacyGuideModal 
+        isOpen={isPharmacyGuideModalOpen} 
+        onClose={() => setIsPharmacyGuideModalOpen(false)} 
+        onOpenPharmacyModal={(searchQuery) => {
+          setPharmacyInitialSearch(searchQuery || '');
+          setIsPharmacyModalOpen(true);
+        }}
+      />
+
       <PharmacyModal 
         isOpen={isPharmacyModalOpen} 
         onClose={() => setIsPharmacyModalOpen(false)} 
+        initialSearch={pharmacyInitialSearch}
+        onOpenGuide={() => setIsPharmacyGuideModalOpen(true)}
       />
 
       {/* Sleek Footer */}
@@ -372,15 +397,44 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
             <p className="text-sm text-slate-500 font-medium leading-relaxed">
               SEDUCEP Conseil & Social est une association dédiée à l'accompagnement des populations vulnérables et à la lutte contre les maladies chroniques au Togo.
             </p>
-            <div className="flex items-center gap-4">
-              <a href={settings?.facebook || "#"} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-sky-500 hover:text-white transition-all shadow-sm">
+            <div className="flex items-center gap-3">
+              <a 
+                href={settings?.facebook || "https://www.facebook.com/share/p/14rENM7EWSB/"} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                title="Page Facebook SEDUCEP"
+                className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-sky-600 hover:text-white transition-all shadow-sm cursor-pointer"
+              >
                 <Facebook size={18} />
               </a>
-              <a href={settings?.instagram || "#"} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-pink-500 hover:text-white transition-all shadow-sm">
-                <Instagram size={18} />
-              </a>
-              <a href={settings?.whatsapp || "#"} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-emerald-500 hover:text-white transition-all shadow-sm">
+              <a 
+                href={settings?.whatsapp || "https://chat.whatsapp.com/J97IaBdATTXDlsACkgMpNS"} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                title="Groupe WhatsApp SEDUCEP"
+                className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all shadow-sm cursor-pointer border border-emerald-100"
+              >
                 <Phone size={18} />
+              </a>
+              <a 
+                href={settings?.tiktok || "https://www.tiktok.com/@seducep"} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                title="Compte TikTok SEDUCEP"
+                className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center hover:bg-slate-800 transition-all shadow-sm cursor-pointer"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.87 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.88c.28 0 .54.04.79.12V9.3a6.34 6.34 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.6a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.87a8.28 8.28 0 0 0 4.88 1.58V7.02a4.84 4.84 0 0 1-1.12-.33z"/>
+                </svg>
+              </a>
+              <a 
+                href={settings?.instagram || "#"} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                title="Instagram"
+                className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-pink-500 hover:text-white transition-all shadow-sm cursor-pointer"
+              >
+                <Instagram size={18} />
               </a>
             </div>
           </div>
@@ -407,6 +461,24 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
           <div>
             <h4 className="font-black text-xs uppercase tracking-widest text-slate-900 mb-6">Soutien</h4>
             <ul className="space-y-4">
+              <li>
+                <button 
+                  onClick={() => setIsPharmacyModalOpen(true)}
+                  className="text-sm text-sky-600 hover:text-sky-800 font-black transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <BriefcaseMedical size={14} />
+                  <span>Pharmacies de Garde</span>
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => setIsPharmacyGuideModalOpen(true)}
+                  className="text-sm text-slate-500 hover:text-sky-600 font-bold transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Compass size={14} className="text-sky-500" />
+                  <span>Guide Interactif Pharmacies</span>
+                </button>
+              </li>
               <li>
                 <button 
                   onClick={() => setActiveTab('donation')}

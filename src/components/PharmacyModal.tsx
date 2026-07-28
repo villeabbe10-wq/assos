@@ -1,22 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Search, MapPin, Phone, MessageSquare, Clipboard, Check, ExternalLink, BriefcaseMedical } from 'lucide-react';
+import { X, Search, MapPin, Phone, MessageSquare, Clipboard, Check, ExternalLink, BriefcaseMedical, Compass, HelpCircle } from 'lucide-react';
 import { db } from '../lib/firebase';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 
 interface PharmacyModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialSearch?: string;
+  onOpenGuide?: () => void;
 }
 
-export default function PharmacyModal({ isOpen, onClose }: PharmacyModalProps) {
+export default function PharmacyModal({ isOpen, onClose, initialSearch = '', onOpenGuide }: PharmacyModalProps) {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<{ title: string; content: string } | null>(null);
   const [copied, setCopied] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
 
   useEffect(() => {
     if (isOpen) {
+      if (initialSearch) {
+        setSearchTerm(initialSearch);
+      }
       fetchLatestList();
       document.body.style.overflow = 'hidden';
     } else {
@@ -25,7 +30,7 @@ export default function PharmacyModal({ isOpen, onClose }: PharmacyModalProps) {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isOpen]);
+  }, [isOpen, initialSearch]);
 
   const fetchLatestList = async () => {
     setLoading(true);
@@ -89,12 +94,27 @@ export default function PharmacyModal({ isOpen, onClose }: PharmacyModalProps) {
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">Lomé • {data?.title || 'Chargement...'}</p>
                 </div>
               </div>
-              <button 
-                onClick={onClose}
-                className="w-10 h-10 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center hover:bg-rose-50 hover:text-rose-500 transition-all cursor-pointer"
-              >
-                <X size={20} />
-              </button>
+              <div className="flex items-center gap-2">
+                {onOpenGuide && (
+                  <button
+                    onClick={() => {
+                      onClose();
+                      onOpenGuide();
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-2 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-xl text-xs font-bold transition-all cursor-pointer border border-sky-100"
+                    title="Guide interactif pour rechercher une pharmacie"
+                  >
+                    <Compass size={15} className="text-sky-600" />
+                    <span className="hidden sm:inline uppercase text-[10px] tracking-wider font-black">Guide</span>
+                  </button>
+                )}
+                <button 
+                  onClick={onClose}
+                  className="w-10 h-10 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center hover:bg-rose-50 hover:text-rose-500 transition-all cursor-pointer"
+                >
+                  <X size={20} />
+                </button>
+              </div>
             </div>
 
             {/* Search & Actions */}
