@@ -8,58 +8,6 @@ import rehypeRaw from 'rehype-raw';
 import { motion, AnimatePresence } from 'motion/react';
 
 // ... (MOCK_POSTS unchanged but could be translated if needed, for now focusing on UI)
-const IMAGE_FALLBACK_MAP: Record<string, string> = {
-  '/images/publications/hygiene.jpg': 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/hygiene1.jpg': 'https://images.unsplash.com/photo-1584634731339-252c581abfc5?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/hygiene2.jpg': 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/hygiene3.jpg': 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/hygiene4.jpg': 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/paludisme1.jpg': 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/paludisme2.jpg': 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/paludisme3.jpg': 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/depistage1.jpg': 'https://images.unsplash.com/photo-1576091160550-2173599bd14e?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/depistage2.jpg': 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/tournoi.jpg': 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/tournoi1.jpg': 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/tournoi2.jpg': 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/joueurs.jpg': 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/equipe3.jpg': 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/equipe4.jpg': 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/equipe5.jpg': 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&q=80&w=600',
-  '/images/publications/equipe6.jpg': 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=600',
-};
-
-const getFallbackImage = (src?: string): string => {
-  if (!src) return 'https://images.unsplash.com/photo-1576091160550-2173599bd14e?auto=format&fit=crop&q=80&w=600';
-  const key = src.trim();
-  if (IMAGE_FALLBACK_MAP[key]) {
-    return IMAGE_FALLBACK_MAP[key];
-  }
-  if (key.includes('hygiene4')) return IMAGE_FALLBACK_MAP['/images/publications/hygiene4.jpg'];
-  if (key.includes('hygiene3')) return IMAGE_FALLBACK_MAP['/images/publications/hygiene3.jpg'];
-  if (key.includes('hygiene2')) return IMAGE_FALLBACK_MAP['/images/publications/hygiene2.jpg'];
-  if (key.includes('hygiene1')) return IMAGE_FALLBACK_MAP['/images/publications/hygiene1.jpg'];
-  if (key.includes('hygiene')) return IMAGE_FALLBACK_MAP['/images/publications/hygiene.jpg'];
-
-  if (key.includes('paludisme3')) return IMAGE_FALLBACK_MAP['/images/publications/paludisme3.jpg'];
-  if (key.includes('paludisme2')) return IMAGE_FALLBACK_MAP['/images/publications/paludisme2.jpg'];
-  if (key.includes('paludisme1')) return IMAGE_FALLBACK_MAP['/images/publications/paludisme1.jpg'];
-
-  if (key.includes('depistage2')) return IMAGE_FALLBACK_MAP['/images/publications/depistage2.jpg'];
-  if (key.includes('depistage1')) return IMAGE_FALLBACK_MAP['/images/publications/depistage1.jpg'];
-
-  if (key.includes('tournoi2')) return IMAGE_FALLBACK_MAP['/images/publications/tournoi2.jpg'];
-  if (key.includes('tournoi1')) return IMAGE_FALLBACK_MAP['/images/publications/tournoi1.jpg'];
-  if (key.includes('tournoi')) return IMAGE_FALLBACK_MAP['/images/publications/tournoi.jpg'];
-
-  if (key.includes('joueurs')) return IMAGE_FALLBACK_MAP['/images/publications/joueurs.jpg'];
-
-  if (key.startsWith('http://') || key.startsWith('https://')) {
-    return key;
-  }
-  return 'https://images.unsplash.com/photo-1576091160550-2173599bd14e?auto=format&fit=crop&q=80&w=600';
-};
-
 const cleanMarkdownContent = (content: string) => {
   if (!content) return '';
   return content
@@ -340,14 +288,7 @@ export default function Blog() {
               initial={{ scale: 1.1 }}
               animate={{ scale: 1 }}
               transition={{ duration: 1.5 }}
-              src={selectedPost.imageUrl ? getFallbackImage(selectedPost.imageUrl) : 'https://images.unsplash.com/photo-1576091160550-2173599bd14e?auto=format&fit=crop&q=60&w=800'} 
-              onError={(e) => {
-                const target = e.currentTarget;
-                if (!target.dataset.fallback) {
-                  target.dataset.fallback = 'true';
-                  target.src = getFallbackImage(selectedPost.imageUrl);
-                }
-              }}
+              src={selectedPost.imageUrl || 'https://images.unsplash.com/photo-1576091160550-2173599bd14e?auto=format&fit=crop&q=60&w=800'} 
               className="w-full h-full object-cover opacity-80" 
               alt={selectedPost.title} 
             />
@@ -430,17 +371,15 @@ export default function Blog() {
             <ReactMarkdown 
               rehypePlugins={[rehypeRaw]}
               components={{
-                img: ({ node, src, ...props }: any) => {
-                  const resolvedSrc = src || props.src || '';
+                img: ({ node, ...props }) => {
                   return (
                     <img 
                       {...props} 
-                      src={resolvedSrc ? getFallbackImage(resolvedSrc) : resolvedSrc}
                       onError={(e) => {
                         const target = e.currentTarget;
                         if (!target.dataset.fallback) {
                           target.dataset.fallback = 'true';
-                          target.src = getFallbackImage(resolvedSrc);
+                          target.src = 'https://images.unsplash.com/photo-1576091160550-2173599bd14e?auto=format&fit=crop&q=80&w=600';
                         }
                       }}
                     />
@@ -456,24 +395,13 @@ export default function Blog() {
             <div className="space-y-8 pt-12 border-t border-slate-50">
               <h3 className="text-2xl font-black text-slate-900 tracking-tight">Galerie Photo</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {selectedPost.gallery.map((imgUrl, idx) => (
+                {selectedPost.gallery.map((img, idx) => (
                   <motion.div 
                     key={idx}
                     whileHover={{ scale: 1.02 }}
                     className="aspect-square rounded-[2rem] overflow-hidden shadow-lg border border-slate-100"
                   >
-                    <img 
-                      src={getFallbackImage(imgUrl)} 
-                      alt="" 
-                      onError={(e) => {
-                        const target = e.currentTarget;
-                        if (!target.dataset.fallback) {
-                          target.dataset.fallback = 'true';
-                          target.src = getFallbackImage(imgUrl);
-                        }
-                      }}
-                      className="w-full h-full object-cover" 
-                    />
+                    <img src={img} alt="" className="w-full h-full object-cover" />
                   </motion.div>
                 ))}
               </div>
@@ -577,14 +505,7 @@ export default function Blog() {
               >
                 <div className="h-72 overflow-hidden relative">
                   <motion.img 
-                    src={getFallbackImage(post.imageUrl)} 
-                    onError={(e) => {
-                      const target = e.currentTarget;
-                      if (!target.dataset.fallback) {
-                        target.dataset.fallback = 'true';
-                        target.src = getFallbackImage(post.imageUrl);
-                      }
-                    }}
+                    src={post.imageUrl || 'https://images.unsplash.com/photo-1576091160550-2173599bd14e?auto=format&fit=crop&q=60&w=800'} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" 
                     alt="" 
                   />
