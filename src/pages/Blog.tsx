@@ -99,6 +99,14 @@ Ce tournoi n’est que le début d’une série d’actions communautaires autou
     content: `### L’hygiène des mains en 5 étapes : un geste simple qui sauve des vies
 Laver ses mains peut sembler banal. Pourtant, ce geste simple et rapide peut prévenir jusqu’à **80 % des infections**. En ces temps où les maladies infectieuses circulent rapidement (grippe, gastro, COVID-19, variole etc.), adopter une bonne hygiène des mains est une barrière essentielle.
 
+<div class="grid grid-cols-2 sm:grid-cols-5 gap-3 my-8">
+  <img src="/images/publications/hygiene.jpg" alt="Sensibilisation Hygiène" class="rounded-2xl h-36 w-full object-cover" />
+  <img src="/images/publications/hygiene1.jpg" alt="Mouiller les mains" class="rounded-2xl h-36 w-full object-cover" />
+  <img src="/images/publications/hygiene2.jpg" alt="Savonner" class="rounded-2xl h-36 w-full object-cover" />
+  <img src="/images/publications/hygiene3.jpg" alt="Frotter" class="rounded-2xl h-36 w-full object-cover" />
+  <img src="/images/publications/hygiene4.jpg" alt="Sécher" class="rounded-2xl h-36 w-full object-cover" />
+</div>
+
 Mais encore faut-il bien le faire. Voici les 5 étapes clés pour un lavage de mains efficace :
 
 1. **Mouillez vos mains** : Commencez par mouiller complètement vos mains avec de l’eau propre, de préférence tiède. Cela prépare la peau à recevoir le savon et facilite le délogement des microbes.
@@ -113,7 +121,7 @@ Mais encore faut-il bien le faire. Voici les 5 étapes clés pour un lavage de m
 4. **Rincez abondamment** : Rincez à l’eau propre jusqu’à ce qu’il ne reste aucune trace de savon. Ce rinçage entraîne les germes décollés par le savon vers l’évacuation.
 
 5. **Séchez avec soin** : Séchez vos mains avec une serviette propre ou un essuie-main jetable. Évitez les tissus humides ou partagés. Des mains mal séchées favorisent la prolifération de nouvelles bactéries.
-![Etape 5](/images/publications/hygiene1.jpg)
+![Etape 5](/images/publications/hygiene4.jpg)
 
 <div class="bg-sky-50 p-8 rounded-[2.5rem] my-12 border border-sky-100">
   <h4 class="text-sky-900 font-black mb-4">Une hygiène des mains régulière est un réflexe de santé publique !</h4>
@@ -138,7 +146,14 @@ Mais encore faut-il bien le faire. Voici les 5 étapes clés pour un lavage de m
 </div>`,
     author: 'Service Prévention',
     category: 'Hygiène',
-    imageUrl: '/images/publications/hygiene1.jpg',
+    imageUrl: '/images/publications/hygiene.jpg',
+    gallery: [
+      '/images/publications/hygiene.jpg',
+      '/images/publications/hygiene1.jpg',
+      '/images/publications/hygiene2.jpg',
+      '/images/publications/hygiene3.jpg',
+      '/images/publications/hygiene4.jpg'
+    ],
     publishedAt: Timestamp.fromDate(new Date('2025-06-10')),
   },
   {
@@ -147,9 +162,10 @@ Mais encore faut-il bien le faire. Voici les 5 étapes clés pour un lavage de m
     content: `### Prévention du Paludisme : Une Approche Multiforme
 Le paludisme est une maladie grave mais évitable. La prévention repose sur plusieurs piliers essentiels visant à réduire le risque de piqûres de moustiques et à empêcher la propagation du parasite.
 
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-8">
-  <img src="/images/publications/paludisme1.jpg" alt="Prévention Palu" class="rounded-3xl shadow-lg w-full h-48 object-cover" />
-  <img src="/images/publications/paludisme2.jpg" alt="Prévention Palu" class="rounded-3xl shadow-lg w-full h-48 object-cover" />
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
+  <img src="/images/publications/paludisme1.jpg" alt="Prévention Palu 1" class="rounded-3xl shadow-lg w-full h-48 object-cover" />
+  <img src="/images/publications/paludisme2.jpg" alt="Prévention Palu 2" class="rounded-3xl shadow-lg w-full h-48 object-cover" />
+  <img src="/images/publications/paludisme3.jpg" alt="Prévention Palu 3" class="rounded-3xl shadow-lg w-full h-48 object-cover" />
 </div>
 
 ### 1. Protection Contre les Piqûres de Moustiques
@@ -175,6 +191,11 @@ Un diagnostic rapide empêche l’évolution vers des formes graves et réduit l
     author: 'Equipe SEDUCEP',
     category: 'Prévention',
     imageUrl: '/images/publications/paludisme1.jpg',
+    gallery: [
+      '/images/publications/paludisme1.jpg',
+      '/images/publications/paludisme2.jpg',
+      '/images/publications/paludisme3.jpg'
+    ],
     publishedAt: Timestamp.fromDate(new Date('2025-06-09')),
   }
 ];
