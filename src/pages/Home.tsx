@@ -55,71 +55,121 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
         variants={itemVariants}
         className="bg-white rounded-[3rem] p-8 sm:p-16 border border-slate-200/60 shadow-xl shadow-slate-200/20 relative overflow-hidden group"
       >
-        <div className="relative z-10 max-w-4xl">
-          <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-4 mb-8">
-            <span className="bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-slate-400/20">
-              Mouvement Solidaire Togo
-            </span>
-            <div className="flex -space-x-3">
-              {[1, 2, 3, 4].map((i) => (
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-7 space-y-8">
+            <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-4">
+              <span className="bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-slate-400/20">
+                Mouvement Solidaire Togo
+              </span>
+              <div className="flex -space-x-3">
+                {[1, 2, 3, 4].map((i) => (
+                  <motion.div 
+                    key={i} 
+                    initial={{ x: -10, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.5 + (i * 0.1) }}
+                    className="w-8 h-8 rounded-full border-2 border-white bg-slate-100 overflow-hidden shadow-sm"
+                  >
+                    <img src={`https://i.pravatar.cc/100?img=${i+20}`} alt="" className="w-full h-full object-cover" />
+                  </motion.div>
+                ))}
                 <motion.div 
-                  key={i} 
-                  initial={{ x: -10, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.5 + (i * 0.1) }}
-                  className="w-8 h-8 rounded-full border-2 border-white bg-slate-100 overflow-hidden shadow-sm"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 1, type: 'spring' }}
+                  className="w-8 h-8 rounded-full border-2 border-white bg-emerald-500 flex items-center justify-center text-[8px] text-white font-black shadow-lg shadow-emerald-500/30"
                 >
-                  <img src={`https://i.pravatar.cc/100?img=${i+20}`} alt="" className="w-full h-full object-cover" />
+                  +1K
                 </motion.div>
-              ))}
-              <motion.div 
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 1, type: 'spring' }}
-                className="w-8 h-8 rounded-full border-2 border-white bg-emerald-500 flex items-center justify-center text-[8px] text-white font-black shadow-lg shadow-emerald-500/30"
-              >
-                +1K
-              </motion.div>
-            </div>
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rejoignez nous</span>
-          </motion.div>
-          
-          <motion.h1 variants={itemVariants} className="text-4xl sm:text-7xl lg:text-8xl font-black text-slate-900 mb-8 leading-[0.9] tracking-tighter">
-            Sensibiliser <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-sky-600 relative">
-              Éduquer
-              <motion.span 
-                initial={{ width: 0 }}
-                animate={{ width: '100%' }}
-                transition={{ delay: 0.8, duration: 0.8 }}
-                className="absolute -bottom-2 left-0 h-2 bg-emerald-500/20 rounded-full"
-              />
-            </span> <br />
-            <span className="text-slate-400">Protéger</span>
-          </motion.h1>
+              </div>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rejoignez nous</span>
+            </motion.div>
+            
+            <motion.h1 variants={itemVariants} className="text-4xl sm:text-6xl lg:text-7xl font-black text-slate-900 leading-[0.95] tracking-tighter">
+              Sensibiliser <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-sky-600 relative">
+                Éduquer
+                <motion.span 
+                  initial={{ width: 0 }}
+                  animate={{ width: '100%' }}
+                  transition={{ delay: 0.8, duration: 0.8 }}
+                  className="absolute -bottom-2 left-0 h-2 bg-emerald-500/20 rounded-full"
+                />
+              </span> <br />
+              <span className="text-slate-400">Protéger</span>
+            </motion.h1>
 
-          <motion.p variants={itemVariants} className="text-slate-500 text-base sm:text-xl mb-12 leading-relaxed font-medium max-w-2xl">
-            L'excellence du conseil médical couplée à l'engagement social pour les populations vulnérables du Togo.
-          </motion.p>
-          
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-5">
-            <motion.button 
-              whileHover={{ scale: 1.05, x: 5 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setActiveTab('volunteer')}
-              className="bg-slate-900 text-white px-8 sm:px-10 py-4 sm:py-5 rounded-2xl font-black text-xs sm:text-sm hover:bg-slate-800 transition-all shadow-2xl shadow-slate-900/20 flex items-center justify-center gap-3 uppercase tracking-widest sm:w-auto w-full"
-            >
-              Nous Rejoindre <ArrowRight size={18} />
-            </motion.button>
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setActiveTab('donation')}
-              className="bg-white border-2 border-slate-100 text-slate-700 px-8 sm:px-10 py-4 sm:py-5 rounded-2xl font-black text-xs sm:text-sm hover:border-emerald-500/30 hover:text-emerald-600 transition-all flex items-center justify-center gap-2 uppercase tracking-widest sm:w-auto w-full"
-            >
-              <Heart size={18} className="fill-current" />
-              Soutenir
-            </motion.button>
+            <motion.p variants={itemVariants} className="text-slate-500 text-base sm:text-lg leading-relaxed font-medium max-w-xl">
+              L'excellence du conseil médical couplée à l'engagement social pour les populations vulnérables du Togo.
+            </motion.p>
+            
+            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-5 pt-2">
+              <motion.button 
+                whileHover={{ scale: 1.05, x: 5 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setActiveTab('volunteer')}
+                className="bg-slate-900 text-white px-8 sm:px-10 py-4 sm:py-5 rounded-2xl font-black text-xs sm:text-sm hover:bg-slate-800 transition-all shadow-2xl shadow-slate-900/20 flex items-center justify-center gap-3 uppercase tracking-widest sm:w-auto w-full"
+              >
+                Nous Rejoindre <ArrowRight size={18} />
+              </motion.button>
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setActiveTab('donation')}
+                className="bg-white border-2 border-slate-100 text-slate-700 px-8 sm:px-10 py-4 sm:py-5 rounded-2xl font-black text-xs sm:text-sm hover:border-emerald-500/30 hover:text-emerald-600 transition-all flex items-center justify-center gap-2 uppercase tracking-widest sm:w-auto w-full"
+              >
+                <Heart size={18} className="fill-current" />
+                Soutenir
+              </motion.button>
+            </motion.div>
+          </div>
+
+          {/* Right Image Card Showcase */}
+          <motion.div 
+            variants={itemVariants}
+            className="lg:col-span-5 relative"
+          >
+            <div className="relative mx-auto max-w-md lg:max-w-none">
+              {/* Background Glow */}
+              <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500/20 to-sky-500/20 rounded-[3.5rem] blur-2xl opacity-75 group-hover:opacity-100 transition-opacity" />
+              
+              {/* Main Image Container */}
+              <div className="relative bg-slate-900 p-3 rounded-[3rem] shadow-2xl border border-slate-200/50">
+                <div className="overflow-hidden rounded-[2.5rem] relative aspect-[4/5] sm:aspect-square lg:aspect-[4/5]">
+                  <img 
+                    src="https://images.unsplash.com/photo-1576091160550-2173599bd14e?auto=format&fit=crop&q=80&w=800" 
+                    referrerPolicy="no-referrer"
+                    alt="Action de santé sur le terrain par SEDUCEP Togo" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+                  
+                  {/* Bottom Floating Info Badge */}
+                  <div className="absolute bottom-5 left-5 right-5 p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-white/60 shadow-xl flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600 flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                        Action Terrain Togo
+                      </span>
+                      <p className="text-xs font-black text-slate-900">Missions & Dépistages Gratuits</p>
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl bg-slate-900 text-white">
+                      SEDUCEP
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Top-Right Floating Pill */}
+              <div className="absolute -top-4 -right-3 bg-emerald-600 text-white px-4 py-3 rounded-2xl shadow-xl shadow-emerald-600/30 flex items-center gap-2.5 border-2 border-white">
+                <ShieldCheck size={18} />
+                <span className="text-[9px] font-black uppercase tracking-widest leading-none">
+                  Santé & Prévention
+                </span>
+              </div>
+            </div>
           </motion.div>
         </div>
         
@@ -250,8 +300,8 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
             <div className="aspect-[4/5] bg-slate-100 rounded-[4rem] overflow-hidden rotate-2 shadow-2xl transition-transform group-hover:rotate-0 duration-700">
               <motion.img 
                 whileHover={{ scale: 1.1 }}
-                src="/images/publications/tournoi.jpg" 
-                onError={(e: any) => e.target.src = "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=600"}
+                src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=800" 
+                referrerPolicy="no-referrer"
                 alt="Tournoi Seducep" 
                 className="w-full h-full object-cover grayscale-0 opacity-100 transition-all group-hover:grayscale-0"
               />
@@ -301,8 +351,8 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
           <motion.div variants={itemVariants} className="relative hidden lg:block">
             <div className="absolute inset-0 bg-white/10 rounded-[3rem] blur-2xl -rotate-6" />
             <img 
-              src="/images/publications/joueurs.jpg" 
-              onError={(e: any) => e.target.src = "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=600"}
+              src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=800" 
+              referrerPolicy="no-referrer"
               alt="Jeunesse et Sport" 
               className="relative rounded-[3rem] shadow-2xl rotate-3 w-full h-[400px] object-cover border-8 border-white/10"
             />
