@@ -288,7 +288,7 @@ export default function Blog() {
               initial={{ scale: 1.1 }}
               animate={{ scale: 1 }}
               transition={{ duration: 1.5 }}
-              src={selectedPost.imageUrl || 'https://images.unsplash.com/photo-1576091160550-2173599bd14e?auto=format&fit=crop&q=60&w=800'} 
+              src={selectedPost.imageUrl || 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=60&w=800'} 
               className="w-full h-full object-cover opacity-80" 
               alt={selectedPost.title} 
             />
@@ -379,7 +379,7 @@ export default function Blog() {
                         const target = e.currentTarget;
                         if (!target.dataset.fallback) {
                           target.dataset.fallback = 'true';
-                          target.src = 'https://images.unsplash.com/photo-1576091160550-2173599bd14e?auto=format&fit=crop&q=80&w=600';
+                          target.src = 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=600';
                         }
                       }}
                     />
@@ -505,7 +505,7 @@ export default function Blog() {
               >
                 <div className="h-72 overflow-hidden relative">
                   <motion.img 
-                    src={post.imageUrl || 'https://images.unsplash.com/photo-1576091160550-2173599bd14e?auto=format&fit=crop&q=60&w=800'} 
+                    src={post.imageUrl || 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=60&w=800'} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" 
                     alt="" 
                   />

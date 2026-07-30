@@ -137,7 +137,10 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
               <div className="relative bg-slate-900 p-3 rounded-[3rem] shadow-2xl border border-slate-200/50">
                 <div className="overflow-hidden rounded-[2.5rem] relative aspect-[4/5] sm:aspect-square lg:aspect-[4/5]">
                   <img 
-                    src="https://images.unsplash.com/photo-1576091160550-2173599bd14e?auto=format&fit=crop&q=80&w=800" 
+                    src="/images/publications/hygiene.jpg"
+                    onError={(e: any) => {
+                      e.target.src = "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=800";
+                    }}
                     referrerPolicy="no-referrer"
                     alt="Action de santé sur le terrain par SEDUCEP Togo" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
