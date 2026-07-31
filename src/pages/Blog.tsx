@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, orderBy, getDocs, Timestamp } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { BlogPost } from '../types';
-import { Calendar, User, ArrowLeft, Share2, BookOpen, Search, ArrowRight, Heart } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Share2, BookOpen, Search, ArrowRight, Heart, ZoomIn, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import { motion, AnimatePresence } from 'motion/react';
@@ -207,6 +207,17 @@ export default function Blog() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('Tout');
+  const [activeLightboxImage, setActiveLightboxImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setActiveLightboxImage(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -275,7 +286,10 @@ export default function Blog() {
         exit={{ opacity: 0 }}
         className="bg-slate-50 min-h-screen"
       >
-        <div className="relative h-[50vh] sm:h-[70vh] overflow-hidden bg-slate-900 group">
+        <div 
+          onClick={() => !selectedPost.videoUrl && setActiveLightboxImage(selectedPost.imageUrl || 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=800')}
+          className={`relative h-[50vh] sm:h-[70vh] overflow-hidden bg-slate-900 group ${!selectedPost.videoUrl ? 'cursor-pointer' : ''}`}
+        >
           {selectedPost.videoUrl ? (
             <video 
               src={selectedPost.videoUrl} 
@@ -289,22 +303,33 @@ export default function Blog() {
               animate={{ scale: 1 }}
               transition={{ duration: 1.5 }}
               src={selectedPost.imageUrl || 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=60&w=800'} 
-              className="w-full h-full object-cover opacity-80" 
+              className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700" 
               alt={selectedPost.title} 
             />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
-          <div className="absolute top-8 left-8">
+          <div className="absolute top-8 left-8 z-10">
             <motion.button 
               whileHover={{ scale: 1.1, rotate: -90 }}
               whileTap={{ scale: 0.9 }}
-              onClick={() => setSelectedPost(null)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedPost(null);
+              }}
               className="p-4 bg-white/10 backdrop-blur-2xl rounded-full text-white border border-white/20 hover:bg-white/20 transition-all shadow-2xl"
             >
               <ArrowLeft size={24} />
             </motion.button>
           </div>
           
+          {!selectedPost.videoUrl && (
+            <div className="absolute top-8 right-8 z-10 hidden sm:block">
+              <span className="flex items-center gap-2 bg-slate-900/80 backdrop-blur-md text-white text-xs font-black uppercase tracking-widest px-4 py-2.5 rounded-2xl border border-white/20 shadow-xl opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all">
+                <ZoomIn size={16} className="text-emerald-400" /> Agrandir
+              </span>
+            </div>
+          )}
+
           <div className="absolute bottom-20 left-0 w-full px-8 sm:px-20 text-white max-w-7xl mx-auto">
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
@@ -373,16 +398,25 @@ export default function Blog() {
               components={{
                 img: ({ node, ...props }) => {
                   return (
-                    <img 
-                      {...props} 
-                      onError={(e) => {
-                        const target = e.currentTarget;
-                        if (!target.dataset.fallback) {
-                          target.dataset.fallback = 'true';
-                          target.src = 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=600';
-                        }
-                      }}
-                    />
+                    <span 
+                      className="block my-8 group relative rounded-[2.5rem] overflow-hidden shadow-2xl border border-slate-100 cursor-pointer"
+                      onClick={() => props.src && setActiveLightboxImage(props.src as string)}
+                    >
+                      <img 
+                        {...props} 
+                        className="w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (!target.dataset.fallback) {
+                            target.dataset.fallback = 'true';
+                            target.src = 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=600';
+                          }
+                        }}
+                      />
+                      <span className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 text-white font-black text-xs uppercase tracking-widest backdrop-blur-[2px]">
+                        <ZoomIn size={22} className="text-emerald-400" /> Cliquer pour agrandir
+                      </span>
+                    </span>
                   );
                 }
               }}
@@ -398,10 +432,14 @@ export default function Blog() {
                 {selectedPost.gallery.map((img, idx) => (
                   <motion.div 
                     key={idx}
-                    whileHover={{ scale: 1.02 }}
-                    className="aspect-square rounded-[2rem] overflow-hidden shadow-lg border border-slate-100"
+                    whileHover={{ scale: 1.03 }}
+                    onClick={() => setActiveLightboxImage(img)}
+                    className="aspect-square rounded-[2rem] overflow-hidden shadow-lg border border-slate-100 cursor-pointer group relative"
                   >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <img src={img} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white gap-2 font-black text-xs uppercase tracking-widest">
+                      <ZoomIn size={24} className="text-emerald-400" /> Agrandir
+                    </div>
                   </motion.div>
                 ))}
               </div>
@@ -423,6 +461,54 @@ export default function Blog() {
             </motion.button>
           </div>
         </motion.div>
+
+        {/* Lightbox Modal */}
+        <AnimatePresence>
+          {activeLightboxImage && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setActiveLightboxImage(null)}
+              className="fixed inset-0 z-[100] bg-slate-950/95 backdrop-blur-2xl flex items-center justify-center p-4 sm:p-10 cursor-zoom-out"
+            >
+              <motion.button
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveLightboxImage(null);
+                }}
+                className="absolute top-6 right-6 p-4 bg-white/10 hover:bg-white/20 text-white rounded-full border border-white/20 transition-all shadow-2xl z-20 cursor-pointer"
+                title="Fermer (Échap)"
+              >
+                <X size={28} />
+              </motion.button>
+
+              <motion.div
+                initial={{ scale: 0.85, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.85, opacity: 0 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                onClick={(e) => e.stopPropagation()}
+                className="relative max-w-5xl max-h-[90vh] overflow-hidden rounded-3xl shadow-2xl border border-white/10 cursor-default flex items-center justify-center"
+              >
+                <img
+                  src={activeLightboxImage}
+                  alt="Agrandissement"
+                  className="w-full h-full max-h-[85vh] object-contain rounded-2xl select-none"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.dataset.fallback) {
+                      target.dataset.fallback = 'true';
+                      target.src = 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=800';
+                    }
+                  }}
+                />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     );
   }
@@ -582,6 +668,54 @@ export default function Blog() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {activeLightboxImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setActiveLightboxImage(null)}
+            className="fixed inset-0 z-[100] bg-slate-950/95 backdrop-blur-2xl flex items-center justify-center p-4 sm:p-10 cursor-zoom-out"
+          >
+            <motion.button
+              whileHover={{ scale: 1.1, rotate: 90 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveLightboxImage(null);
+              }}
+              className="absolute top-6 right-6 p-4 bg-white/10 hover:bg-white/20 text-white rounded-full border border-white/20 transition-all shadow-2xl z-20 cursor-pointer"
+              title="Fermer (Échap)"
+            >
+              <X size={28} />
+            </motion.button>
+
+            <motion.div
+              initial={{ scale: 0.85, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.85, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-5xl max-h-[90vh] overflow-hidden rounded-3xl shadow-2xl border border-white/10 cursor-default flex items-center justify-center"
+            >
+              <img
+                src={activeLightboxImage}
+                alt="Agrandissement"
+                className="w-full h-full max-h-[85vh] object-contain rounded-2xl select-none"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (!target.dataset.fallback) {
+                    target.dataset.fallback = 'true';
+                    target.src = 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=800';
+                  }
+                }}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
