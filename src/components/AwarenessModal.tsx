@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Megaphone, ShieldCheck, ZoomIn, ArrowRight } from 'lucide-react';
+import { X, Megaphone, ShieldCheck, ZoomIn, ZoomOut, ArrowRight, Maximize2 } from 'lucide-react';
 
 interface AwarenessModalProps {
   bannerImage?: string;
@@ -14,7 +14,8 @@ export default function AwarenessModal({
   autoCloseSeconds = 5
 }: AwarenessModalProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isZoomed, setIsZoomed] = useState(false);
+  const [isFullscreenZoom, setIsFullscreenZoom] = useState(false);
+  const [zoomScale, setZoomScale] = useState<number>(1);
   const [imgSrc, setImgSrc] = useState(bannerImage);
   const [countdown, setCountdown] = useState(autoCloseSeconds);
 
@@ -30,10 +31,9 @@ export default function AwarenessModal({
     }
   }, []);
 
-  // Countdown timer when splash ad is open
+  // Countdown timer when splash ad is open (paused if zoomed in full screen)
   useEffect(() => {
-    if (!isOpen) return;
-    setCountdown(autoCloseSeconds);
+    if (!isOpen || isFullscreenZoom) return;
 
     const interval = setInterval(() => {
       setCountdown((prev) => {
@@ -47,11 +47,17 @@ export default function AwarenessModal({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isOpen, autoCloseSeconds]);
+  }, [isOpen, isFullscreenZoom]);
 
   const handleClose = () => {
     setIsOpen(false);
-    setIsZoomed(false);
+    setIsFullscreenZoom(false);
+    setZoomScale(1);
+  };
+
+  const toggleZoom = () => {
+    setIsFullscreenZoom(!isFullscreenZoom);
+    setZoomScale(1);
   };
 
   return (
@@ -63,7 +69,10 @@ export default function AwarenessModal({
           animate={{ scale: 1, opacity: 1 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => setIsOpen(true)}
+          onClick={() => {
+            setCountdown(autoCloseSeconds);
+            setIsOpen(true);
+          }}
           className="fixed bottom-6 left-6 z-40 flex items-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-full shadow-2xl border border-emerald-500/40 hover:bg-slate-800 transition-all cursor-pointer group"
           title="Afficher la bannière de sensibilisation"
         >
@@ -106,7 +115,7 @@ export default function AwarenessModal({
                 </div>
 
                 <div className="flex items-center gap-3">
-                  {countdown > 0 && (
+                  {countdown > 0 && !isFullscreenZoom && (
                     <span className="text-[11px] font-mono font-bold text-slate-400 bg-slate-800 px-2.5 py-1 rounded-lg">
                       Fermeture dans {countdown}s
                     </span>
@@ -123,27 +132,40 @@ export default function AwarenessModal({
 
               {/* Main Banner Image Display */}
               <div 
-                onClick={() => setIsZoomed(!isZoomed)}
-                className="relative flex-1 bg-slate-950 overflow-hidden cursor-pointer group flex items-center justify-center"
+                onClick={toggleZoom}
+                className="relative flex-1 bg-slate-950 overflow-hidden cursor-pointer group flex items-center justify-center min-h-[300px]"
               >
                 <img
                   src={imgSrc}
                   alt="Bannière de Sensibilisation SEDUCEP Togo"
                   referrerPolicy="no-referrer"
-                  className={`max-h-[65vh] w-full object-contain transition-transform duration-500 ${isZoomed ? 'scale-110' : 'group-hover:scale-102'}`}
+                  className="max-h-[65vh] w-full object-contain transition-transform duration-300 group-hover:scale-102"
                   onError={() => setImgSrc(fallbackImage)}
                 />
 
-                <div className="absolute bottom-3 right-3 bg-slate-950/80 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1.5 rounded-xl border border-white/20 opacity-80 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 pointer-events-none">
-                  <ZoomIn size={14} className="text-emerald-400" /> Agrandir
-                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleZoom();
+                  }}
+                  className="absolute bottom-4 right-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl shadow-xl transition-all flex items-center gap-2 cursor-pointer"
+                >
+                  <Maximize2 size={15} /> Afficher en Grand
+                </button>
               </div>
 
               {/* Compact Splash Footer */}
-              <div className="p-4 sm:px-6 sm:py-4 bg-slate-900 border-t border-slate-800 flex items-center justify-end gap-4">
+              <div className="p-4 sm:px-6 sm:py-4 bg-slate-900 border-t border-slate-800 flex items-center justify-between gap-4">
+                <button
+                  onClick={toggleZoom}
+                  className="text-emerald-400 hover:text-emerald-300 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                >
+                  <ZoomIn size={16} /> Cliquez pour Agrandir l'Affiche
+                </button>
+
                 <button
                   onClick={handleClose}
-                  className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs uppercase tracking-wider px-6 py-3 rounded-xl transition-all shadow-lg shadow-emerald-500/20 cursor-pointer"
+                  className="shrink-0 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs uppercase tracking-wider px-6 py-3 rounded-xl transition-all shadow-lg shadow-emerald-500/20 cursor-pointer"
                 >
                   Continuer vers le site <ArrowRight size={15} />
                 </button>
@@ -152,7 +174,76 @@ export default function AwarenessModal({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* FULLSCREEN LIGHTBOX ZOOM MODAL */}
+      <AnimatePresence>
+        {isFullscreenZoom && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsFullscreenZoom(false)}
+            className="fixed inset-0 z-[110] bg-slate-950/98 backdrop-blur-2xl flex flex-col justify-between p-4 sm:p-8 cursor-zoom-out"
+          >
+            {/* Lightbox Controls Header */}
+            <div 
+              onClick={(e) => e.stopPropagation()} 
+              className="flex items-center justify-between z-20 w-full max-w-5xl mx-auto bg-slate-900/90 p-3 sm:px-6 rounded-2xl border border-slate-800"
+            >
+              <div className="flex items-center gap-2 text-white font-black text-xs sm:text-sm uppercase tracking-wider">
+                <ShieldCheck className="text-emerald-400" size={18} />
+                Affiche Officielle SEDUCEP Togo
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setZoomScale(prev => Math.min(prev + 0.4, 2.5))}
+                  className="p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+                  title="Zoomer"
+                >
+                  <ZoomIn size={16} /> <span className="hidden sm:inline">Zoom</span>
+                </button>
+                <button
+                  onClick={() => setZoomScale(prev => Math.max(prev - 0.4, 0.8))}
+                  className="p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+                  title="Dézoomer"
+                >
+                  <ZoomOut size={16} /> <span className="hidden sm:inline">Réduire</span>
+                </button>
+                <button
+                  onClick={() => setIsFullscreenZoom(false)}
+                  className="p-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ml-2"
+                >
+                  <X size={18} /> Fermer
+                </button>
+              </div>
+            </div>
+
+            {/* Lightbox Main Image Display with Scroll & Scale */}
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              className="flex-1 w-full overflow-auto flex items-center justify-center p-2 sm:p-6 my-2 scrollbar-thin"
+            >
+              <motion.img
+                src={imgSrc}
+                alt="Affiche Agrandie SEDUCEP Togo"
+                referrerPolicy="no-referrer"
+                animate={{ scale: zoomScale }}
+                transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+                className="max-h-[85vh] w-auto object-contain rounded-2xl shadow-2xl border border-slate-800/50 cursor-grab active:cursor-grabbing"
+                onError={() => setImgSrc(fallbackImage)}
+              />
+            </div>
+
+            {/* Lightbox Footer Note */}
+            <div className="text-center text-xs text-slate-400 font-semibold z-20">
+              Astuce : Utilisez les boutons de zoom ou défilez pour lire tous les détails de l'affiche.
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
+
 
