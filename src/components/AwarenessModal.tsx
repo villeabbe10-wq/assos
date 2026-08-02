@@ -74,14 +74,14 @@ export default function AwarenessModal({
             setIsOpen(true);
           }}
           className="fixed bottom-6 left-6 z-40 flex items-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-full shadow-2xl border border-emerald-500/40 hover:bg-slate-800 transition-all cursor-pointer group"
-          title="Afficher la bannière de sensibilisation"
+          title="Afficher le message de sensibilisation"
         >
           <span className="relative flex h-3 w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
           </span>
           <Megaphone size={16} className="text-emerald-400 group-hover:rotate-12 transition-transform" />
-          <span className="text-xs font-black uppercase tracking-wider">Bannière Sensibilisation</span>
+          <span className="text-xs font-black uppercase tracking-wider">Flash Santé</span>
         </motion.button>
       )}
 
