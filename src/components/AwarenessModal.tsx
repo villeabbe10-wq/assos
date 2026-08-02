@@ -9,7 +9,7 @@ interface AwarenessModalProps {
 }
 
 export default function AwarenessModal({
-  bannerImage = '/images/publications/bennier/sensibilisation.jpg',
+  bannerImage = '/images/publications/bannier/sensibilisation.jpg',
   fallbackImage = 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=1200',
   autoCloseSeconds = 5
 }: AwarenessModalProps) {
@@ -140,14 +140,10 @@ export default function AwarenessModal({
               </div>
 
               {/* Compact Splash Footer */}
-              <div className="p-4 sm:px-6 sm:py-4 bg-slate-900 border-t border-slate-800 flex items-center justify-between gap-4">
-                <span className="text-xs font-semibold text-slate-400 truncate">
-                  Fichier unique : <code className="text-emerald-400 font-mono">public/images/publications/bennier/sensibilisation.jpg</code>
-                </span>
-
+              <div className="p-4 sm:px-6 sm:py-4 bg-slate-900 border-t border-slate-800 flex items-center justify-end gap-4">
                 <button
                   onClick={handleClose}
-                  className="shrink-0 flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs uppercase tracking-wider px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-emerald-500/20 cursor-pointer"
+                  className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs uppercase tracking-wider px-6 py-3 rounded-xl transition-all shadow-lg shadow-emerald-500/20 cursor-pointer"
                 >
                   Continuer vers le site <ArrowRight size={15} />
                 </button>

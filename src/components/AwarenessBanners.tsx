@@ -37,8 +37,8 @@ export const INITIAL_AWARENESS_BANNERS: AwarenessBannerItem[] = [
     title: 'Sensibilisation Nationale : Prévention & Santé pour Tous',
     category: 'Paludisme',
     badge: 'Mouvement Solidaire Togo',
-    imageUrl: '/images/publications/bennier/sensibilisation.jpg',
-    description: 'Bannière officielle de sensibilisation sur le terrain. Remplacez le fichier dans "public/images/publications/bennier/sensibilisation.jpg" pour actualiser automatiquement l’image.',
+    imageUrl: '/images/publications/bannier/sensibilisation.jpg',
+    description: 'Bannière officielle de sensibilisation sur le terrain. Remplacez le fichier dans "public/images/publications/bannier/sensibilisation.jpg" pour actualiser automatiquement l’image.',
     keyPoints: [
       'Sensibiliser, éduquer et protéger les populations vulnérables',
       'Missions de dépistage gratuit et distribution de kits sanitaires',

@@ -137,7 +137,7 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
               <div className="relative bg-slate-900 p-3 rounded-[3rem] shadow-2xl border border-slate-200/50">
                 <div className="overflow-hidden rounded-[2.5rem] relative aspect-[4/5] sm:aspect-square lg:aspect-[4/5]">
                   <img 
-                    src="/images/publications/bennier/sensibilisation.jpg"
+                    src="/images/publications/bannier/sensibilisation.jpg"
                     onError={(e: any) => {
                       e.target.src = "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=800";
                     }}
