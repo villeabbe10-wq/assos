@@ -13,6 +13,7 @@ import Sponsorship from './pages/Sponsorship';
 import Admin from './pages/Admin';
 import Donation from './pages/Donation';
 import Messages from './pages/Messages';
+import AwarenessModal from './components/AwarenessModal';
 import { LanguageProvider } from './lib/i18n';
 import { AnimatePresence, motion } from 'motion/react';
 
@@ -58,6 +59,7 @@ export default function App() {
       <Layout activeTab={activeTab} setActiveTab={setActiveTab}>
         {renderContent()}
       </Layout>
+      <AwarenessModal />
     </LanguageProvider>
   );
 }
