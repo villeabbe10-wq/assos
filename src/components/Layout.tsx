@@ -319,9 +319,9 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
         animate={{ scale: 1, opacity: 1 }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.9 }}
-        className="fixed bottom-24 right-6 sm:bottom-8 sm:right-8 z-40 bg-[#25D366] text-white p-4 rounded-2xl shadow-2xl shadow-green-500/30 flex items-center justify-center group"
+        className="fixed bottom-20 right-4 sm:bottom-6 sm:right-8 z-40 bg-[#25D366] text-white p-3.5 sm:p-4 rounded-2xl shadow-2xl shadow-green-500/30 flex items-center justify-center group"
       >
-        <MessageSquare size={24} fill="currentColor" />
+        <MessageSquare size={22} fill="currentColor" />
         <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 font-bold text-sm ml-0 group-hover:ml-2">
           Aide
         </span>
@@ -334,9 +334,9 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
         animate={{ scale: 1, opacity: 1 }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.9 }}
-        className="lg:hidden fixed bottom-40 right-6 sm:bottom-28 sm:right-8 z-40 bg-sky-600 text-white p-4 rounded-2xl shadow-2xl shadow-sky-600/30 flex items-center justify-center group cursor-pointer"
+        className="lg:hidden fixed bottom-36 right-4 sm:bottom-22 sm:right-8 z-40 bg-sky-600 text-white p-3.5 sm:p-4 rounded-2xl shadow-2xl shadow-sky-600/30 flex items-center justify-center group cursor-pointer"
       >
-        <BriefcaseMedical size={24} />
+        <BriefcaseMedical size={22} />
         <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 font-bold text-sm ml-0 group-hover:ml-2">
           Pharmacies de garde
         </span>
@@ -350,7 +350,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
           animate={{ scale: 1, opacity: 1 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.9 }}
-          className="fixed bottom-56 right-6 sm:bottom-48 sm:right-8 z-40 bg-slate-900/90 backdrop-blur-md text-white p-3.5 sm:p-4 rounded-2xl shadow-xl shadow-slate-900/20 border border-slate-700/50 flex items-center justify-center group cursor-pointer"
+          className="fixed bottom-68 right-4 sm:bottom-54 sm:right-8 lg:bottom-38 lg:right-8 z-40 bg-slate-900/90 backdrop-blur-md text-white p-3.5 sm:p-4 rounded-2xl shadow-xl shadow-slate-900/20 border border-slate-700/50 flex items-center justify-center group cursor-pointer"
           title="Espace Membres"
         >
           <ShieldCheck size={22} className="text-emerald-400" />

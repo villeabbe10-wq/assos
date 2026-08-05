@@ -73,15 +73,19 @@ export default function AwarenessModal({
             setCountdown(autoCloseSeconds);
             setIsOpen(true);
           }}
-          className="fixed bottom-6 left-6 z-40 flex items-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-full shadow-2xl border border-emerald-500/40 hover:bg-slate-800 transition-all cursor-pointer group"
-          title="Afficher le message de sensibilisation"
+          className="fixed bottom-52 right-4 sm:bottom-38 sm:right-8 lg:bottom-22 lg:right-8 z-40 p-3.5 sm:p-4 bg-slate-900/90 backdrop-blur-md text-white rounded-2xl shadow-xl shadow-slate-900/20 border border-emerald-500/50 hover:bg-slate-800 transition-all cursor-pointer group flex items-center justify-center"
+          title="Flash Santé - Sensibilisation"
         >
-          <span className="relative flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+          <div className="relative flex items-center justify-center">
+            <Megaphone size={22} className="text-emerald-400 group-hover:rotate-12 transition-transform" />
+            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+          </div>
+          <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 font-bold text-xs ml-0 group-hover:ml-2 whitespace-nowrap text-emerald-300 uppercase tracking-wider">
+            Flash Santé
           </span>
-          <Megaphone size={16} className="text-emerald-400 group-hover:rotate-12 transition-transform" />
-          <span className="text-xs font-black uppercase tracking-wider">Flash Santé</span>
         </motion.button>
       )}
 
