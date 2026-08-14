@@ -85,7 +85,7 @@ export default function About({ setActiveTab }: { setActiveTab: (tab: string) =>
     },
     {
       id: 'h5',
-      name: "M. Lebon A.",
+      name: "M. BRUCE KUASSI Ahlin K.",
       role: "Mobilisation & Organisation",
       desc: "Remerciements appuyés pour son dynamisme remarquable, sa présence active et son appui logistique aux campagnes.",
       badge: "Acteur de Terrain",
