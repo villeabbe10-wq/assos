@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Layout from './components/Layout';
 import Home from './pages/Home';
-import Blog from './pages/Blog';
 import Events from './pages/Events';
 import Volunteer from './pages/Volunteer';
 import Resources from './pages/Resources';
@@ -34,7 +33,6 @@ export default function App() {
           {(() => {
             switch (activeTab) {
               case 'home': return <Home setActiveTab={setActiveTab} />;
-              case 'blog': return <Blog />;
               case 'events': return <Events />;
               case 'actions': return <Actions setActiveTab={setActiveTab} />;
               case 'volunteer': return <Volunteer />;

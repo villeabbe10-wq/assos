@@ -444,7 +444,7 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
           </p>
           <motion.button 
             whileHover={{ x: 5 }}
-            onClick={() => setActiveTab('blog')}
+            onClick={() => setActiveTab('actions')}
             className="bg-slate-900 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-3 group shadow-lg shadow-slate-900/10"
           >
             Lire le guide <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />

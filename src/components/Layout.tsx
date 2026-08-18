@@ -76,7 +76,6 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
 
   const publicNavItems = [
     { id: 'home', label: 'Accueil', icon: Home },
-    { id: 'blog', label: 'Blog', icon: BookOpen },
     { id: 'actions', label: 'Actions', icon: Activity },
     { id: 'events', label: 'Agenda', icon: Calendar },
     { id: 'volunteer', label: 'Bénévolat', icon: Users },

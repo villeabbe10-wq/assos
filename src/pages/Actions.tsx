@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { db } from '../lib/firebase';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import Blog from './Blog';
 
 export default function Actions({ setActiveTab }: { setActiveTab: (tab: string) => void }) {
   const [missionsFromDb, setMissionsFromDb] = useState<any[]>([]);
@@ -388,6 +389,11 @@ export default function Actions({ setActiveTab }: { setActiveTab: (tab: string) 
             </motion.div>
           ))}
         </div>
+      </section>
+
+      {/* Publications Section embedded from Blog */}
+      <section id="publications-section" className="relative">
+        <Blog />
       </section>
 
       {/* CTA SECTION */}

@@ -284,7 +284,7 @@ export default function Blog() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="bg-slate-50 min-h-screen"
+        className="bg-slate-50 rounded-3xl"
       >
         <div 
           onClick={() => !selectedPost.videoUrl && setActiveLightboxImage(selectedPost.imageUrl || 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=800')}
@@ -453,7 +453,7 @@ export default function Blog() {
               whileTap={{ scale: 0.95 }}
               onClick={() => {
                 setSelectedPost(null);
-                window.scrollTo(0, 0);
+                document.getElementById('publications-section')?.scrollIntoView({ behavior: 'smooth' });
               }}
               className="bg-slate-900 text-white px-12 py-5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-slate-900/20"
             >
@@ -585,7 +585,7 @@ export default function Blog() {
                 whileHover={{ y: -12 }}
                 onClick={() => {
                   setSelectedPost(post);
-                  window.scrollTo(0, 0);
+                  document.getElementById('publications-section')?.scrollIntoView({ behavior: 'smooth' });
                 }}
                 className="group bg-white rounded-[3.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 cursor-pointer overflow-hidden flex flex-col relative"
               >

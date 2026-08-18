@@ -443,6 +443,45 @@ export default function About({ setActiveTab }: { setActiveTab: (tab: string) =>
             </button>
           </div>
         )}
+
+        {/* Galerie des Personnalités */}
+        <div className="pt-16 mt-8 relative z-10">
+          <div className="text-center space-y-4 mb-12">
+            <h4 className="text-2xl font-black text-slate-900 tracking-tight">Galerie d'Honneur</h4>
+            <p className="text-amber-600 font-bold uppercase text-[10px] tracking-[0.3em]">Visages de nos soutiens</p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            {[
+              '/images/remerciements/personnalite.png',
+              '/images/remerciements/personnalite1.png',
+              '/images/remerciements/personnalite2.png',
+              '/images/remerciements/personnalite3.png',
+              '/images/remerciements/personnalite4.png',
+              '/images/remerciements/personnalite5.png',
+              '/images/remerciements/personnalite6.png',
+              '/images/remerciements/personnalite7.png',
+              '/images/remerciements/personnalitea.png',
+              '/images/remerciements/personnaliteb.png',
+              '/images/remerciements/personnalitec.png',
+            ].map((src, idx) => (
+              <div 
+                key={idx} 
+                className="aspect-[4/5] rounded-3xl overflow-hidden bg-white shadow-lg shadow-amber-900/5 border border-amber-200/50 group relative"
+              >
+                <img 
+                  src={src} 
+                  alt={`Personnalité ${idx + 1}`}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  onError={(e) => {
+                    (e.currentTarget.parentNode as HTMLDivElement).style.display = 'none';
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* Tenue Officielle & T-Shirts de Sensibilisation */}
