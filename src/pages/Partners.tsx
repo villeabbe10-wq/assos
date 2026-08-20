@@ -196,7 +196,49 @@ export default function Partners({ setActiveTab }: { setActiveTab: (tab: string)
         </div>
       </section>
 
-      {/* Dynamic Partners Grid */}
+      {/* Galerie des Partenaires (Images Locales) */}
+      <section className="space-y-12">
+        <div className="text-center space-y-4">
+          <h3 className="text-3xl font-black text-slate-900 tracking-tight">Nos Soutiens Institutionnels & Privés</h3>
+          <p className="text-sky-600 font-bold uppercase text-[10px] tracking-[0.3em]">Instituts publics, partenaires privés, ONG</p>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+          {[
+            '/images/partenaires/partenaire.png',
+            '/images/partenaires/partenaire1.png',
+            '/images/partenaires/partenaire2.png',
+            '/images/partenaires/partenaire3.png',
+            '/images/partenaires/partenaire4.png',
+            '/images/partenaires/partenaire5.png',
+            '/images/partenaires/partenaire6.png',
+            '/images/partenaires/partenaire7.png',
+            '/images/partenaires/partenaire8.png',
+            '/images/partenaires/partenaire9.png',
+            '/images/partenaires/partenaire10.png',
+            '/images/partenaires/partenaire11.png',
+            '/images/partenaires/partenairea.png',
+            '/images/partenaires/partenaireb.png',
+            '/images/partenaires/partenairec.png',
+          ].map((src, idx) => (
+            <div 
+              key={idx} 
+              className="aspect-video bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-xl hover:border-sky-200 transition-all flex items-center justify-center group"
+            >
+              <img 
+                src={src} 
+                alt={`Partenaire ${idx + 1}`}
+                className="max-w-full max-h-full object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
+                onError={(e) => {
+                  (e.currentTarget.parentNode as HTMLDivElement).style.display = 'none';
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Dynamic Partners Grid (From Database) */}
       {partners.length > 0 && (
         <section className="space-y-16">
           <div className="text-center space-y-4">
