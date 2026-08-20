@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Heart, ShieldCheck, Star, Mail, Phone, ArrowRight, Users, Briefcase } from 'lucide-react';
+import { Heart, ShieldCheck, Star, Mail, MessageCircle, ArrowRight, Users, Briefcase } from 'lucide-react';
 
 export default function Volunteer() {
   return (
@@ -79,7 +79,7 @@ export default function Volunteer() {
       </div>
 
       {/* Contacts Section */}
-      <div className="bg-emerald-50/50 rounded-[4rem] p-8 sm:p-16 border border-emerald-100 mt-16 max-w-4xl mx-auto text-center space-y-10">
+      <div className="bg-emerald-50/50 rounded-[4rem] p-8 sm:p-14 border border-emerald-100 mt-16 max-w-5xl mx-auto text-center space-y-10">
         <div className="space-y-4">
           <h3 className="text-3xl font-black text-slate-900 tracking-tight">Prêt(e) à nous rejoindre ?</h3>
           <p className="text-slate-500 font-medium max-w-xl mx-auto">
@@ -87,49 +87,62 @@ export default function Volunteer() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a 
+        {/* 3 Blocks: Stacked vertically on mobile, 3 columns on tablet/desktop */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
+          {/* WhatsApp Togo */}
+          <motion.a 
+            whileHover={{ y: -6, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             href="https://wa.me/22897682466?text=Bonjour SEDUCEP, je souhaite vous rejoindre (adhésion/bénévolat)."
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-emerald-500 hover:bg-emerald-600 text-white p-5 sm:p-6 rounded-3xl flex items-center justify-start gap-5 transition-all shadow-lg shadow-emerald-500/20 group cursor-pointer"
+            className="bg-[#25D366] hover:bg-[#20ba5a] text-white p-6 sm:p-7 rounded-[2.5rem] flex flex-col items-center justify-center text-center gap-4 transition-all shadow-xl shadow-[#25D366]/25 group cursor-pointer border border-[#25D366]/40"
           >
-            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-inner">
-              <Phone size={24} />
+            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-inner">
+              <MessageCircle size={28} className="text-white fill-white/20" />
             </div>
-            <div className="text-left">
-              <span className="block font-black text-lg sm:text-xl tracking-tight">WhatsApp (Togo)</span>
-              <span className="text-xs sm:text-sm font-bold text-emerald-100 uppercase tracking-widest">+228 97 68 24 66</span>
+            <div className="space-y-1">
+              <span className="block font-black text-base sm:text-lg tracking-tight">WhatsApp Togo</span>
+              <span className="block text-xs sm:text-sm font-bold text-white/90 tracking-wide">Écrire à notre équipe</span>
+              <span className="inline-block text-[10px] uppercase tracking-widest font-black text-emerald-950 bg-white/30 px-2.5 py-0.5 rounded-full mt-1">Direct Togo</span>
             </div>
-          </a>
+          </motion.a>
 
-          <a 
+          {/* WhatsApp International */}
+          <motion.a 
+            whileHover={{ y: -6, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             href="https://wa.me/32465796529?text=Bonjour SEDUCEP, je souhaite vous rejoindre (adhésion/bénévolat)."
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-emerald-600 hover:bg-emerald-700 text-white p-5 sm:p-6 rounded-3xl flex items-center justify-start gap-5 transition-all shadow-lg shadow-emerald-600/20 group cursor-pointer"
+            className="bg-emerald-700 hover:bg-emerald-800 text-white p-6 sm:p-7 rounded-[2.5rem] flex flex-col items-center justify-center text-center gap-4 transition-all shadow-xl shadow-emerald-800/25 group cursor-pointer border border-emerald-600/40"
           >
-            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-inner">
-              <Phone size={24} />
+            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-inner">
+              <MessageCircle size={28} className="text-white fill-white/20" />
             </div>
-            <div className="text-left">
-              <span className="block font-black text-lg sm:text-xl tracking-tight">WhatsApp (Intl)</span>
-              <span className="text-xs sm:text-sm font-bold text-emerald-100 uppercase tracking-widest">+32 465 79 65 29</span>
+            <div className="space-y-1">
+              <span className="block font-black text-base sm:text-lg tracking-tight">WhatsApp International</span>
+              <span className="block text-xs sm:text-sm font-bold text-emerald-100 tracking-wide">Écrire à la coordination</span>
+              <span className="inline-block text-[10px] uppercase tracking-widest font-black text-emerald-950 bg-emerald-200/40 px-2.5 py-0.5 rounded-full mt-1">International</span>
             </div>
-          </a>
+          </motion.a>
 
-          <a 
+          {/* Email */}
+          <motion.a 
+            whileHover={{ y: -6, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             href="mailto:seduceconseil@gmail.com?subject=Demande d'adhésion à SEDUCEP"
-            className="md:col-span-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 p-5 sm:p-6 rounded-3xl flex items-center justify-start gap-5 transition-all group cursor-pointer"
+            className="bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 p-6 sm:p-7 rounded-[2.5rem] flex flex-col items-center justify-center text-center gap-4 transition-all shadow-lg shadow-slate-200/40 group cursor-pointer"
           >
-            <div className="w-14 h-14 bg-slate-100 text-slate-500 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-inner">
-              <Mail size={24} />
+            <div className="w-14 h-14 bg-slate-100 text-slate-700 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-inner">
+              <Mail size={28} />
             </div>
-            <div className="text-left">
-              <span className="block font-black text-lg sm:text-xl tracking-tight">Par E-mail</span>
-              <span className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-widest">seduceconseil@gmail.com</span>
+            <div className="space-y-1 w-full overflow-hidden">
+              <span className="block font-black text-base sm:text-lg tracking-tight text-slate-900">Par E-mail</span>
+              <span className="block text-xs sm:text-[11px] lg:text-xs font-bold text-slate-500 tracking-tight break-all">seduceconseil@gmail.com</span>
+              <span className="inline-block text-[10px] uppercase tracking-widest font-black text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full mt-1">Écrivez-nous</span>
             </div>
-          </a>
+          </motion.a>
         </div>
       </div>
     </div>
