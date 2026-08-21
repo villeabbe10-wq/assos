@@ -33,7 +33,19 @@ export default function Admin({ onBack }: AdminProps) {
     priority: 'Moyenne' as 'Haute' | 'Moyenne' | 'Basse',
     deadline: ''
   });
-  const [settings, setSettings] = useState({ logoUrl: '', associationName: 'SEDUCEP', phone: '+228 97682466', email: 'seduceconseil@gmail.com', facebook: '', whatsapp: '', instagram: '' });
+  const [settings, setSettings] = useState({ 
+    logoUrl: '', 
+    associationName: 'SEDUCEP', 
+    phone: '+228 97682466', 
+    email: 'seduceconseil@gmail.com', 
+    facebook: '', 
+    whatsapp: '', 
+    instagram: '',
+    impact_vies: '1.2k',
+    impact_campagnes: '42',
+    impact_beneficiaires: '15k',
+    impact_benevoles: '380'
+  });
   const [isAuthorized, setIsAuthorized] = useState(user?.email === 'seduceconseil@gmail.com');
   const [activity, setActivity] = useState<{ proposals: any[], reviews: any[], campaigns: any[] }>({ proposals: [], reviews: [], campaigns: [] });
 
@@ -1687,7 +1699,29 @@ export default function Admin({ onBack }: AdminProps) {
               </div>
             </div>
 
-            <button disabled={loading} className="w-full bg-slate-900 text-white font-black py-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-black transition-all">
+            <div className="pt-8 border-t border-slate-100">
+              <h5 className="font-bold text-slate-900 mb-6 flex items-center gap-2"><Activity size={16} /> Indicateurs d'Impact (Accueil)</h5>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Vies Impactées</label>
+                  <input className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none font-bold" value={settings.impact_vies || ''} onChange={e => setSettings({...settings, impact_vies: e.target.value})} placeholder="Ex: 1.2k" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Campagnes Terrain</label>
+                  <input className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none font-bold" value={settings.impact_campagnes || ''} onChange={e => setSettings({...settings, impact_campagnes: e.target.value})} placeholder="Ex: 42" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Bénéficiaires Directs</label>
+                  <input className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none font-bold" value={settings.impact_beneficiaires || ''} onChange={e => setSettings({...settings, impact_beneficiaires: e.target.value})} placeholder="Ex: 15k" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Bénévoles Actifs</label>
+                  <input className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 outline-none font-bold" value={settings.impact_benevoles || ''} onChange={e => setSettings({...settings, impact_benevoles: e.target.value})} placeholder="Ex: 380" />
+                </div>
+              </div>
+            </div>
+
+            <button disabled={loading} className="w-full bg-slate-900 text-white font-black py-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-black transition-all mt-8">
               {loading ? <Loader2 className="animate-spin" /> : 'Enregistrer les Paramètres'}
             </button>
           </form>

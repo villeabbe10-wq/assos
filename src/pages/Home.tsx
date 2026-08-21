@@ -2,10 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Heart, ShieldCheck, Users, ArrowRight, Activity, Calendar as CalendarIcon, MapPin, Globe } from 'lucide-react';
 import { db } from '../lib/firebase';
-import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, limit, onSnapshot, doc } from 'firebase/firestore';
 
 export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => void }) {
   const [latestEvents, setLatestEvents] = useState<any[]>([]);
+  const [impactStats, setImpactStats] = useState({
+    vies: '1.2k',
+    campagnes: '42',
+    beneficiaires: '15k',
+    benevoles: '380'
+  });
 
   useEffect(() => {
     const q = query(
@@ -24,6 +30,21 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
       console.error("Error listening to events:", error);
     });
 
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(doc(db, 'config', 'general'), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setImpactStats({
+          vies: data.impact_vies || '1.2k',
+          campagnes: data.impact_campagnes || '42',
+          beneficiaires: data.impact_beneficiaires || '15k',
+          benevoles: data.impact_benevoles || '380'
+        });
+      }
+    });
     return () => unsubscribe();
   }, []);
 
@@ -206,10 +227,10 @@ export default function Home({ setActiveTab }: { setActiveTab: (tab: string) => 
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { label: 'Vies Impactées', value: '1.2k', progress: 75, color: '#10b981', symbol: <Activity size={16} /> },
-            { label: 'Campagnes Terrain', value: '42', progress: 90, color: '#f59e0b', symbol: <Globe size={16} /> },
-            { label: 'Bénéficiaires Directs', value: '15k', progress: 60, color: '#0ea5e9', symbol: <Users size={16} /> },
-            { label: 'Bénévoles Actifs', value: '380', progress: 85, color: '#8b5cf6', symbol: <Heart size={16} /> },
+            { label: 'Vies Impactées', value: impactStats.vies, progress: 75, color: '#10b981', symbol: <Activity size={16} /> },
+            { label: 'Campagnes Terrain', value: impactStats.campagnes, progress: 90, color: '#f59e0b', symbol: <Globe size={16} /> },
+            { label: 'Bénéficiaires Directs', value: impactStats.beneficiaires, progress: 60, color: '#0ea5e9', symbol: <Users size={16} /> },
+            { label: 'Bénévoles Actifs', value: impactStats.benevoles, progress: 85, color: '#8b5cf6', symbol: <Heart size={16} /> },
           ].map((item, i) => (
             <motion.div 
               key={i}
