@@ -93,7 +93,7 @@ export default function Volunteer() {
           <motion.a 
             whileHover={{ y: -6, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            href="https://wa.me/22897682466?text=Bonjour SEDUCEP, je souhaite vous rejoindre (adhésion/bénévolat)."
+            href={`https://api.whatsapp.com/send?phone=22897682466&text=${encodeURIComponent("Bonjour SEDUCEP, je souhaite vous rejoindre (adhésion/bénévolat).")}`}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-[#25D366] hover:bg-[#20ba5a] text-white p-6 sm:p-7 rounded-[2.5rem] flex flex-col items-center justify-center text-center gap-4 transition-all shadow-xl shadow-[#25D366]/25 group cursor-pointer border border-[#25D366]/40"
@@ -112,7 +112,7 @@ export default function Volunteer() {
           <motion.a 
             whileHover={{ y: -6, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            href="https://wa.me/32465796529?text=Bonjour SEDUCEP, je souhaite vous rejoindre (adhésion/bénévolat)."
+            href={`https://api.whatsapp.com/send?phone=32465796529&text=${encodeURIComponent("Bonjour SEDUCEP, je souhaite vous rejoindre (adhésion/bénévolat).")}`}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-emerald-700 hover:bg-emerald-800 text-white p-6 sm:p-7 rounded-[2.5rem] flex flex-col items-center justify-center text-center gap-4 transition-all shadow-xl shadow-emerald-800/25 group cursor-pointer border border-emerald-600/40"

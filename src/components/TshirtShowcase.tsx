@@ -309,7 +309,7 @@ export default function TshirtShowcase({ compact = false }: TshirtShowcaseProps)
 
                   <div className="flex flex-col gap-2 pt-2">
                     <a
-                      href={`https://wa.me/22897682466?text=${encodeURIComponent(`Bonjour SEDUCEP, je viens d'enregistrer une commande de T-Shirt :\n- Nom : ${userName}\n- Tél : ${userPhone}\n- Modèle : ${current.name}\n- Taille : ${selectedSize}`)}`}
+                      href={`https://api.whatsapp.com/send?phone=22897682466&text=${encodeURIComponent(`Bonjour SEDUCEP, je viens d'enregistrer une commande de T-Shirt :\n- Nom : ${userName}\n- Tél : ${userPhone}\n- Modèle : ${current.name}\n- Taille : ${selectedSize}`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-4 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20"

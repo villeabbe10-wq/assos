@@ -109,7 +109,7 @@ export default function Donation({ setActiveTab }: { setActiveTab: (tab: string)
               </p>
             </div>
             <a 
-              href="https://wa.me/22890000000?text=Bonjour, je souhaite proposer des dons en nature pour SEDUCEP."
+              href={`https://api.whatsapp.com/send?phone=22897682466&text=${encodeURIComponent("Bonjour, je souhaite proposer des dons en nature pour SEDUCEP.")}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full md:w-auto text-center bg-sky-600 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-sky-700 transition-all shadow-xl shadow-sky-600/20 whitespace-nowrap"
@@ -162,7 +162,7 @@ export default function Donation({ setActiveTab }: { setActiveTab: (tab: string)
                 
                 <div className="w-full space-y-4">
                   <a 
-                    href="https://wa.me/22890000000?text=Bonjour, je souhaite obtenir les informations sécurisées pour un don financier (T-Money/Flooz/Carte)."
+                    href={`https://api.whatsapp.com/send?phone=22897682466&text=${encodeURIComponent("Bonjour, je souhaite obtenir les informations sécurisées pour un don financier (T-Money/Flooz/Carte).")}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-6 px-4 rounded-[2rem] transition-all flex items-center justify-center gap-3 uppercase tracking-widest text-xs shadow-2xl shadow-emerald-500/30 group"
@@ -171,7 +171,7 @@ export default function Donation({ setActiveTab }: { setActiveTab: (tab: string)
                     Par WhatsApp Direct
                   </a>
                   <a 
-                    href="tel:+22890000000"
+                    href="tel:+22897682466"
                     className="w-full bg-white text-slate-900 font-black py-6 px-4 rounded-[2rem] hover:bg-slate-50 transition-all flex items-center justify-center gap-3 uppercase tracking-widest text-xs shadow-xl"
                   >
                     <Phone size={24} /> 

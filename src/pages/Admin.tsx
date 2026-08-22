@@ -4,7 +4,7 @@ import { collection, addDoc, Timestamp, getDocs, query, orderBy, doc, getDoc, se
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { motion } from 'motion/react';
-import { Plus, LayoutDashboard, FileText, Calendar, Loader2, CheckCircle, Users, Mail, Phone, Briefcase, ArrowLeft, BriefcaseMedical, UserPlus, Shield, Trash2, Sparkles, Wand2, LogIn, CheckSquare, Clock, AlertCircle, ListTodo, UserCheck, MessageSquare } from 'lucide-react';
+import { Plus, LayoutDashboard, FileText, Calendar, Loader2, CheckCircle, Users, Mail, Phone, Briefcase, ArrowLeft, BriefcaseMedical, UserPlus, Shield, Trash2, Sparkles, Wand2, LogIn, CheckSquare, Clock, AlertCircle, ListTodo, UserCheck, MessageSquare, Activity } from 'lucide-react';
 import AuthModal from '../components/AuthModal';
 
 interface AdminProps {

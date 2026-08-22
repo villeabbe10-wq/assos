@@ -311,7 +311,7 @@ export default function Layout({ children, activeTab, setActiveTab }: LayoutProp
 
       {/* WhatsApp Floating Action Button */}
       <motion.a
-        href={settings?.whatsapp || "https://wa.me/22892004436?text=Bonjour SEDUCEP-CONSEILS, j'ai une question."}
+        href={settings?.whatsapp || `https://api.whatsapp.com/send?phone=22897682466&text=${encodeURIComponent("Bonjour SEDUCEP-CONSEILS, j'ai une question.")}`}
         target="_blank"
         rel="noopener noreferrer"
         initial={{ scale: 0, opacity: 0 }}
